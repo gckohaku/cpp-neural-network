@@ -1,0 +1,39 @@
+// {
+// 	"version": "2.0.0",
+// 	"tasks": [
+// 		{
+// 			"type": "cppbuild",
+// 			"label": "C/C++ (debug): clang++ アクティブなファイルのビルド",
+// 			"command": "cmake",
+// 			"args": [
+// 				"--build",
+//                 "build/release"
+// 			],
+// 			"options": {
+// 				"cwd": "${fileDirname}"
+// 			},
+// 			"problemMatcher": [
+// 				"$gcc"
+// 			],
+// 			"group": "build",
+// 			"detail": "コンパイラ: /usr/bin/clang++"
+// 		},
+// 		{
+// 			"type": "cppbuild",
+// 			"label": "C/C++ (release): clang++ アクティブなファイルのビルド",
+// 			"command": "cmake",
+// 			"args": [
+// 				"--build",
+//                 "build/release"
+// 			],
+// 			"options": {
+// 				"cwd": "${fileDirname}"
+// 			},
+// 			"problemMatcher": [
+// 				"$gcc"
+// 			],
+// 			"group": "build",
+// 			"detail": "コンパイラ: /usr/bin/clang++"
+// 		}
+// 	]
+// }
