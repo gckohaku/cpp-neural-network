@@ -3,7 +3,7 @@ project(cpp-neural-network)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 find_package(BLAS REQUIRED)
 
-set(CMAKE_CXX_FLAGS "-std=c++23 -Wall -Wextra -I/opt/intel/oneapi/mkl/latest/include -L/opt/intel/oneapi/mkl/latest/lib/intel64 -Wformat -Wformat-security -Wc++20-compat -Wconversion -Wsign-conversion -Wsign-compare -Wuninitialized -Wno-uninitialized -Wreturn-local-addr -Wshadow -Wimplicit-fallthrough -Wold-style-cast")
+set(CMAKE_CXX_FLAGS "-std=c++23 -Wall -Wextra -Wformat -Wformat-security -Wc++20-compat -Wconversion -Wsign-conversion -Wsign-compare -Wuninitialized -Wno-uninitialized -Wreturn-local-addr -Wshadow -Wimplicit-fallthrough -Wold-style-cast")
 set(CMAKE_CXX_FLAGS_DEBUG "-g -O0 -fsanitize=address,undefined -DDEBUG")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3 -s -DNDEBUG -march=native")
 

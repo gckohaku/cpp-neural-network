@@ -8,7 +8,9 @@
         "rgba(79,236,236,0.25)"
     ],
     "cSpell.words": [
-        "Eigen"
+        "cblas",
+        "Eigen",
+        "sgemm"
     ],
     "C_Cpp.intelliSenseEngine": "disabled",
     "clangd.arguments": [
