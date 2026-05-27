@@ -1,39 +1,145 @@
-// {
-// 	"version": "2.0.0",
-// 	"tasks": [
-// 		{
-// 			"type": "cppbuild",
-// 			"label": "C/C++ (debug): clang++ アクティブなファイルのビルド",
-// 			"command": "cmake",
-// 			"args": [
-// 				"--build",
-//                 "build/release"
-// 			],
-// 			"options": {
-// 				"cwd": "${fileDirname}"
-// 			},
-// 			"problemMatcher": [
-// 				"$gcc"
-// 			],
-// 			"group": "build",
-// 			"detail": "コンパイラ: /usr/bin/clang++"
-// 		},
-// 		{
-// 			"type": "cppbuild",
-// 			"label": "C/C++ (release): clang++ アクティブなファイルのビルド",
-// 			"command": "cmake",
-// 			"args": [
-// 				"--build",
-//                 "build/release"
-// 			],
-// 			"options": {
-// 				"cwd": "${fileDirname}"
-// 			},
-// 			"problemMatcher": [
-// 				"$gcc"
-// 			],
-// 			"group": "build",
-// 			"detail": "コンパイラ: /usr/bin/clang++"
-// 		}
-// 	]
-// }
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "cppbuild",
+			"label": "C/C++ (debug): clang++ コンフィグレーション",
+			"command": "cmake",
+			"args": [
+				"-B",
+				"../build/debug",
+				"-DCMAKE_BUILD_TYPE=Debug",
+				"-DCMAKE_TOOLCHAIN_FILE=vcpkg/scripts/buildsystems/vcpkg.cmake",
+				".."
+			],
+			"options": {
+				"cwd": "${fileDirname}"
+			},
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": "build",
+			"detail": "コンパイラ: /usr/bin/clang++"
+		},
+		{
+			"type": "cppbuild",
+			"label": "C/C++ (debug): clang++ ビルド",
+			"command": "cmake",
+			"args": [
+				"--build",
+				"../build/debug",
+			],
+			"options": {
+				"cwd": "${fileDirname}"
+			},
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": "build",
+			"detail": "コンパイラ: /usr/bin/clang++"
+		},
+		{
+			"type": "cppbuild",
+			"label": "C/C++ (debug): clang++ 実行",
+			"command": "../bin/debug/cpp-neural-network",
+			"args": [],
+			"options": {
+				"cwd": "${fileDirname}"
+			},
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": "build",
+			"detail": "コンパイラ: /usr/bin/clang++"
+		},
+		{
+			"type": "cppbuild",
+			"label": "C/C++ (debug): clang++ ビルドして実行",
+			"command": "cmake",
+			"args": [
+				"--build",
+				"../build/debug",
+				"&&",
+				"../bin/debug/cpp-neural-network"
+			],
+			"options": {
+				"cwd": "${fileDirname}"
+			},
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": "build",
+			"detail": "コンパイラ: /usr/bin/clang++"
+		},
+		{
+			"type": "cppbuild",
+			"label": "C/C++ (release): clang++ コンフィグレーション",
+			"command": "cmake",
+			"args": [
+				"-B",
+				"../build/release",
+				"-DCMAKE_BUILD_TYPE=Release",
+				"-DCMAKE_TOOLCHAIN_FILE=vcpkg/scripts/buildsystems/vcpkg.cmake",
+				".."
+			],
+			"options": {
+				"cwd": "${fileDirname}"
+			},
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": "build",
+			"detail": "コンパイラ: /usr/bin/clang++"
+		},
+		{
+			"type": "cppbuild",
+			"label": "C/C++ (release): clang++ ビルド",
+			"command": "cmake",
+			"args": [
+				"--build",
+				"../build/release",
+			],
+			"options": {
+				"cwd": "${fileDirname}"
+			},
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": "build",
+			"detail": "コンパイラ: /usr/bin/clang++"
+		},
+		{
+			"type": "cppbuild",
+			"label": "C/C++ (release): clang++ 実行",
+			"command": "../bin/release/cpp-neural-network",
+			"args": [],
+			"options": {
+				"cwd": "${fileDirname}"
+			},
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": "build",
+			"detail": "コンパイラ: /usr/bin/clang++"
+		},
+		{
+			"type": "cppbuild",
+			"label": "C/C++ (release): clang++ ビルドして実行",
+			"command": "cmake",
+			"args": [
+				"--build",
+				"../build/release",
+				"&&",
+				"../bin/release/cpp-neural-network"
+			],
+			"options": {
+				"cwd": "${fileDirname}"
+			},
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": "build",
+			"detail": "コンパイラ: /usr/bin/clang++"
+		},
+	]
+}

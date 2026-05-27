@@ -1,4 +1,6 @@
 BasedOnStyle: LLVM
+LanguageStandard:
+  Cpp: Cpp23
 IndentWidth: 4
 TabWidth: 4
 UseTab: Never
