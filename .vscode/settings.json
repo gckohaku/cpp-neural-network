@@ -9,7 +9,9 @@
     ],
     "cSpell.words": [
         "cblas",
+        "Dont",
         "Eigen",
+        "Multipliable",
         "sgemm"
     ],
     "C_Cpp.intelliSenseEngine": "disabled",

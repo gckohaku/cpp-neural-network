@@ -1,6 +1,10 @@
-BasedOnStyle: LLVM
-LanguageStandard:
-  Cpp: Cpp23
+BasedOnStyle: Google
+Standard: c++20
 IndentWidth: 4
 TabWidth: 4
 UseTab: Never
+
+ContinuationIndentWidth: 4
+AlignConsecutiveAssignments:
+  Enabled: false
+AlignOperands: DontAlign
