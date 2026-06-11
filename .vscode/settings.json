@@ -19,5 +19,7 @@
         "--compile-commands-dir=${workspaceFolder}/build/debug"
     ],
     "C_Cpp.formatting": "default",
-    "C_Cpp.vcFormat.indent.namespaceContents": true
+    "C_Cpp.vcFormat.indent.namespaceContents": true,
+    "workbench.colorTheme": "Visual Studio Dark",
+    "files.autoSave": "off"
 }
