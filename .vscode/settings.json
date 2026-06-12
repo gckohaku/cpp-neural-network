@@ -21,5 +21,6 @@
     "C_Cpp.formatting": "default",
     "C_Cpp.vcFormat.indent.namespaceContents": true,
     "workbench.colorTheme": "Visual Studio Dark",
-    "files.autoSave": "off"
+    "files.autoSave": "off",
+    "editor.minimap.enabled": false
 }

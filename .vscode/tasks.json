@@ -9,11 +9,12 @@
 				"-B",
 				"${workspaceFolder}/build/debug",
 				"-DCMAKE_BUILD_TYPE=Debug",
-				"-DCMAKE_TOOLCHAIN_FILE=vcpkg/scripts/buildsystems/vcpkg.cmake",
-				".."
+				"-DCMAKE_TOOLCHAIN_FILE=${workspaceFolder}/vcpkg/scripts/buildsystems/vcpkg.cmake",
+				"-S",
+				"${workspaceFolder}"
 			],
 			"options": {
-				"cwd": "${fileDirname}"
+				"cwd": "${workspaceFolder}"
 			},
 			"problemMatcher": [
 				"$gcc"
@@ -30,7 +31,7 @@
 				"${workspaceFolder}/build/debug",
 			],
 			"options": {
-				"cwd": "${fileDirname}"
+				"cwd": "${workspaceFolder}"
 			},
 			"problemMatcher": [
 				"$gcc"
@@ -44,7 +45,7 @@
 			"command": "${workspaceFolder}/bin/debug/cpp-neural-network",
 			"args": [],
 			"options": {
-				"cwd": "${fileDirname}"
+				"cwd": "${workspaceFolder}"
 			},
 			"problemMatcher": [
 				"$gcc"
@@ -63,7 +64,7 @@
 				"${workspaceFolder}/bin/debug/cpp-neural-network"
 			],
 			"options": {
-				"cwd": "${fileDirname}"
+				"cwd": "${workspaceFolder}"
 			},
 			"problemMatcher": [
 				"$gcc"
@@ -79,11 +80,12 @@
 				"-B",
 				"${workspaceFolder}/build/release",
 				"-DCMAKE_BUILD_TYPE=Release",
-				"-DCMAKE_TOOLCHAIN_FILE=vcpkg/scripts/buildsystems/vcpkg.cmake",
-				".."
+				"-DCMAKE_TOOLCHAIN_FILE=${workspaceFolder}/vcpkg/scripts/buildsystems/vcpkg.cmake",
+				"-S",
+				"${workspaceFolder}"
 			],
 			"options": {
-				"cwd": "${fileDirname}"
+				"cwd": "${workspaceFolder}"
 			},
 			"problemMatcher": [
 				"$gcc"
@@ -100,7 +102,7 @@
 				"${workspaceFolder}/build/release",
 			],
 			"options": {
-				"cwd": "${fileDirname}"
+				"cwd": "${workspaceFolder}"
 			},
 			"problemMatcher": [
 				"$gcc"
@@ -114,7 +116,7 @@
 			"command": "${workspaceFolder}/bin/release/cpp-neural-network",
 			"args": [],
 			"options": {
-				"cwd": "${fileDirname}"
+				"cwd": "${workspaceFolder}"
 			},
 			"problemMatcher": [
 				"$gcc"
@@ -133,7 +135,7 @@
 				"${workspaceFolder}/bin/release/cpp-neural-network"
 			],
 			"options": {
-				"cwd": "${fileDirname}"
+				"cwd": "${workspaceFolder}"
 			},
 			"problemMatcher": [
 				"$gcc"
