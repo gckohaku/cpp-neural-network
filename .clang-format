@@ -3,6 +3,7 @@ Standard: c++20
 IndentWidth: 4
 TabWidth: 4
 UseTab: Never
+ColumnLimit: 120
 
 ContinuationIndentWidth: 4
 AlignConsecutiveAssignments:
@@ -10,3 +11,5 @@ AlignConsecutiveAssignments:
 AlignOperands: DontAlign
 
 AccessModifierOffset: -4
+
+AlignAfterOpenBracket: BlockIndent
