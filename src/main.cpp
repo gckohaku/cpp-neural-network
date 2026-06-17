@@ -3,6 +3,8 @@
 #include <iostream>
 #include <vector>
 
+#include "matrices/matrix_static.hpp"
+
 int main() {
     // a row, c row value
     int m = 2;
@@ -14,22 +16,16 @@ int main() {
     float alpha = 1.0;
     float beta = 0.0;
 
-    std::vector<float> a = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0};
-    std::vector<float> b = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0};
+    std::array<float, 6> a = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0};
+    std::array<float, 6> b = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0};
 
     std::vector<float> c(m * n, 0.0);
 
-    // call cblas_sgemm
-    cblas_sgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, m, n, k, alpha, a.data(), k, b.data(), n, beta, c.data(), n);
+    auto x = MatrixStatic<float, 2, 3>(a);
+    auto y = MatrixStatic<float, 2, 3>(b);
+    auto res = x + y;
 
-    // output result
-    std::cout << "Result matrix c:" << std::endl;
-    for (int i = 0; i < m; ++i) {
-        for (int j = 0; j < n; ++j) {
-            std::cout << c[i * n + j] << " ";
-        }
-        std::cout << std::endl;
-    }
+    std::cout << res << std::endl;
 
     return 0;
 }

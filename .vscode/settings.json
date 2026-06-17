@@ -11,8 +11,10 @@
         "cblas",
         "Dont",
         "Eigen",
+        "mdspan",
         "multipliable",
         "Multipliable",
+        "saxpy",
         "sgemm"
     ],
     "C_Cpp.intelliSenseEngine": "disabled",
@@ -23,7 +25,7 @@
     ],
     "C_Cpp.formatting": "default",
     "C_Cpp.vcFormat.indent.namespaceContents": true,
-    "workbench.colorTheme": "Visual Studio 2017 Dark - C++",
+    "workbench.colorTheme": "Dark Modern",
     "files.autoSave": "off",
     "editor.minimap.enabled": false,
     "cmake.configureSettings": {
