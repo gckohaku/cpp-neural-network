@@ -13,3 +13,5 @@ AlignOperands: DontAlign
 AccessModifierOffset: -4
 
 AlignAfterOpenBracket: BlockIndent
+BreakInheritanceList: AfterColon
+PointerAlignment: Left

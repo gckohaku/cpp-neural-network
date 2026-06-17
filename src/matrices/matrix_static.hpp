@@ -1,13 +1,16 @@
 #include <array>
+#include <boost/operators.hpp>
 #include <cstddef>
 #include <mdspan>
-#include <boost/operators.hpp>
 
 #ifndef MATRIX_STATIC_H
 #define MATRIX_STATIC_H
 
 template <typename K, size_t Row, size_t Col>
-class MatrixStatic : boost::addable<MatrixStatic<K, Row, Col>>{
+class MatrixStatic :
+    private boost::addable<MatrixStatic<K, Row, Col>>,
+    private boost::subtractable<MatrixStatic<K, Row, Col>>,
+    private boost::multipliable<MatrixStatic<K, Row, Col>> {
 private:
     size_t _rowSize = Row;
     size_t _columnSize = Col;
@@ -16,8 +19,7 @@ private:
 public:
     MatrixStatic(size_t rowSize, size_t columnSize);
     MatrixStatic(size_t rowSize, size_t columnSize, std::array<K, Row * Col> elements);
-
-    
+    MatrixStatic<K, Row, Col>& operator+=(const MatrixStatic<K, Row, Col> x);
 };
 
 template <typename K, size_t Row, size_t Col>

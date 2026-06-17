@@ -11,13 +11,13 @@ add_link_options(-stdlib=libc++)
 project(cpp-neural-network)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-find_package(OpenBLAS REQUIRED)
+find_package(BLAS REQUIRED)
 find_package(Boost REQUIRED)
 
 add_executable(${PROJECT_NAME} src/main.cpp)
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(${PROJECT_NAME} PRIVATE OpenBLAS Boost::headers)
+target_link_libraries(${PROJECT_NAME} PRIVATE BLAS::BLAS Boost::headers)
 
 if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
     set_target_properties(${PROJECT_NAME} PROPERTIES

@@ -11,12 +11,15 @@
         "cblas",
         "Dont",
         "Eigen",
+        "multipliable",
         "Multipliable",
         "sgemm"
     ],
     "C_Cpp.intelliSenseEngine": "disabled",
     "clangd.arguments": [
-        "--compile-commands-dir=${workspaceFolder}/build/debug"
+        "--compile-commands-dir=${workspaceFolder}/build/debug",
+        "--query-driver=/usr/bin/clang++,/usr/bin/clang",
+        "-clang-tidy"
     ],
     "C_Cpp.formatting": "default",
     "C_Cpp.vcFormat.indent.namespaceContents": true,
