@@ -22,5 +22,8 @@
     "C_Cpp.vcFormat.indent.namespaceContents": true,
     "workbench.colorTheme": "Visual Studio 2017 Dark - C++",
     "files.autoSave": "off",
-    "editor.minimap.enabled": false
+    "editor.minimap.enabled": false,
+    "cmake.configureSettings": {
+        "CMAKE_TOOLCHAIN_FILE": "${workspaceFolder}/vcpkg/scripts/buildsystems/vcpkg.cmake"
+    },
 }

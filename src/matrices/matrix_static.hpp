@@ -1,12 +1,13 @@
 #include <array>
 #include <cstddef>
 #include <mdspan>
+#include <boost/operators.hpp>
 
 #ifndef MATRIX_STATIC_H
 #define MATRIX_STATIC_H
 
 template <typename K, size_t Row, size_t Col>
-class MatrixStatic {
+class MatrixStatic : boost::addable<MatrixStatic<K, Row, Col>>{
 private:
     size_t _rowSize = Row;
     size_t _columnSize = Col;
