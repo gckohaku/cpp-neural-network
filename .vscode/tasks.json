@@ -42,7 +42,7 @@
 		{
 			"type": "cppbuild",
 			"label": "C/C++ (debug): clang++ 実行",
-			"command": "${workspaceFolder}/bin/debug/cpp-neural-network",
+			"command": "./bin/debug/cpp-neural-network",
 			"args": [],
 			"options": {
 				"cwd": "${workspaceFolder}"
@@ -113,7 +113,7 @@
 		{
 			"type": "cppbuild",
 			"label": "C/C++ (release): clang++ 実行",
-			"command": "${workspaceFolder}/bin/release/cpp-neural-network",
+			"command": "./bin/release/cpp-neural-network",
 			"args": [],
 			"options": {
 				"cwd": "${workspaceFolder}"
