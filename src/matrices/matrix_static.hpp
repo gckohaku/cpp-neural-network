@@ -1,8 +1,10 @@
 #include <cblas.h>
 
+#include <algorithm>
 #include <array>
 #include <boost/operators.hpp>
 #include <cstddef>
+#include <functional>
 #include <mdspan>
 #include <ostream>
 
@@ -42,6 +44,8 @@ public:
     MatrixStatic<K, Row, Col>& operator=(const MatrixStatic<K, Row, Col>& x);
     // arithmetics
     MatrixStatic<K, Row, Col>& operator+=(const MatrixStatic<K, Row, Col>& x);
+    MatrixStatic<K, Row, Col>& operator-=(const MatrixStatic<K, Row, Col>& x);
+    MatrixStatic<K, Row, Col>& operator*=(const MatrixStatic<K, Row, Col>& x);
 
     // ostream
     friend std::ostream& operator<< <>(std::ostream& os, const MatrixStatic<K, Row, Col>& mat);
@@ -77,6 +81,19 @@ MatrixStatic<K, Row, Col>& MatrixStatic<K, Row, Col>::operator=(const MatrixStat
 template <typename K, size_t Row, size_t Col>
 MatrixStatic<K, Row, Col>& MatrixStatic<K, Row, Col>::operator+=(const MatrixStatic<K, Row, Col>& x) {
     cblas_saxpy(Row * Col, 1.0, x._elements.data(), 1, this->_elements.data(), 1);
+    return *this;
+}
+
+template <typename K, size_t Row, size_t Col>
+MatrixStatic<K, Row, Col>& MatrixStatic<K, Row, Col>::operator-=(const MatrixStatic<K, Row, Col>& x) {
+    cblas_saxpy(Row * Col, -1.0, x._elements.data(), 1, this->_elements.data(), 1);
+    return *this;
+}
+
+template <typename K, size_t Row, size_t Col>
+MatrixStatic<K, Row, Col>& MatrixStatic<K, Row, Col>::operator*=(const MatrixStatic<K, Row, Col>& x) {
+    // hadamard product is not into BLAS
+    std::ranges::transform(this->_elements, x._elements, this->_elements.begin(), std::multiplies<>());
     return *this;
 }
 

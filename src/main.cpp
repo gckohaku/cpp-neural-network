@@ -24,11 +24,11 @@ int main() {
 
     auto x = MatrixStatic<float, 2, 3>(a);
     auto y = MatrixStatic<float, 2, 3>(b);
-    auto res = x + y;
+    auto resAdd = x + y;
+    auto resSub = y - x;
+    auto resHadamard = x * y;
 
-    std::cout << x << "\n+\n" << y << std::endl << "↓" << std::endl;
-
-    std::cout << res << std::endl;
+    std::cout << "Add:\n" << resAdd << "\nSub:\n" << resSub << "\nHadamard\n" << resHadamard << std::endl;
 
     return 0;
 }
