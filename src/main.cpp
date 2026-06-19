@@ -23,12 +23,11 @@ int main() {
     std::vector<float> c(m * n, 0.0);
 
     auto x = MatrixStatic<float, 2, 3>(a);
-    auto y = MatrixStatic<float, 2, 3>(b);
-    auto resAdd = x + y;
-    auto resSub = y - x;
-    auto resHadamard = x * y;
+    auto y = MatrixStatic<float, 3, 2>(b);
+    
+    auto res = x.Dot(y);
 
-    std::cout << "Add:\n" << resAdd << "\nSub:\n" << resSub << "\nHadamard\n" << resHadamard << std::endl;
+    std::cout << res << std::endl;
 
     return 0;
 }

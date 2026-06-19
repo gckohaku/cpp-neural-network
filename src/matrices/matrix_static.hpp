@@ -47,14 +47,29 @@ public:
     MatrixStatic<K, Row, Col>& operator-=(const MatrixStatic<K, Row, Col>& x);
     MatrixStatic<K, Row, Col>& operator*=(const MatrixStatic<K, Row, Col>& x);
 
+    // 2 dimensions index
+    K& operator[](const size_t a, const size_t b);
+
     // ostream
     friend std::ostream& operator<< <>(std::ostream& os, const MatrixStatic<K, Row, Col>& mat);
     /* end operator overloads declaration */
+
+    /* begin matrix unique functions declaration */
+    K* ElementsPointer();
+    const K* ElementsPointer() const;
+
+    /* end matrix unique functions declaration */
+
+    /* begin matrix unique arithmetics declaration */
+    template <size_t OppCol>
+    MatrixStatic<K, Row, OppCol> Dot(const MatrixStatic<K, Col, OppCol> mat);
+    /* end matrix unique arithmetics declaration */
 };
 
 /* begin constructors definition */
 template <typename K, size_t Row, size_t Col>
-MatrixStatic<K, Row, Col>::MatrixStatic() : _rowSize(Row), _columnSize(Col) {}
+MatrixStatic<K, Row, Col>::MatrixStatic()
+    : _rowSize(Row), _columnSize(Col), _elements{}, _span(_elements.data(), MatrixExtent{}) {}
 
 template <typename K, size_t Row, size_t Col>
 MatrixStatic<K, Row, Col>::MatrixStatic(const std::array<K, Row * Col> elements)
@@ -72,7 +87,7 @@ template <typename K, size_t Row, size_t Col>
 MatrixStatic<K, Row, Col>& MatrixStatic<K, Row, Col>::operator=(const MatrixStatic<K, Row, Col>& x) {
     if (this != &x) {
         _elements = x.data;
-        _span = MdView(_elements.data(), MatrixExtent{});
+        _span = MdView(ElementsPointer(), MatrixExtent{});
     }
     return *this;
 }
@@ -80,13 +95,13 @@ MatrixStatic<K, Row, Col>& MatrixStatic<K, Row, Col>::operator=(const MatrixStat
 // arithmetics
 template <typename K, size_t Row, size_t Col>
 MatrixStatic<K, Row, Col>& MatrixStatic<K, Row, Col>::operator+=(const MatrixStatic<K, Row, Col>& x) {
-    cblas_saxpy(Row * Col, 1.0, x._elements.data(), 1, this->_elements.data(), 1);
+    cblas_saxpy(Row * Col, 1.0, x.ElementsPointer(), 1, this->ElementsPointer(), 1);
     return *this;
 }
 
 template <typename K, size_t Row, size_t Col>
 MatrixStatic<K, Row, Col>& MatrixStatic<K, Row, Col>::operator-=(const MatrixStatic<K, Row, Col>& x) {
-    cblas_saxpy(Row * Col, -1.0, x._elements.data(), 1, this->_elements.data(), 1);
+    cblas_saxpy(Row * Col, -1.0, x.ElementsPointer(), 1, this->ElementsPointer(), 1);
     return *this;
 }
 
@@ -110,6 +125,29 @@ std::ostream& operator<<(std::ostream& os, const MatrixStatic<K, Row, Col>& mat)
 }
 /* end operator overloads definition */
 
-// template <typename K, size_t Row, size_t Col>
+/* begin matrix unique functions definition */
+template <typename K, size_t Row, size_t Col>
+inline K* MatrixStatic<K, Row, Col>::ElementsPointer() {
+    return this->_elements.data();
+}
+
+template <typename K, size_t Row, size_t Col>
+inline const K* MatrixStatic<K, Row, Col>::ElementsPointer() const {
+    return this->_elements.data();
+}
+/* end matrix unique functions definition */
+
+/* begin matrix unique arithmetics definition */
+template <typename K, size_t Row, size_t Col>
+template <size_t OppCol>
+MatrixStatic<K, Row, OppCol> MatrixStatic<K, Row, Col>::Dot(const MatrixStatic<K, Col, OppCol> mat) {
+    auto res = MatrixStatic<K, Row, OppCol>();
+    cblas_sgemm(
+        CblasColMajor, CblasNoTrans, CblasNoTrans, Row, OppCol, Col, 1.0, this->ElementsPointer(), Row,
+        mat.ElementsPointer(), Col, 1.0, res.ElementsPointer(), Row
+    );
+    return res;
+}
+/* end matrix unique arithmetics definition */
 
 #endif

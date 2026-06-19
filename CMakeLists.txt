@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 set(CMAKE_C_COMPILER "clang")
 set(CMAKE_CXX_COMPILER "clang++")
 
-set(CMAKE_CXX_FLAGS "-std=c++23 -Wall -Wextra -Wformat -Wformat-security -Wc++20-compat -Wconversion -Wsign-conversion -Wsign-compare -Wuninitialized -Wno-uninitialized -Wreturn-local-addr -Wshadow -Wimplicit-fallthrough -Wold-style-cast")
+set(CMAKE_CXX_FLAGS "-std=c++23 -Wall -Wextra -Wformat -Wformat-security -Wconversion -Wsign-conversion -Wsign-compare -Wuninitialized -Wreturn-local-addr -Wshadow -Wimplicit-fallthrough -Wold-style-cast")
 set(CMAKE_CXX_FLAGS_DEBUG "-g -O0 -fsanitize=address,undefined -DDEBUG")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3 -s -DNDEBUG -march=native")
 add_compile_options(-stdlib=libc++)

@@ -20,7 +20,7 @@
     ],
     "C_Cpp.intelliSenseEngine": "disabled",
     "clangd.arguments": [
-        "--compile-commands-dir=${workspaceFolder}/build/debug",
+        "--compile-commands-dir=${workspaceFolder}/build/editor",
         "--query-driver=/usr/bin/clang++,/usr/bin/clang",
         "-clang-tidy"
     ],
@@ -32,4 +32,5 @@
     "cmake.configureSettings": {
         "CMAKE_TOOLCHAIN_FILE": "${workspaceFolder}/vcpkg/scripts/buildsystems/vcpkg.cmake"
     },
+    "cmake.buildDirectory": "${workspaceFolder}/build/editor",
 }
