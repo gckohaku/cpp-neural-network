@@ -8,6 +8,8 @@
 #include <mdspan>
 #include <ostream>
 
+#include "src/concept_defines/types/type_concepts.hpp"
+
 #ifndef MATRIX_STATIC_H
 #define MATRIX_STATIC_H
 
@@ -43,8 +45,8 @@ public:
     // copy assignment operator
     MatrixStatic<K, Row, Col>& operator=(const MatrixStatic<K, Row, Col>& x);
     // arithmetics
-    MatrixStatic<K, Row, Col>& operator+=(const MatrixStatic<K, Row, Col>& x);
-    MatrixStatic<K, Row, Col>& operator-=(const MatrixStatic<K, Row, Col>& x);
+    MatrixStatic<K, Row, Col>& operator+=(const MatrixStatic<K, Row, Col>& x) requires SingleFloatingPoint<K>;
+    MatrixStatic<K, Row, Col>& operator-=(const MatrixStatic<K, Row, Col>& x) requires SingleFloatingPoint<K>;
     MatrixStatic<K, Row, Col>& operator*=(const MatrixStatic<K, Row, Col>& x);
 
     // 2 dimensions index
@@ -62,7 +64,7 @@ public:
 
     /* begin matrix unique arithmetics declaration */
     template <size_t OppCol>
-    MatrixStatic<K, Row, OppCol> Dot(const MatrixStatic<K, Col, OppCol> mat);
+    MatrixStatic<K, Row, OppCol> Dot(const MatrixStatic<K, Col, OppCol> mat) requires SingleFloatingPoint<K>;
     /* end matrix unique arithmetics declaration */
 };
 
@@ -94,13 +96,13 @@ MatrixStatic<K, Row, Col>& MatrixStatic<K, Row, Col>::operator=(const MatrixStat
 
 // arithmetics
 template <typename K, size_t Row, size_t Col>
-MatrixStatic<K, Row, Col>& MatrixStatic<K, Row, Col>::operator+=(const MatrixStatic<K, Row, Col>& x) {
+MatrixStatic<K, Row, Col>& MatrixStatic<K, Row, Col>::operator+=(const MatrixStatic<K, Row, Col>& x) requires SingleFloatingPoint<K> {
     cblas_saxpy(Row * Col, 1.0, x.ElementsPointer(), 1, this->ElementsPointer(), 1);
     return *this;
 }
 
 template <typename K, size_t Row, size_t Col>
-MatrixStatic<K, Row, Col>& MatrixStatic<K, Row, Col>::operator-=(const MatrixStatic<K, Row, Col>& x) {
+MatrixStatic<K, Row, Col>& MatrixStatic<K, Row, Col>::operator-=(const MatrixStatic<K, Row, Col>& x) requires SingleFloatingPoint<K> {
     cblas_saxpy(Row * Col, -1.0, x.ElementsPointer(), 1, this->ElementsPointer(), 1);
     return *this;
 }
@@ -140,7 +142,7 @@ inline const K* MatrixStatic<K, Row, Col>::ElementsPointer() const {
 /* begin matrix unique arithmetics definition */
 template <typename K, size_t Row, size_t Col>
 template <size_t OppCol>
-MatrixStatic<K, Row, OppCol> MatrixStatic<K, Row, Col>::Dot(const MatrixStatic<K, Col, OppCol> mat) {
+MatrixStatic<K, Row, OppCol> MatrixStatic<K, Row, Col>::Dot(const MatrixStatic<K, Col, OppCol> mat) requires SingleFloatingPoint<K> {
     auto res = MatrixStatic<K, Row, OppCol>();
     cblas_sgemm(
         CblasColMajor, CblasNoTrans, CblasNoTrans, Row, OppCol, Col, 1.0, this->ElementsPointer(), Row,
