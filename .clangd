@@ -1,2 +1,6 @@
 CompileFlags:
-  Add: [-std=c++23, -stdlib=libc++]
+  Add: 
+    - "-std=c++23"
+    - "-stdlib=libc++"
+    - "/usr/lib/llvm-14/include/c++/v1"
+  Compiler: /usr/bin/clang++

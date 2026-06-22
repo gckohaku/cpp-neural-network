@@ -67,7 +67,7 @@ public:
     template <size_t OppCol>
     MatrixStatic<K, Row, OppCol> Dot(const MatrixStatic<K, Col, OppCol> mat) requires SingleFloatingPoint<K>;
 
-    MatrixRowStatic<K, Row> Dot(const MatrixRowStatic<K, Col> mat) requires SingleFloatingPoint<K>;
+    MatrixRowStatic<K, Row> Dot(const MatrixRowStatic<K, Col>& mat) requires SingleFloatingPoint<K>;
     /* end matrix unique arithmetics declaration */
 };
 
@@ -83,7 +83,7 @@ MatrixStatic<K, Row, Col>::MatrixStatic(const std::array<K, Row * Col> elements)
 // copy constructor
 template <typename K, size_t Row, size_t Col>
 MatrixStatic<K, Row, Col>::MatrixStatic(const MatrixStatic<K, Row, Col>& mat)
-    : _elements(mat._elements), _span(_elements.data(), MatrixExtent{}) {}
+    : _rowSize(Row), _columnSize(Col), _elements(mat._elements), _span(_elements.data(), MatrixExtent{}) {}
 /* end constructors definition */
 
 /* begin operator overloads definition */
@@ -155,7 +155,7 @@ MatrixStatic<K, Row, OppCol> MatrixStatic<K, Row, Col>::Dot(const MatrixStatic<K
 }
 
 template <typename K, size_t Row, size_t Col>
-MatrixRowStatic<K, Row> MatrixStatic<K, Row, Col>::Dot(const MatrixRowStatic<K, Col> mat) requires SingleFloatingPoint<K> {
+MatrixRowStatic<K, Row> MatrixStatic<K, Row, Col>::Dot(const MatrixRowStatic<K, Col>& mat) requires SingleFloatingPoint<K> {
     auto res = MatrixRowStatic<K, Row>();
     cblas_sgemm(
         CblasColMajor, CblasNoTrans, CblasNoTrans, Row, mat._columnSize, Col, 1.0, this->ElementsPointer(), Row,

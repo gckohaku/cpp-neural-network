@@ -2,7 +2,7 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
-			"type": "cppbuild",
+			"type": "process",
 			"label": "C/C++ (debug): clang++ コンフィグレーション",
 			"command": "cmake",
 			"args": [
@@ -23,7 +23,7 @@
 			"detail": "コンパイラ: /usr/bin/clang++"
 		},
 		{
-			"type": "cppbuild",
+			"type": "process",
 			"label": "C/C++ (debug): clang++ ビルド",
 			"command": "cmake",
 			"args": [
@@ -40,7 +40,7 @@
 			"detail": "コンパイラ: /usr/bin/clang++"
 		},
 		{
-			"type": "cppbuild",
+			"type": "process",
 			"label": "C/C++ (debug): clang++ 実行",
 			"command": "./bin/debug/cpp-neural-network",
 			"args": [],
@@ -54,7 +54,7 @@
 			"detail": "コンパイラ: /usr/bin/clang++"
 		},
 		{
-			"type": "cppbuild",
+			"type": "process",
 			"label": "C/C++ (debug): clang++ ビルドして実行",
 			"command": "cmake",
 			"args": [
@@ -73,7 +73,7 @@
 			"detail": "コンパイラ: /usr/bin/clang++"
 		},
 		{
-			"type": "cppbuild",
+			"type": "process",
 			"label": "C/C++ (release): clang++ コンフィグレーション",
 			"command": "cmake",
 			"args": [
@@ -94,7 +94,7 @@
 			"detail": "コンパイラ: /usr/bin/clang++"
 		},
 		{
-			"type": "cppbuild",
+			"type": "process",
 			"label": "C/C++ (release): clang++ ビルド",
 			"command": "cmake",
 			"args": [
@@ -111,7 +111,7 @@
 			"detail": "コンパイラ: /usr/bin/clang++"
 		},
 		{
-			"type": "cppbuild",
+			"type": "process",
 			"label": "C/C++ (release): clang++ 実行",
 			"command": "./bin/release/cpp-neural-network",
 			"args": [],
@@ -125,7 +125,7 @@
 			"detail": "コンパイラ: /usr/bin/clang++"
 		},
 		{
-			"type": "cppbuild",
+			"type": "process",
 			"label": "C/C++ (release): clang++ ビルドして実行",
 			"command": "cmake",
 			"args": [
