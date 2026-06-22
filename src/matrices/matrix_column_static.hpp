@@ -1,5 +1,5 @@
-#ifndef MATRIX_COLUMN_STATIC_HPP
-#define MATRIX_COLUMN_STATIC_HPP
+#ifndef MKNNLIB_MATRICES_MATRIX_COLUMN_STATIC_HPP
+#define MKNNLIB_MATRICES_MATRIX_COLUMN_STATIC_HPP
 
 #include <cblas.h>
 
@@ -13,6 +13,7 @@
 
 #include "src/concept_defines/types/type_concepts.hpp"
 
+namespace mknnlib::matrix {
 template <typename K, size_t Col>
 class MatrixColumnStatic;
 template <typename K, size_t Col>
@@ -34,6 +35,7 @@ private:
     MdView _span;
 
 public:
+    // TODO: ドキュメントをちゃんと書く
     /* begin constructors declaration */
     MatrixColumnStatic();
     MatrixColumnStatic(const size_t rowSize, const std::vector<K> elements);
@@ -45,8 +47,10 @@ public:
     // copy assignment operator
     MatrixColumnStatic<K, Col>& operator=(const MatrixColumnStatic<K, Col>& x);
     // arithmetics
-    MatrixColumnStatic<K, Col>& operator+=(const MatrixColumnStatic<K, Col>& x) requires SingleFloatingPoint<K>;
-    MatrixColumnStatic<K, Col>& operator-=(const MatrixColumnStatic<K, Col>& x) requires SingleFloatingPoint<K>;
+    MatrixColumnStatic<K, Col>& operator+=(const MatrixColumnStatic<K, Col>& x)
+        requires concepts::SingleFloatingPoint<K>;
+    MatrixColumnStatic<K, Col>& operator-=(const MatrixColumnStatic<K, Col>& x)
+        requires concepts::SingleFloatingPoint<K>;
     MatrixColumnStatic<K, Col>& operator*=(const MatrixColumnStatic<K, Col>& x);
 
     // 2 dimensions index
@@ -64,8 +68,10 @@ public:
 
     /* begin matrix unique arithmetics declaration */
     template <size_t OppCol>
-    MatrixColumnStatic<K, Col> Dot(const MatrixColumnStatic<K, Col> mat) requires SingleFloatingPoint<K>;
+    MatrixColumnStatic<K, Col> Dot(const MatrixColumnStatic<K, Col> mat)
+        requires concepts::SingleFloatingPoint<K>;
     /* end matrix unique arithmetics declaration */
 };
+}  // namespace mknnlib::matrix
 
 #endif

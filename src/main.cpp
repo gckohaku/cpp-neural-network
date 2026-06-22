@@ -7,6 +7,9 @@
 #include "matrices/matrix_static.hpp"
 #include "src/matrices/matrix_row_static.hpp"
 
+using mknnlib::matrix::MatrixStatic;
+using mknnlib::matrix::MatrixRowStatic;
+
 int main() {
     // a row, c row value
     int m = 2;

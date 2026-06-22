@@ -1,8 +1,9 @@
-#ifndef ARITHMETICS_HPP
-#define ARITHMETICS_HPP
+#ifndef MKNNLIB_CONCEPT_DEFINES_ARITHMETICS_HPP
+#define MKNNLIB_CONCEPT_DEFINES_ARITHMETICS_HPP
 
 #include <concepts>
 
+namespace mknnlib::concepts {
 template <typename T, typename U, typename V>
 concept Addable = requires(T t, U u) {
     { t + u } -> std::same_as<V>;
@@ -29,10 +30,11 @@ concept ClosedMultipliable = Multipliable<T, T, T>;
 
 template <typename T, typename U, typename V>
 concept Divisible = requires(T t, U u) {
-    {t / u} -> std::same_as<V>;
+    { t / u } -> std::same_as<V>;
 };
 
 template <typename T>
 concept ClosedDivisible = Divisible<T, T, T>;
+}  // namespace mknnlib::concepts
 
 #endif

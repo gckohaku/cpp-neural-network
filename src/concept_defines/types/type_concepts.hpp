@@ -1,14 +1,16 @@
-#ifndef TYPE_CONCEPTS_HPP
-#define TYPE_CONCEPTS_HPP
+#ifndef MKNNLIB_CONCEPT_DEFINES_TYPES_TYPE_CONCEPTS_HPP
+#define MKNNLIB_CONCEPT_DEFINES_TYPES_TYPE_CONCEPTS_HPP
 
 #include <complex>
 #include <concepts>
 
-#if defined (__STDCPP_FLOAT16_T__)
+#if defined(__STDCPP_FLOAT16_T__)
 #include <stdfloat>
 #endif
 
-#if defined (__STDCPP_FLOAT16_T__)
+namespace mknnlib::concepts {
+
+#if defined(__STDCPP_FLOAT16_T__)
 template <typename T>
 concept HalfFloatingPoint = std::same_as<T, std::float16_t>;
 #endif
@@ -19,9 +21,10 @@ concept SingleFloatingPoint = std::same_as<T, float>;
 template <typename T>
 concept DoubleFloatingPoint = std::same_as<T, double>;
 
-#if defined (__STDCPP_FLOAT16_T__)
+#if defined(__STDCPP_FLOAT16_T__)
 template <typename T>
-concept HalfFloatingComplex = std::same_as<T, std::complex<std::float16_t>;
+concept HalfFloatingComplex = std::same_as < T,
+        std::complex<std::float16_t>;
 #endif
 
 template <typename T>
@@ -29,5 +32,6 @@ concept SingleFloatingComplex = std::same_as<T, std::complex<float>>;
 
 template <typename T>
 concept DoubleFloatingComplex = std::same_as<T, std::complex<double>>;
+}  // namespace mknnlib::matrix
 
 #endif

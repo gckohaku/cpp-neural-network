@@ -13,6 +13,7 @@
         "Eigen",
         "hadamard",
         "mdspan",
+        "mknnlib",
         "multipliable",
         "Multipliable",
         "saxpy",
