@@ -1,3 +1,6 @@
+#ifndef MATRIX_STATIC_HPP
+#define MATRIX_STATIC_HPP
+
 #include <cblas.h>
 
 #include <algorithm>
@@ -9,9 +12,7 @@
 #include <ostream>
 
 #include "src/concept_defines/types/type_concepts.hpp"
-
-#ifndef MATRIX_STATIC_H
-#define MATRIX_STATIC_H
+#include "src/matrices/matrix_row_static.hpp"
 
 template <typename K, size_t Row, size_t Col>
 class MatrixStatic;
@@ -65,6 +66,8 @@ public:
     /* begin matrix unique arithmetics declaration */
     template <size_t OppCol>
     MatrixStatic<K, Row, OppCol> Dot(const MatrixStatic<K, Col, OppCol> mat) requires SingleFloatingPoint<K>;
+
+    MatrixRowStatic<K, Row> Dot(const MatrixRowStatic<K, Col> mat) requires SingleFloatingPoint<K>;
     /* end matrix unique arithmetics declaration */
 };
 
@@ -146,6 +149,16 @@ MatrixStatic<K, Row, OppCol> MatrixStatic<K, Row, Col>::Dot(const MatrixStatic<K
     auto res = MatrixStatic<K, Row, OppCol>();
     cblas_sgemm(
         CblasColMajor, CblasNoTrans, CblasNoTrans, Row, OppCol, Col, 1.0, this->ElementsPointer(), Row,
+        mat.ElementsPointer(), Col, 1.0, res.ElementsPointer(), Row
+    );
+    return res;
+}
+
+template <typename K, size_t Row, size_t Col>
+MatrixRowStatic<K, Row> MatrixStatic<K, Row, Col>::Dot(const MatrixRowStatic<K, Col> mat) requires SingleFloatingPoint<K> {
+    auto res = MatrixRowStatic<K, Row>();
+    cblas_sgemm(
+        CblasColMajor, CblasNoTrans, CblasNoTrans, Row, mat._columnSize, Col, 1.0, this->ElementsPointer(), Row,
         mat.ElementsPointer(), Col, 1.0, res.ElementsPointer(), Row
     );
     return res;

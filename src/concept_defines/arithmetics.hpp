@@ -1,3 +1,6 @@
+#ifndef ARITHMETICS_HPP
+#define ARITHMETICS_HPP
+
 #include <concepts>
 
 template <typename T, typename U, typename V>
@@ -31,3 +34,5 @@ concept Divisible = requires(T t, U u) {
 
 template <typename T>
 concept ClosedDivisible = Divisible<T, T, T>;
+
+#endif

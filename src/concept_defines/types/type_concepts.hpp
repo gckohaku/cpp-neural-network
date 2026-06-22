@@ -1,3 +1,6 @@
+#ifndef TYPE_CONCEPTS_HPP
+#define TYPE_CONCEPTS_HPP
+
 #include <complex>
 #include <concepts>
 
@@ -26,3 +29,5 @@ concept SingleFloatingComplex = std::same_as<T, std::complex<float>>;
 
 template <typename T>
 concept DoubleFloatingComplex = std::same_as<T, std::complex<double>>;
+
+#endif
