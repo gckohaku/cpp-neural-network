@@ -2,10 +2,9 @@
 #define MKNNLIB_MATRICES_MATRIX_ROW_STATIC_HPP
 
 #include <cblas.h>
+#include <boost/operators.hpp>
 
 #include <algorithm>
-#include <array>
-#include <boost/operators.hpp>
 #include <cstddef>
 #include <functional>
 #include <mdspan>
@@ -39,8 +38,8 @@ public:
     // TODO: ドキュメントをちゃんと書く
     /* begin constructors declaration */
     MatrixRowStatic();
-    MatrixRowStatic(const size_t rowSize);
-    MatrixRowStatic(const size_t rowSize, const std::vector<K> elements);
+    MatrixRowStatic(const size_t columnSize);
+    MatrixRowStatic(const size_t columnSize, const std::vector<K> elements);
     // copy constructor
     MatrixRowStatic(const MatrixRowStatic<K, Row>& mat);
     /* end constructors declaration */
@@ -83,12 +82,12 @@ MatrixRowStatic<K, Row>::MatrixRowStatic()
     : _rowSize(Row), _columnSize(0), _elements{}, _span(_elements.data(), MatrixExtent{}) {}
 
 template <typename K, size_t Row>
-MatrixRowStatic<K, Row>::MatrixRowStatic(const size_t column)
-    : _rowSize(Row), _columnSize(column), _elements(Row * column, K{}), _span(_elements.data(), MatrixExtent{}) {}
+MatrixRowStatic<K, Row>::MatrixRowStatic(const size_t columnSize)
+    : _rowSize(Row), _columnSize(columnSize), _elements(Row * columnSize, K{}), _span(_elements.data(), MatrixExtent{}) {}
 
 template <typename K, size_t Row>
-MatrixRowStatic<K, Row>::MatrixRowStatic(const size_t column, const std::vector<K> elements)
-    : _rowSize(Row), _columnSize(column), _elements(elements), _span(_elements.data(), MatrixExtent{}) {}
+MatrixRowStatic<K, Row>::MatrixRowStatic(const size_t columnSize, const std::vector<K> elements)
+    : _rowSize(Row), _columnSize(columnSize), _elements(elements), _span(_elements.data(), MatrixExtent{}) {}
 
 // copy constructor
 template <typename K, size_t Row>
@@ -109,7 +108,7 @@ MatrixRowStatic<K, Row>& MatrixRowStatic<K, Row>::operator=(const MatrixRowStati
 
 // arithmetics
 template <typename K, size_t Row>
-MatrixRowStatic<K, Row>& MatrixRowStatic<K, Row>::operator+=(const MatrixRowStatic<K, Row>& x)
+inline MatrixRowStatic<K, Row>& MatrixRowStatic<K, Row>::operator+=(const MatrixRowStatic<K, Row>& x)
     requires concepts::SingleFloatingPoint<K>
 {
     cblas_saxpy(Row * this->_columnSize, 1.0, x.ElementsPointer(), 1, this->ElementsPointer(), 1);
@@ -117,7 +116,7 @@ MatrixRowStatic<K, Row>& MatrixRowStatic<K, Row>::operator+=(const MatrixRowStat
 }
 
 template <typename K, size_t Row>
-MatrixRowStatic<K, Row>& MatrixRowStatic<K, Row>::operator-=(const MatrixRowStatic<K, Row>& x)
+inline MatrixRowStatic<K, Row>& MatrixRowStatic<K, Row>::operator-=(const MatrixRowStatic<K, Row>& x)
     requires concepts::SingleFloatingPoint<K>
 {
     cblas_saxpy(Row * this->_columnSize, -1.0, x.ElementsPointer(), 1, this->ElementsPointer(), 1);

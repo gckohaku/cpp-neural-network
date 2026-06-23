@@ -8,6 +8,7 @@
         "rgba(79,236,236,0.25)"
     ],
     "cSpell.words": [
+        "blasint",
         "cblas",
         "Dont",
         "Eigen",
@@ -34,4 +35,5 @@
         "CMAKE_TOOLCHAIN_FILE": "${workspaceFolder}/vcpkg/scripts/buildsystems/vcpkg.cmake"
     },
     "cmake.buildDirectory": "${workspaceFolder}/build/editor",
+    "clangd.inactiveRegions.opacity": 0.55,
 }

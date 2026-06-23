@@ -11,7 +11,7 @@ namespace mknnlib::concepts {
 #if defined(__STDCPP_FLOAT16_T__)
 #include <stdfloat>
 #define ADDITIONAL_FLOAT_CONCEPT
-template <typename Tstd>
+template <typename T>
 concept AdditionalFloatConcept = HalfFloatingPoint<T>;
 #endif
 

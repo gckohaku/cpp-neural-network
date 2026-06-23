@@ -2,10 +2,9 @@
 #define MKNNLIB_MATRICES_MATRIX_COLUMN_STATIC_HPP
 
 #include <cblas.h>
+#include <boost/operators.hpp>
 
 #include <algorithm>
-#include <array>
-#include <boost/operators.hpp>
 #include <cstddef>
 #include <functional>
 #include <mdspan>
@@ -25,12 +24,12 @@ class MatrixColumnStatic :
     private boost::subtractable<MatrixColumnStatic<K, Col>>,
     private boost::multipliable<MatrixColumnStatic<K, Col>> {
     // type alias
-    using MatrixExtent = std::extents<size_t, Col>;
+    using MatrixExtent = std::extents<size_t, std::dynamic_extent, Col>;
     using MdView = std::mdspan<K, MatrixExtent, std::layout_left>;
 
 private:
-    size_t _rowSize = Col;
-    size_t _columnSize = 0;
+    size_t _rowSize = 0;
+    size_t _columnSize = Col;
     std::vector<K> _elements;
     MdView _span;
 
@@ -38,6 +37,7 @@ public:
     // TODO: ドキュメントをちゃんと書く
     /* begin constructors declaration */
     MatrixColumnStatic();
+    MatrixColumnStatic(const size_t rowSize);
     MatrixColumnStatic(const size_t rowSize, const std::vector<K> elements);
     // copy constructor
     MatrixColumnStatic(const MatrixColumnStatic<K, Col>& mat);
@@ -61,9 +61,11 @@ public:
     /* end operator overloads declaration */
 
     /* begin matrix unique functions declaration */
+    size_t RowSize();
+    size_t RowSize() const;
+    constexpr size_t ColumnSize();
     K* ElementsPointer();
     const K* ElementsPointer() const;
-
     /* end matrix unique functions declaration */
 
     /* begin matrix unique arithmetics declaration */
@@ -72,6 +74,101 @@ public:
         requires concepts::SingleFloatingPoint<K>;
     /* end matrix unique arithmetics declaration */
 };
+
+/* begin constructors definition */
+template <typename K, size_t Col>
+MatrixColumnStatic<K, Col>::MatrixColumnStatic()
+    : _rowSize(0), _columnSize(Col), _elements{}, _span(_elements.data(), MatrixExtent{}) {}
+
+template <typename K, size_t Col>
+MatrixColumnStatic<K, Col>::MatrixColumnStatic(const size_t rowSize)
+    : _rowSize(rowSize), _columnSize(Col), _elements{rowSize * Col, K{}}, _span(_elements.data(), MatrixExtent{}) {}
+
+template <typename K, size_t Col>
+MatrixColumnStatic<K, Col>::MatrixColumnStatic(const size_t rowSize, const std::vector<K> elements)
+    : _rowSize(rowSize), _columnSize(Col), _elements{elements}, _span(_elements.data(), MatrixExtent{}) {}
+
+// copy constructor
+template <typename K, size_t Col>
+MatrixColumnStatic<K, Col>::MatrixColumnStatic(const MatrixColumnStatic<K, Col>& mat)
+    : _rowSize(mat.RowSize()), _columnSize(Col), _elements(mat._elements), _span(_elements.data(), MatrixExtent{}) {}
+/* end constructors definition */
+
+/* begin operator overloads definition */
+// copy assignment operator
+template <typename K, size_t Col>
+MatrixColumnStatic<K, Col>& MatrixColumnStatic<K, Col>::operator=(const MatrixColumnStatic<K, Col>& x) {
+    if (this != &x) {
+        _elements = x._elements;
+        _span = MdView(ElementsPointer(), MatrixExtent{_rowSize});
+    }
+    return *this;
+}
+
+// arithmetics
+template <typename K, size_t Col>
+inline MatrixColumnStatic<K, Col>& MatrixColumnStatic<K, Col>::operator+=(const MatrixColumnStatic<K, Col>& x)
+    requires concepts::SingleFloatingPoint<K>
+{
+    cblas_saxpy(this->_rowSize * Col, 1.0, x.ElementsPointer(), 1, this->ElementsPointer(), 1);
+    return *this;
+}
+
+template <typename K, size_t Col>
+inline MatrixColumnStatic<K, Col>& MatrixColumnStatic<K, Col>::operator-=(const MatrixColumnStatic<K, Col>& x)
+    requires concepts::SingleFloatingPoint<K>
+{
+    cblas_saxpy(this->_rowSize * Col, -1.0, x.ElementsPointer(), 1, this->ElementsPointer(), 1);
+    return *this;
+}
+
+template <typename K, size_t Col>
+MatrixColumnStatic<K, Col>& MatrixColumnStatic<K, Col>::operator*=(const MatrixColumnStatic<K, Col>& x) {
+    // hadamard product is not into BLAS
+    std::ranges::transform(this->_elements, x._elements, this->_elements.begin(), std::multiplies<>());
+    return *this;
+}
+
+// ostream
+template <typename K, size_t Col>
+std::ostream& operator<<(std::ostream& os, const MatrixColumnStatic<K, Col>& mat) {
+    for (size_t i = 0; i < mat._rowSize; i++) {
+        for (size_t j = 0; j < Col; j++) {
+            os << mat._span[i, j] << " ";
+        }
+        os << std::endl;
+    }
+    return os;
+}
+
+/* end operator overloads definition */
+
+/* begin matrix unique functions definition */
+template <typename K, size_t Col>
+size_t MatrixColumnStatic<K, Col>::RowSize() {
+    return this->_rowSize;
+}
+
+template <typename K, size_t Col>
+size_t MatrixColumnStatic<K, Col>::RowSize() const {
+    return this->_rowSize;
+}
+
+template <typename K, size_t Col>
+constexpr size_t MatrixColumnStatic<K, Col>::ColumnSize() {
+    return Col;
+}
+
+template <typename K, size_t Col>
+inline K* MatrixColumnStatic<K, Col>::ElementsPointer() {
+    return this->_elements.data();
+}
+
+template <typename K, size_t Col>
+inline const K* MatrixColumnStatic<K, Col>::ElementsPointer() const {
+    return this->_elements.data();
+}
+/* end matrix unique functions definition */
 }  // namespace mknnlib::matrix
 
 #endif
