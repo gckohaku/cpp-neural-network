@@ -67,6 +67,7 @@ public:
     /* begin matrix unique functions declaration */
     constexpr size_t RowSize();
     constexpr size_t ColumnSize();
+    std::array<float, Row * Col>& Elements();
     K* ElementsPointer();
     const K* ElementsPointer() const;
 
@@ -161,6 +162,11 @@ constexpr size_t MatrixStatic<K, Row, Col>::RowSize() {
 template <typename K, size_t Row, size_t Col>
 constexpr size_t MatrixStatic<K, Row, Col>::ColumnSize() {
     return Col;
+}
+
+template <typename K, size_t Row, size_t Col>
+std::array<float, Row * Col>& MatrixStatic<K, Row, Col>::Elements() {
+    return this->_elements;
 }
 
 template <typename K, size_t Row, size_t Col>
