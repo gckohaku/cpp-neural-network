@@ -6,9 +6,14 @@ UseTab: Never
 ColumnLimit: 120
 
 ContinuationIndentWidth: 4
+AlignOperands: DontAlign
+# BreakBeforeBinaryOperands: None
+
 AlignConsecutiveAssignments:
   Enabled: false
-AlignOperands: DontAlign
+
+AlignConsecutiveBitFields:
+  Enabled: false
 
 AccessModifierOffset: -4
 
