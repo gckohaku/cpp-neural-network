@@ -12,12 +12,9 @@ AlignOperands: DontAlign
 AlignConsecutiveAssignments:
   Enabled: false
 
-AlignConsecutiveBitFields:
-  Enabled: false
-
 AccessModifierOffset: -4
 
-AlignAfterOpenBracket: BlockIndent
+AlignAfterOpenBracket: DontAlign
 BreakInheritanceList: AfterColon
 PointerAlignment: Left
 
