@@ -16,6 +16,9 @@ AccessModifierOffset: -4
 
 AlignAfterOpenBracket: DontAlign
 BreakInheritanceList: AfterColon
+BreakConstructorInitializers: AfterColon
+PackConstructorInitializers: NextLine
+ConstructorInitializerIndentWidth: 4
 PointerAlignment: Left
 
 NamespaceIndentation: None

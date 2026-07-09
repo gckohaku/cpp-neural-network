@@ -2,9 +2,9 @@
 #define MKNNLIB_MATRICES_MATRIX_ROW_STATIC_HPP
 
 #include <cblas.h>
-#include <boost/operators.hpp>
 
 #include <algorithm>
+#include <boost/operators.hpp>
 #include <cstddef>
 #include <functional>
 #include <mdspan>
@@ -65,34 +65,36 @@ public:
     constexpr size_t RowSize();
     size_t ColumnSize();
     size_t ColumnSize() const;
+    std::vector<float>& Elements();
     K* ElementsPointer();
     const K* ElementsPointer() const;
 
     /* end matrix unique functions declaration */
 
     // /* begin matrix unique arithmetics declaration */
-    // template <size_t OppRow>
-    // MatrixRowStatic<K, Row> Dot(const MatrixRowStatic<K, OppRow> mat) requires SingleFloatingPoint<K>;
+    template <size_t OppRow>
+    MatrixRowStatic<K, Row> Dot(const MatrixRowStatic<K, OppRow> mat)
+        requires concepts::SingleFloatingPoint<K>;
     /* end matrix unique arithmetics declaration */
 };
 
 /* begin constructors definition */
 template <typename K, size_t Row>
-MatrixRowStatic<K, Row>::MatrixRowStatic()
-    : _rowSize(Row), _columnSize(0), _elements{}, _span(_elements.data(), MatrixExtent{}) {}
+MatrixRowStatic<K, Row>::MatrixRowStatic() :
+    _rowSize(Row), _columnSize(0), _elements{}, _span(_elements.data(), MatrixExtent{}) {}
 
 template <typename K, size_t Row>
-MatrixRowStatic<K, Row>::MatrixRowStatic(const size_t columnSize)
-    : _rowSize(Row), _columnSize(columnSize), _elements(Row * columnSize, K{}), _span(_elements.data(), MatrixExtent{}) {}
+MatrixRowStatic<K, Row>::MatrixRowStatic(const size_t columnSize) :
+    _rowSize(Row), _columnSize(columnSize), _elements(Row * columnSize, K{}), _span(_elements.data(), MatrixExtent{}) {}
 
 template <typename K, size_t Row>
-MatrixRowStatic<K, Row>::MatrixRowStatic(const size_t columnSize, const std::vector<K> elements)
-    : _rowSize(Row), _columnSize(columnSize), _elements(elements), _span(_elements.data(), MatrixExtent{}) {}
+MatrixRowStatic<K, Row>::MatrixRowStatic(const size_t columnSize, const std::vector<K> elements) :
+    _rowSize(Row), _columnSize(columnSize), _elements(elements), _span(_elements.data(), MatrixExtent{}) {}
 
 // copy constructor
 template <typename K, size_t Row>
-MatrixRowStatic<K, Row>::MatrixRowStatic(const MatrixRowStatic<K, Row>& mat)
-    : _rowSize(Row), _columnSize(mat.ColumnSize()), _elements(mat._elements), _span(_elements.data(), MatrixExtent{}) {}
+MatrixRowStatic<K, Row>::MatrixRowStatic(const MatrixRowStatic<K, Row>& mat) :
+    _rowSize(Row), _columnSize(mat.ColumnSize()), _elements(mat._elements), _span(_elements.data(), MatrixExtent{}) {}
 /* end constructors definition */
 
 /* begin operator overloads definition */
@@ -160,6 +162,11 @@ size_t MatrixRowStatic<K, Row>::ColumnSize() const {
 }
 
 template <typename K, size_t Row>
+std::vector<float>& MatrixRowStatic<K, Row>::Elements() {
+    return this->_elements;
+}
+
+template <typename K, size_t Row>
 inline K* MatrixRowStatic<K, Row>::ElementsPointer() {
     return this->_elements.data();
 }
@@ -171,17 +178,17 @@ inline const K* MatrixRowStatic<K, Row>::ElementsPointer() const {
 /* end matrix unique functions definition */
 
 /* begin matrix unique arithmetics definition */
-// template <typename K, size_t Row>
-// template <size_t OppCol>
-// MatrixRowStatic<K, Row> MatrixRowStatic<K, Row>::Dot(const MatrixRowStatic<K, Col> mat) requires
-// SingleFloatingPoint<K> {
-//     auto res = MatrixStatic<K, Row, OppCol>();
-//     cblas_sgemm(
-//         CblasColMajor, CblasNoTrans, CblasNoTrans, Row, OppCol, this->_columnSize, 1.0, this->ElementsPointer(), Row,
-//         mat.ElementsPointer(), Col, 1.0, res.ElementsPointer(), Row
-//     );
-//     return res;
-// }
+template <typename K, size_t Row>
+template <size_t OppCol>
+MatrixRowStatic<K, Row> MatrixRowStatic<K, Row>::Dot(const MatrixRowStatic<K, OppCol> mat)
+    requires concepts::SingleFloatingPoint<K>
+{
+    auto res = MatrixRowStatic<K, Row>(mat.ColumnSize());
+    cblas_sgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, Row, static_cast<blasint>(mat.ColumnSize()), OppCol, 1.0,
+        this->ElementsPointer(), Row, mat.ElementsPointer(), OppCol, 0.0, res.ElementsPointer(), Row);
+    return res;
+    return res;
+}
 
 // template <typename K, size_t Row, size_t Col>
 // MatrixRowStatic<K, Row> MatrixStatic<K, Row, Col>::Dot(const MatrixRowStatic<K, Col> mat) requires

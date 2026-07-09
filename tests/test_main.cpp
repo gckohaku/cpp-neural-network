@@ -3,3 +3,4 @@
 #include <boost/test/included/unit_test.hpp>
 
 #include "tests/matrix_test/static_test.cpp"
+#include "tests/matrix_test/row_static_test.cpp"

@@ -12,7 +12,7 @@
 using mknnlib::matrix::MatrixStatic;
 
 BOOST_AUTO_TEST_CASE(matrix_static_test) {
-    // 正方行列同士の積
+    // square x square
     // 3x3
     constexpr size_t row1 = 3;
     constexpr size_t column1 = 3;
@@ -90,4 +90,129 @@ BOOST_AUTO_TEST_CASE(matrix_static_test) {
     BOOST_CHECK(typeCheckDC);
     CheckCloseEachArrayElement(CD.Elements(), expectedCD, acceptableErrorCD);
     CheckCloseEachArrayElement(DC.Elements(), expectedDC, acceptableErrorDC);
+
+    // non-square x non-square -> square
+    constexpr size_t rowE = 3;
+    constexpr size_t columnE = 4;
+    constexpr size_t elementSizeE = rowE * columnE;
+    constexpr size_t rowF = 4;
+    constexpr size_t columnF = 3;
+    constexpr size_t elementSizeF = rowF * columnF;
+    constexpr size_t resultSizeEF = rowE * columnF;
+    constexpr size_t resultSizeFE = rowF * columnE;
+
+    auto arrayE =
+        std::array<float, elementSizeE>{3.1f, 2.1f, 6.3f, 4.6f, 3.7f, 4.7f, 5.1f, 2.2f, 5.7f, 3.4f, 2.7f, 3.1f};
+    auto arrayF =
+        std::array<float, elementSizeF>{1.7f, 4.5f, 5.3f, 1.7f, 3.4f, 3.7f, 0.5f, 3.5f, 1.5f, 1.4f, 3.4f, 4.3f};
+
+    auto expectedEF =
+        std::array<float, resultSizeEF>{58.78f, 36.47f, 67.34f, 42.01f, 31.38f, 52.51f, 43.05f, 27.42f, 48.74f};
+    auto expectedFE = std::array<float, resultSizeFE>{21.86f, 30.54f, 38.9f, 39.71f, 27.45f, 40.97f, 42.21f, 40.98f,
+        24.7f, 39.07f, 47.51f, 40.88f, 19.61f, 29.63f, 29.91f, 28.56f};
+
+    auto E = MatrixStatic<float, rowE, columnE>(arrayE);
+    auto F = MatrixStatic<float, rowF, columnF>(arrayF);
+
+    auto acceptableErrorEF =
+        std::array<float, resultSizeEF>{91.3f, 54.8f, 100.4f, 55.35f, 40.3f, 68.45f, 62.3f, 42.2f, 68.6f};
+    auto acceptableErrorFE = std::array<float, resultSizeFE>{29.8f, 44.9f, 51.25f, 60.1f, 36.3f, 61.5f, 65.45f, 61.8f,
+        34.8f, 61.5f, 68.7f, 63.3f, 25.1f, 41.3f, 39.55f, 40.2f};
+
+    for (size_t i = 0; i < resultSizeEF; i++) {
+        acceptableErrorEF[i] *= std::numeric_limits<float>::epsilon();
+    }
+    for (size_t i = 0; i < resultSizeFE; i++) {
+        acceptableErrorFE[i] *= std::numeric_limits<float>::epsilon();
+    }
+
+    auto EF = E.Dot(F);
+    auto FE = F.Dot(E);
+
+    auto typeCheckEF = std::is_same<decltype(EF), MatrixStatic<float, rowE, columnF>>::value;
+    auto typeCheckFE = std::is_same<decltype(FE), MatrixStatic<float, rowF, columnE>>::value;
+    BOOST_CHECK(typeCheckEF);
+    BOOST_CHECK(typeCheckFE);
+    CheckCloseEachArrayElement(EF.Elements(), expectedEF, acceptableErrorEF);
+    CheckCloseEachArrayElement(FE.Elements(), expectedFE, acceptableErrorFE);
+
+    // other matrix x matrix
+    constexpr size_t rowG = 4;
+    constexpr size_t columnG = 1;
+    constexpr size_t elementSizeG = rowG * columnG;
+    constexpr size_t rowH = 4;
+    constexpr size_t columnH = 4;
+    constexpr size_t elementSizeH = rowH * columnH;
+    constexpr size_t resultSizeHG = rowH * columnG;
+
+    auto arrayG = std::array<float, elementSizeG>{3.5f, 6.2f, 4.0f, 5.4f};
+    auto arrayH = std::array<float, elementSizeH>{
+        1.2f, 3.4f, 5.1f, 3.4f, 3.4f, 1.4f, 3.6f, 3.6f, 5.1f, 0.7f, 7.2f, 2.5f, 2.0f, 3.4f, 3.4f, 1.4f};
+
+    auto expectedHG = std::array<float, resultSizeHG>{56.48f, 41.74f, 87.33f, 51.78f};
+
+    auto G = MatrixStatic<float, rowG, columnG>(arrayG);
+    auto H = MatrixStatic<float, rowH, columnH>(arrayH);
+
+    auto acceptableErrorHG = std::array<float, resultSizeHG>{87.1f, 54.8f, 120.2f, 69.6f};
+    for (size_t i = 0; i < resultSizeHG; i++) {
+        acceptableErrorHG[i] *= std::numeric_limits<float>::epsilon();
+    }
+
+    auto HG = H.Dot(G);
+
+    auto typeCheckHG = std::is_same<decltype(HG), MatrixStatic<float, rowH, columnG>>::value;
+    BOOST_CHECK(typeCheckHG);
+    CheckCloseEachArrayElement(HG.Elements(), expectedHG, acceptableErrorHG);
+
+    // other matrix x matrix
+    constexpr size_t rowI = 3;
+    constexpr size_t columnI = 5;
+    constexpr size_t elementSizeI = rowI * columnI;
+    constexpr size_t rowJ = 2;
+    constexpr size_t columnJ = 3;
+    constexpr size_t elementSizeJ = rowJ * columnJ;
+    constexpr size_t resultSizeJI = rowJ * columnI;
+
+    auto arrayI = std::array<float, elementSizeI>{
+        4.1f, 3.6f, 1.7f, 2.4f, 2.7f, 3.7f, 0.8f, 3.0f, 5.4f, 3.5f, 3.2f, 1.7f, 1.7f, 4.6f, 3.3f};
+    auto arrayJ = std::array<float, elementSizeJ>{2.7f, 1.6f, 3.5f, 2.2f, 1.7f, 0.9f};
+
+    auto expectedJI =
+        std::array<float, resultSizeJI>{26.56f, 16.01f, 22.22f, 13.11f, 21.84f, 12.74f, 23.54f, 14.17f, 26.3f, 15.81f};
+
+    auto I = MatrixStatic<float, rowI, columnI>(arrayI);
+    auto J = MatrixStatic<float, rowJ, columnJ>(arrayJ);
+
+    auto acceptableErrorJI =
+        std::array<float, resultSizeJI>{36.6f, 23.85f, 29.7f, 19.05f, 28.15f, 18.3f, 29.2f, 19.25f, 36.0f, 24.75f};
+    for (size_t i = 0; i < resultSizeJI; i++) {
+        acceptableErrorJI[i] *= std::numeric_limits<float>::epsilon();
+    }
+
+    auto JI = J.Dot(I);
+
+    auto typeCheckJI = std::is_same<decltype(JI), MatrixStatic<float, rowJ, columnI>>::value;
+    BOOST_CHECK(typeCheckJI);
+    CheckCloseEachArrayElement(JI.Elements(), expectedJI, acceptableErrorJI);
+
+    constexpr size_t rowK = 2;
+    constexpr size_t columnK = 2;
+    constexpr size_t elementSizeK = rowK * columnK;
+
+    auto arrayK = std::array<float, elementSizeK>{0.0f, -1.0f, 1.0f, 0.0f};
+
+    auto expectedKK = std::array<float, elementSizeK>{-1.0f, 0.0f, 0.0f, -1.0f};
+
+    auto K = MatrixStatic<float, rowK, columnK>(arrayK);
+
+    auto acceptableErrorKK = std::array<float, elementSizeK>{0.0f, 0.0f, 0.0f, 0.0f};
+    for (size_t i = 0; i < elementSizeK; i++) {
+        acceptableErrorJI[i] *= std::numeric_limits<float>::epsilon();
+    }
+
+    auto KK = K.Dot(K);
+    auto typeCheckKK = std::is_same<decltype(KK), MatrixStatic<float, rowK, columnK>>::value;
+    BOOST_CHECK(typeCheckKK);
+    CheckCloseEachArrayElement(KK.Elements(), expectedKK, acceptableErrorKK);
 }
