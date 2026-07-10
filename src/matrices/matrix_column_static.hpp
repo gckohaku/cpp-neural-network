@@ -64,13 +64,14 @@ public:
     size_t RowSize();
     size_t RowSize() const;
     constexpr size_t ColumnSize();
+    std::vector<float>& Elements();
     K* ElementsPointer();
     const K* ElementsPointer() const;
     /* end matrix unique functions declaration */
 
     /* begin matrix unique arithmetics declaration */
     template <size_t OppCol>
-    MatrixColumnStatic<K, Col> Dot(const MatrixColumnStatic<K, Col> mat)
+    MatrixColumnStatic<K, OppCol> Dot(const MatrixColumnStatic<K, OppCol> mat)
         requires concepts::SingleFloatingPoint<K>;
     /* end matrix unique arithmetics declaration */
 };
@@ -82,7 +83,7 @@ MatrixColumnStatic<K, Col>::MatrixColumnStatic()
 
 template <typename K, size_t Col>
 MatrixColumnStatic<K, Col>::MatrixColumnStatic(const size_t rowSize)
-    : _rowSize(rowSize), _columnSize(Col), _elements{rowSize * Col, K{}}, _span(_elements.data(), MatrixExtent{}) {}
+    : _rowSize(rowSize), _columnSize(Col), _elements(rowSize * Col, K{}), _span(_elements.data(), MatrixExtent{}) {}
 
 template <typename K, size_t Col>
 MatrixColumnStatic<K, Col>::MatrixColumnStatic(const size_t rowSize, const std::vector<K> elements)
@@ -160,6 +161,11 @@ constexpr size_t MatrixColumnStatic<K, Col>::ColumnSize() {
 }
 
 template <typename K, size_t Col>
+inline std::vector<float>& MatrixColumnStatic<K, Col>::Elements() {
+    return this->_elements;
+}
+
+template <typename K, size_t Col>
 inline K* MatrixColumnStatic<K, Col>::ElementsPointer() {
     return this->_elements.data();
 }
@@ -169,6 +175,17 @@ inline const K* MatrixColumnStatic<K, Col>::ElementsPointer() const {
     return this->_elements.data();
 }
 /* end matrix unique functions definition */
+
+/* begin matrix unique arithmetics definition */
+template <typename K, size_t Col>
+template <size_t OppCol>
+MatrixColumnStatic<K, OppCol> MatrixColumnStatic<K, Col>::Dot(MatrixColumnStatic<K, OppCol> mat) requires concepts::SingleFloatingPoint<K> {
+    auto res = MatrixColumnStatic<K, OppCol>(this->RowSize());
+    cblas_sgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, static_cast<blasint>(this->RowSize()), OppCol, Col, 1.0,
+        this->ElementsPointer(), static_cast<blasint>(this->RowSize()), mat.ElementsPointer(), static_cast<blasint>(mat.RowSize()), 0.0, res.ElementsPointer(), static_cast<blasint>(this->RowSize()));
+    return res;
+}
+/* end matrix unique arithmetics definition */
 }  // namespace mknnlib::matrix
 
 #endif

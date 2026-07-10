@@ -4,7 +4,6 @@
 #include <cblas.h>
 
 #include <algorithm>
-#include <array>
 #include <boost/operators.hpp>
 #include <cassert>
 #include <cstddef>
@@ -69,28 +68,39 @@ public:
     size_t RowSize() const;
     size_t ColumnSize();
     size_t ColumnSize() const;
+    std::vector<float>& Elements();
     K* ElementsPointer();
     const K* ElementsPointer() const;
     /* end matrix unique functions declaration */
+
+    /* begin matrix unique arithmetics declaration */
+    MatrixDynamic<K> Dot(const MatrixDynamic<K> mat)
+        requires concepts::SingleFloatingPoint<K>;
+    /* end matrix unique arithmetics declaration */
 };
 
 /* begin constructors definition */
 template <typename K>
-MatrixDynamic<K>::MatrixDynamic()
-    : _rowSize(0), _columnSize(0), _elements{}, _span(_elements.data(), MatrixExtent{}) {}
+MatrixDynamic<K>::MatrixDynamic() : _rowSize(0), _columnSize(0), _elements{}, _span(_elements.data(), MatrixExtent{}) {}
 
 template <typename K>
-MatrixDynamic<K>::MatrixDynamic(const size_t rowSize, const size_t columnSize)
-    : _rowSize(rowSize), _columnSize(columnSize), _elements(rowSize * columnSize, K{}), _span(_elements.data(), MatrixExtent{}) {}
+MatrixDynamic<K>::MatrixDynamic(const size_t rowSize, const size_t columnSize) :
+    _rowSize(rowSize),
+    _columnSize(columnSize),
+    _elements(rowSize * columnSize, K{}),
+    _span(_elements.data(), MatrixExtent{}) {}
 
 template <typename K>
-MatrixDynamic<K>::MatrixDynamic(const size_t rowSize, const size_t columnSize, const std::vector<K> elements)
-    : _rowSize(rowSize), _columnSize(columnSize), _elements(elements), _span(_elements.data(), MatrixExtent{}) {}
+MatrixDynamic<K>::MatrixDynamic(const size_t rowSize, const size_t columnSize, const std::vector<K> elements) :
+    _rowSize(rowSize), _columnSize(columnSize), _elements(elements), _span(_elements.data(), MatrixExtent{}) {}
 
 // copy constructor
 template <typename K>
-MatrixDynamic<K>::MatrixDynamic(const MatrixDynamic<K>& mat)
-    : _rowSize(mat.RowSize()), _columnSize(mat.ColumnSize()), _elements(mat._elements), _span(_elements.data(), MatrixExtent{}) {}
+MatrixDynamic<K>::MatrixDynamic(const MatrixDynamic<K>& mat) :
+    _rowSize(mat.RowSize()),
+    _columnSize(mat.ColumnSize()),
+    _elements(mat._elements),
+    _span(_elements.data(), MatrixExtent{}) {}
 /* end constructors definition */
 
 // arithmetics
@@ -152,6 +162,11 @@ size_t MatrixDynamic<K>::ColumnSize() const {
 }
 
 template <typename K>
+inline std::vector<float>& MatrixDynamic<K>::Elements() {
+    return this->_elements;
+}
+
+template <typename K>
 inline K* MatrixDynamic<K>::ElementsPointer() {
     return this->_elements.data();
 }
@@ -161,6 +176,20 @@ inline const K* MatrixDynamic<K>::ElementsPointer() const {
     return this->_elements.data();
 }
 /* end matrix unique functions definition */
+
+/* begin matrix unique arithmetics definition */
+template <typename K>
+MatrixDynamic<K> MatrixDynamic<K>::Dot(MatrixDynamic<K> mat)
+    requires concepts::SingleFloatingPoint<K>
+{
+    auto res = MatrixDynamic<K>(this->RowSize(), mat.ColumnSize());
+    cblas_sgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, static_cast<blasint>(this->RowSize()),
+        static_cast<blasint>(mat.ColumnSize()), static_cast<blasint>(this->ColumnSize()), 1.0, this->ElementsPointer(),
+        static_cast<blasint>(this->RowSize()), mat.ElementsPointer(), static_cast<blasint>(mat.RowSize()), 0.0,
+        res.ElementsPointer(), static_cast<blasint>(this->RowSize()));
+    return res;
+}
+/* end matrix unique arithmetics definition */
 }  // namespace mknnlib::matrix
 
 #endif

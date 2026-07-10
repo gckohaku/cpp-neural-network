@@ -12,6 +12,7 @@
 #include <span>
 
 #include "src/concept_defines/types/type_concepts.hpp"
+#include "src/matrices/matrix_static.hpp"
 
 namespace mknnlib::matrix {
 template <typename K, size_t Row>
@@ -74,6 +75,9 @@ public:
     // /* begin matrix unique arithmetics declaration */
     template <size_t OppRow>
     MatrixRowStatic<K, Row> Dot(const MatrixRowStatic<K, OppRow> mat)
+        requires concepts::SingleFloatingPoint<K>;
+    template <size_t OppRow, size_t OppCol>
+    MatrixStatic<K, Row, OppCol> Dot(const MatrixStatic<K, OppRow, OppCol> mat)
         requires concepts::SingleFloatingPoint<K>;
     /* end matrix unique arithmetics declaration */
 };
@@ -162,7 +166,7 @@ size_t MatrixRowStatic<K, Row>::ColumnSize() const {
 }
 
 template <typename K, size_t Row>
-std::vector<float>& MatrixRowStatic<K, Row>::Elements() {
+inline std::vector<float>& MatrixRowStatic<K, Row>::Elements() {
     return this->_elements;
 }
 
@@ -179,14 +183,13 @@ inline const K* MatrixRowStatic<K, Row>::ElementsPointer() const {
 
 /* begin matrix unique arithmetics definition */
 template <typename K, size_t Row>
-template <size_t OppCol>
-MatrixRowStatic<K, Row> MatrixRowStatic<K, Row>::Dot(const MatrixRowStatic<K, OppCol> mat)
+template <size_t OppRow>
+MatrixRowStatic<K, Row> MatrixRowStatic<K, Row>::Dot(const MatrixRowStatic<K, OppRow> mat)
     requires concepts::SingleFloatingPoint<K>
 {
     auto res = MatrixRowStatic<K, Row>(mat.ColumnSize());
-    cblas_sgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, Row, static_cast<blasint>(mat.ColumnSize()), OppCol, 1.0,
-        this->ElementsPointer(), Row, mat.ElementsPointer(), OppCol, 0.0, res.ElementsPointer(), Row);
-    return res;
+    cblas_sgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, Row, static_cast<blasint>(mat.ColumnSize()), OppRow, 1.0,
+        this->ElementsPointer(), Row, mat.ElementsPointer(), OppRow, 0.0, res.ElementsPointer(), Row);
     return res;
 }
 

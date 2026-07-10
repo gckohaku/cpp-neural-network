@@ -165,7 +165,7 @@ constexpr size_t MatrixStatic<K, Row, Col>::ColumnSize() {
 }
 
 template <typename K, size_t Row, size_t Col>
-std::array<float, Row * Col>& MatrixStatic<K, Row, Col>::Elements() {
+inline std::array<float, Row * Col>& MatrixStatic<K, Row, Col>::Elements() {
     return this->_elements;
 }
 
