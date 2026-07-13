@@ -6,3 +6,4 @@
 #include "tests/matrix_test/matrix_product/float/row_static_test.cpp"
 #include "tests/matrix_test/matrix_product/float/column_static_test.cpp"
 #include "tests/matrix_test/matrix_product/float/dynamic_test.cpp"
+#include "tests/matrix_test/matrix_product/float/static_and_row_static_test.cpp"

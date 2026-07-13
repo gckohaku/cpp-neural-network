@@ -13,15 +13,19 @@
 #include <ostream>
 
 #include "src/concept_defines/types/type_concepts.hpp"
-#include "src/matrices/matrix_column_static.hpp"
-#include "src/matrices/matrix_dynamic.hpp"
-#include "src/matrices/matrix_row_static.hpp"
 
 namespace mknnlib::matrix {
 template <typename K, size_t Row, size_t Col>
 class MatrixStatic;
 template <typename K, size_t Row, size_t Col>
 std::ostream& operator<<(std::ostream& os, const MatrixStatic<K, Row, Col>& mat);
+
+template <typename K, size_t Row>
+class MatrixRowStatic;
+template <typename K, size_t Col>
+class MatrixColumnStatic;
+template <typename K>
+class MatrixDynamic;
 
 template <typename K, size_t Row, size_t Col>
 class MatrixStatic :

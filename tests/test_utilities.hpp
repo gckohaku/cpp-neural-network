@@ -10,6 +10,7 @@
 #include <ios>
 #include <source_location>
 #include <sstream>
+
 template <typename T, size_t N>
 void CheckCloseEachArrayElement(const std::array<T, N> left, const std::array<T, N> right,
     const std::array<T, N> tolerance, const std::source_location& location = std::source_location::current()) {
@@ -46,6 +47,11 @@ void CheckCloseEachVectorElement(const std::vector<T> left, const std::vector<T>
         message << "Actual error exceeds expected error.";
         BOOST_CHECK_MESSAGE(std::abs(left[i] - right[i]) <= tolerance[i], message.str());
     }
+}
+
+template<typename T, size_t Size>
+std::vector<T> ArrayToVector(std::array<float, Size> arr) {
+    return std::vector<T>(arr.begin(), arr.end());
 }
 
 #endif

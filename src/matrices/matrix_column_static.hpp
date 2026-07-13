@@ -18,6 +18,13 @@ class MatrixColumnStatic;
 template <typename K, size_t Col>
 std::ostream& operator<<(std::ostream& os, const MatrixColumnStatic<K, Col>& mat);
 
+template <typename K, size_t Row, size_t Col>
+class MatrixStatic;
+template <typename K, size_t Row>
+class MatrixRowStatic;
+template <typename K>
+class MatrixDynamic;
+
 template <typename K, size_t Col>
 class MatrixColumnStatic :
     private boost::addable<MatrixColumnStatic<K, Col>>,

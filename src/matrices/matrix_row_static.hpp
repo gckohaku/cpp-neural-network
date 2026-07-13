@@ -2,6 +2,7 @@
 #define MKNNLIB_MATRICES_MATRIX_ROW_STATIC_HPP
 
 #include <cblas.h>
+#include <openblas_config.h>
 
 #include <algorithm>
 #include <boost/operators.hpp>
@@ -12,13 +13,19 @@
 #include <span>
 
 #include "src/concept_defines/types/type_concepts.hpp"
-#include "src/matrices/matrix_static.hpp"
 
 namespace mknnlib::matrix {
 template <typename K, size_t Row>
 class MatrixRowStatic;
 template <typename K, size_t Row>
 std::ostream& operator<<(std::ostream& os, const MatrixRowStatic<K, Row>& mat);
+
+template <typename K, size_t Row, size_t Col>
+class MatrixStatic;
+template <typename K, size_t Col>
+class MatrixColumnStatic;
+template <typename K>
+class MatrixDynamic;
 
 template <typename K, size_t Row>
 class MatrixRowStatic :
@@ -193,16 +200,17 @@ MatrixRowStatic<K, Row> MatrixRowStatic<K, Row>::Dot(const MatrixRowStatic<K, Op
     return res;
 }
 
-// template <typename K, size_t Row, size_t Col>
-// MatrixRowStatic<K, Row> MatrixStatic<K, Row, Col>::Dot(const MatrixRowStatic<K, Col> mat) requires
-// SingleFloatingPoint<K> {
-//     auto res = MatrixRowStatic<K, Row>();
-//     cblas_sgemm(
-//         CblasColMajor, CblasNoTrans, CblasNoTrans, Row, mat._columnSize, Col, 1.0, this->ElementsPointer(), Row,
-//         mat.ElementsPointer(), Col, 1.0, res.ElementsPointer(), Row
-//     );
-//     return res;
-// }
+template <typename K, size_t Row>
+template <size_t OppRow, size_t OppCol>
+MatrixStatic<K, Row, OppCol> MatrixRowStatic<K, Row>::Dot(const MatrixStatic<K, OppRow, OppCol> mat) requires
+concepts::SingleFloatingPoint<K> {
+    auto res = MatrixStatic<K, Row, OppCol>();
+    cblas_sgemm(
+        CblasColMajor, CblasNoTrans, CblasNoTrans, Row, OppCol, static_cast<blasint>(this->ColumnSize()), 1.0, this->ElementsPointer(), Row,
+        mat.ElementsPointer(), static_cast<blasint>(this->ColumnSize()), 1.0, res.ElementsPointer(), Row
+    );
+    return res;
+}
 /* end matrix unique arithmetics definition */
 }  // namespace mknnlib::matrix
 

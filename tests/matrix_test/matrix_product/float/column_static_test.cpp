@@ -1,6 +1,3 @@
-#ifndef TESTS_MATRIX_TESTS_MATRIX_PRODUCT_FLOAT_COLUMN_STATIC_TEST_CPP
-#define TESTS_MATRIX_TESTS_MATRIX_PRODUCT_FLOAT_COLUMN_STATIC_TEST_CPP
-
 #include <boost/test/included/unit_test.hpp>
 #include <boost/test/tools/interface.hpp>
 #include <boost/test/tools/old/interface.hpp>
@@ -205,5 +202,3 @@ BOOST_AUTO_TEST_CASE(matrix_column_static_test) {
     BOOST_CHECK(typeCheckKK);
     CheckCloseEachVectorElement(KK.Elements(), expectedKK, acceptableErrorKK);
 }
-
-#endif
