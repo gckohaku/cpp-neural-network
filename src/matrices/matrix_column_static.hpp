@@ -2,9 +2,9 @@
 #define MKNNLIB_MATRICES_MATRIX_COLUMN_STATIC_HPP
 
 #include <cblas.h>
-#include <boost/operators.hpp>
 
 #include <algorithm>
+#include <boost/operators.hpp>
 #include <cstddef>
 #include <functional>
 #include <mdspan>
@@ -80,26 +80,30 @@ public:
     template <size_t OppCol>
     MatrixColumnStatic<K, OppCol> Dot(const MatrixColumnStatic<K, OppCol> mat)
         requires concepts::SingleFloatingPoint<K>;
+
+    template <size_t OppRow, size_t OppCol>
+    MatrixColumnStatic<K, OppCol> Dot(const MatrixStatic<K, OppRow, OppCol> mat)
+        requires concepts::SingleFloatingPoint<K>;
     /* end matrix unique arithmetics declaration */
 };
 
 /* begin constructors definition */
 template <typename K, size_t Col>
-MatrixColumnStatic<K, Col>::MatrixColumnStatic()
-    : _rowSize(0), _columnSize(Col), _elements{}, _span(_elements.data(), MatrixExtent{}) {}
+MatrixColumnStatic<K, Col>::MatrixColumnStatic() :
+    _rowSize(0), _columnSize(Col), _elements{}, _span(_elements.data(), MatrixExtent{}) {}
 
 template <typename K, size_t Col>
-MatrixColumnStatic<K, Col>::MatrixColumnStatic(const size_t rowSize)
-    : _rowSize(rowSize), _columnSize(Col), _elements(rowSize * Col, K{}), _span(_elements.data(), MatrixExtent{}) {}
+MatrixColumnStatic<K, Col>::MatrixColumnStatic(const size_t rowSize) :
+    _rowSize(rowSize), _columnSize(Col), _elements(rowSize * Col, K{}), _span(_elements.data(), MatrixExtent{}) {}
 
 template <typename K, size_t Col>
-MatrixColumnStatic<K, Col>::MatrixColumnStatic(const size_t rowSize, const std::vector<K> elements)
-    : _rowSize(rowSize), _columnSize(Col), _elements{elements}, _span(_elements.data(), MatrixExtent{}) {}
+MatrixColumnStatic<K, Col>::MatrixColumnStatic(const size_t rowSize, const std::vector<K> elements) :
+    _rowSize(rowSize), _columnSize(Col), _elements{elements}, _span(_elements.data(), MatrixExtent{}) {}
 
 // copy constructor
 template <typename K, size_t Col>
-MatrixColumnStatic<K, Col>::MatrixColumnStatic(const MatrixColumnStatic<K, Col>& mat)
-    : _rowSize(mat.RowSize()), _columnSize(Col), _elements(mat._elements), _span(_elements.data(), MatrixExtent{}) {}
+MatrixColumnStatic<K, Col>::MatrixColumnStatic(const MatrixColumnStatic<K, Col>& mat) :
+    _rowSize(mat.RowSize()), _columnSize(Col), _elements(mat._elements), _span(_elements.data(), MatrixExtent{}) {}
 /* end constructors definition */
 
 /* begin operator overloads definition */
@@ -186,10 +190,25 @@ inline const K* MatrixColumnStatic<K, Col>::ElementsPointer() const {
 /* begin matrix unique arithmetics definition */
 template <typename K, size_t Col>
 template <size_t OppCol>
-MatrixColumnStatic<K, OppCol> MatrixColumnStatic<K, Col>::Dot(MatrixColumnStatic<K, OppCol> mat) requires concepts::SingleFloatingPoint<K> {
+MatrixColumnStatic<K, OppCol> MatrixColumnStatic<K, Col>::Dot(MatrixColumnStatic<K, OppCol> mat)
+    requires concepts::SingleFloatingPoint<K>
+{
     auto res = MatrixColumnStatic<K, OppCol>(this->RowSize());
     cblas_sgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, static_cast<blasint>(this->RowSize()), OppCol, Col, 1.0,
-        this->ElementsPointer(), static_cast<blasint>(this->RowSize()), mat.ElementsPointer(), static_cast<blasint>(mat.RowSize()), 0.0, res.ElementsPointer(), static_cast<blasint>(this->RowSize()));
+        this->ElementsPointer(), static_cast<blasint>(this->RowSize()), mat.ElementsPointer(),
+        static_cast<blasint>(mat.RowSize()), 0.0, res.ElementsPointer(), static_cast<blasint>(this->RowSize()));
+    return res;
+}
+
+template <typename K, size_t Col>
+template <size_t OppRow, size_t OppCol>
+MatrixColumnStatic<K, OppCol> MatrixColumnStatic<K, Col>::Dot(MatrixStatic<K, OppRow, OppCol> mat)
+    requires concepts::SingleFloatingPoint<K>
+{
+    auto res = MatrixColumnStatic<K, OppCol>(this->RowSize());
+    cblas_sgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, static_cast<blasint>(this->RowSize()), OppCol, Col, 1.0,
+        this->ElementsPointer(), static_cast<blasint>(this->RowSize()), mat.ElementsPointer(),
+        OppRow, 0.0, res.ElementsPointer(), static_cast<blasint>(this->RowSize()));
     return res;
 }
 /* end matrix unique arithmetics definition */

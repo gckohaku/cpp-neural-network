@@ -35,6 +35,7 @@ void CheckCloseEachVectorElement(const std::vector<T> left, const std::vector<T>
         message << "Vector size is not match.\n";
         message << "Left: " << left.size() << ", Right: " << right.size() << ".";
         BOOST_ERROR(message.str());
+        return;
     }
     const size_t N = left.size();
     for (size_t i = 0; i < N; i++) {

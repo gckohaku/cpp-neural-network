@@ -222,6 +222,7 @@ inline MatrixStatic<K, Row, OppCol> MatrixStatic<K, Row, Col>::Dot(const MatrixC
         CblasColMajor, CblasNoTrans, CblasNoTrans, Row, OppCol, Col, 1.0, this->ElementsPointer(), Row,
         mat.ElementsPointer(), Col, 0.0, res.ElementsPointer(), Row
     );
+    return res;
 }
 
 template <typename K, size_t Row, size_t Col>
@@ -233,6 +234,7 @@ inline MatrixRowStatic<K, Row> MatrixStatic<K, Row, Col>::Dot(const MatrixDynami
         CblasColMajor, CblasNoTrans, CblasNoTrans, Row, static_cast<blasint>(mat.ColumnSize()), Col, 1.0,
         this->ElementsPointer(), Row, mat.ElementsPointer(), Col, 0.0, res.ElementsPointer(), Row
     );
+    return res;
 }
 /* end matrix unique arithmetics definition */  // namespace mknnlib::matrix
 }  // namespace mknnlib::matrix

@@ -1,22 +1,18 @@
-#include <algorithm>
-#include <array>
 #include <boost/test/included/unit_test.hpp>
 #include <boost/test/tools/interface.hpp>
 #include <boost/test/tools/old/interface.hpp>
 #include <boost/test/unit_test_suite.hpp>
 #include <cstddef>
 #include <limits>
-#include <type_traits>
-#include <vector>
 
-#include "src/matrices/matrix_row_static.hpp"
+#include "src/matrices/matrix_column_static.hpp"
 #include "src/matrices/matrix_static.hpp"
 #include "tests/test_utilities.hpp"
 
 using mknnlib::matrix::MatrixStatic;
-using mknnlib::matrix::MatrixRowStatic;
+using mknnlib::matrix::MatrixColumnStatic;
 
-BOOST_AUTO_TEST_CASE(matrix_static_and_matrix_row_static_test) {
+BOOST_AUTO_TEST_CASE(matrix_static_and_matrix_column_static_test) {
     // square x square
     // 3x3
     constexpr size_t row1 = 3;
@@ -32,7 +28,7 @@ BOOST_AUTO_TEST_CASE(matrix_static_and_matrix_row_static_test) {
         std::vector<float>{112.46f, 54.02f, 40.2f, 142.39f, 62.15f, 74.79f, 119.84f, 49.05f, 48.05f};
 
     auto A = MatrixStatic<float, row1, column1>(arrayA);
-    auto B = MatrixRowStatic<float, row1>(column1, arrayB);
+    auto B = MatrixColumnStatic<float, column1>(row1, arrayB);
 
     auto acceptableErrorAB =
         std::vector<float>{83.85f, 105.65f, 104.525f, 98.0f, 129.0f, 88.3f, 100.0f, 178.8f, 119.6f};
@@ -51,8 +47,8 @@ BOOST_AUTO_TEST_CASE(matrix_static_and_matrix_row_static_test) {
     auto typeCheckBA = std::is_same<decltype(BA), MatrixStatic<float, row1, column1>>::value;
     BOOST_CHECK(typeCheckAB);
     BOOST_CHECK(typeCheckBA);
-    CheckCloseEachVectorElement<float>(AB.Elements(),  expectedAB, acceptableErrorAB);
-    CheckCloseEachVectorElement<float>(ArrayToVector<float>(BA.Elements()), expectedBA, acceptableErrorBA);
+    CheckCloseEachVectorElement<float>(ArrayToVector<float>(AB.Elements()),  expectedAB, acceptableErrorAB);
+    CheckCloseEachVectorElement<float>(BA.Elements(), expectedBA, acceptableErrorBA);
 
     // 5x5
     constexpr size_t row2 = 5;
@@ -72,7 +68,7 @@ BOOST_AUTO_TEST_CASE(matrix_static_and_matrix_row_static_test) {
         30.56f, 64.35f, 47.04f};
 
     auto C = MatrixStatic<float, row2, column2>(arrayC);
-    auto D = MatrixRowStatic<float, row2>(column2, arrayD);
+    auto D = MatrixColumnStatic<float, row2>(column2, arrayD);
 
     auto acceptableErrorCD = std::vector<float>{95.7f, 56.2f, 74.5f, 90.2f, 48.3f, 67.375f, 59.025f,
         60.975f, 84.425f, 49.325f, 121.0f, 94.5f, 108.5f, 129.6f, 72.7f, 70.675f, 52.25f, 73.45f, 93.7f, 69.2f,
@@ -93,8 +89,8 @@ BOOST_AUTO_TEST_CASE(matrix_static_and_matrix_row_static_test) {
     auto typeCheckDC = std::is_same<decltype(DC), MatrixStatic<float, row2, column2>>::value;
     BOOST_CHECK(typeCheckCD);
     BOOST_CHECK(typeCheckDC);
-    CheckCloseEachVectorElement(CD.Elements(), expectedCD, acceptableErrorCD);
-    CheckCloseEachVectorElement(ArrayToVector<float>(DC.Elements()), expectedDC, acceptableErrorDC);
+    CheckCloseEachVectorElement(ArrayToVector<float>(CD.Elements()), expectedCD, acceptableErrorCD);
+    CheckCloseEachVectorElement(DC.Elements(), expectedDC, acceptableErrorDC);
 
     // non-square x non-square -> square
     constexpr size_t rowE = 3;
@@ -117,7 +113,7 @@ BOOST_AUTO_TEST_CASE(matrix_static_and_matrix_row_static_test) {
         24.7f, 39.07f, 47.51f, 40.88f, 19.61f, 29.63f, 29.91f, 28.56f};
 
     auto E = MatrixStatic<float, rowE, columnE>(arrayE);
-    auto F = MatrixRowStatic<float, rowF>(columnF, arrayF);
+    auto F = MatrixColumnStatic<float, rowF>(columnF, arrayF);
 
     auto acceptableErrorEF =
         std::vector<float>{91.3f, 54.8f, 100.4f, 55.35f, 40.3f, 68.45f, 62.3f, 42.2f, 68.6f};
@@ -138,8 +134,8 @@ BOOST_AUTO_TEST_CASE(matrix_static_and_matrix_row_static_test) {
     auto typeCheckFE = std::is_same<decltype(FE), MatrixStatic<float, rowF, columnE>>::value;
     BOOST_CHECK(typeCheckEF);
     BOOST_CHECK(typeCheckFE);
-    CheckCloseEachVectorElement(EF.Elements(), expectedEF, acceptableErrorEF);
-    CheckCloseEachVectorElement(ArrayToVector<float>(FE.Elements()), expectedFE, acceptableErrorFE);
+    CheckCloseEachVectorElement(ArrayToVector<float>(EF.Elements()), expectedEF, acceptableErrorEF);
+    CheckCloseEachVectorElement(FE.Elements(), expectedFE, acceptableErrorFE);
 
     // other matrix x matrix
     constexpr size_t rowG = 4;
@@ -157,7 +153,7 @@ BOOST_AUTO_TEST_CASE(matrix_static_and_matrix_row_static_test) {
     auto expectedHG = std::vector<float>{56.48f, 41.74f, 87.33f, 51.78f};
 
     auto G = MatrixStatic<float, rowG, columnG>(arrayG);
-    auto H = MatrixRowStatic<float, rowH>(columnH, arrayH);
+    auto H = MatrixColumnStatic<float, rowH>(columnH, arrayH);
 
     auto acceptableErrorHG = std::vector<float>{87.1f, 54.8f, 120.2f, 69.6f};
     for (size_t i = 0; i < resultSizeHG; i++) {
@@ -168,7 +164,7 @@ BOOST_AUTO_TEST_CASE(matrix_static_and_matrix_row_static_test) {
 
     auto typeCheckHG = std::is_same<decltype(HG), MatrixStatic<float, rowH, columnG>>::value;
     BOOST_CHECK(typeCheckHG);
-    CheckCloseEachVectorElement(ArrayToVector<float>(HG.Elements()), expectedHG, acceptableErrorHG);
+    CheckCloseEachVectorElement(HG.Elements(), expectedHG, acceptableErrorHG);
 
     constexpr size_t rowI = 3;
     constexpr size_t columnI = 5;
@@ -187,7 +183,7 @@ BOOST_AUTO_TEST_CASE(matrix_static_and_matrix_row_static_test) {
         std::vector<float>{26.56f, 16.01f, 22.22f, 13.11f, 21.84f, 12.74f, 23.54f, 14.17f, 26.3f, 15.81f};
 
     auto I = MatrixStatic<float, rowI, columnI>(arrayI);
-    auto J = MatrixRowStatic<float, rowJ>(columnJ, arrayJ);
+    auto J = MatrixColumnStatic<float, rowJ>(columnJ, arrayJ);
 
     auto acceptableErrorJI =
         std::vector<float>{36.6f, 23.85f, 29.7f, 19.05f, 28.15f, 18.3f, 29.2f, 19.25f, 36.0f, 24.75f};
@@ -199,9 +195,9 @@ BOOST_AUTO_TEST_CASE(matrix_static_and_matrix_row_static_test) {
 
     auto typeCheckJI = std::is_same<decltype(JI), MatrixStatic<float, rowJ, columnI>>::value;
     BOOST_CHECK(typeCheckJI);
-    CheckCloseEachVectorElement(ArrayToVector<float>(JI.Elements()), expectedJI, acceptableErrorJI);
+    CheckCloseEachVectorElement(JI.Elements(), expectedJI, acceptableErrorJI);
 
-    auto K = MatrixRowStatic<float, rowI>(columnI, std::vector<float>(arrayI.begin(), arrayI.end()));
+    auto K = MatrixColumnStatic<float, columnI>(rowI, std::vector<float>(arrayI.begin(), arrayI.end()));
     auto arrayL = std::array<float, elementSizeJ>();
     std::copy_n(arrayJ.begin(), elementSizeJ, arrayL.begin());
     auto L = MatrixStatic<float, rowJ, columnJ>(arrayL);
@@ -210,5 +206,5 @@ BOOST_AUTO_TEST_CASE(matrix_static_and_matrix_row_static_test) {
 
     auto typeCheckKL = std::is_same<decltype(KL), MatrixStatic<float, rowJ, columnI>>::value;
     BOOST_CHECK(typeCheckKL);
-    CheckCloseEachVectorElement(ArrayToVector<float>(KL.Elements()), expectedJI, acceptableErrorJI);
+    CheckCloseEachVectorElement(KL.Elements(), expectedJI, acceptableErrorJI);
 }
