@@ -11,6 +11,7 @@
 #include <mdspan>
 #include <ostream>
 #include <span>
+#include <stdexcept>
 
 #include "src/concept_defines/types/type_concepts.hpp"
 
@@ -73,6 +74,7 @@ public:
     constexpr size_t RowSize();
     size_t ColumnSize();
     size_t ColumnSize() const;
+    std::string GetSizeString() const;
     std::vector<float>& Elements();
     K* ElementsPointer();
     const K* ElementsPointer() const;
@@ -173,6 +175,11 @@ size_t MatrixRowStatic<K, Row>::ColumnSize() const {
 }
 
 template <typename K, size_t Row>
+std::string MatrixRowStatic<K, Row>::GetSizeString() const {
+    return "(" + std::to_string(Row) + ", " + std::to_string(this->ColumnSize()) + ")";
+}
+
+template <typename K, size_t Row>
 inline std::vector<float>& MatrixRowStatic<K, Row>::Elements() {
     return this->_elements;
 }
@@ -194,6 +201,14 @@ template <size_t OppRow>
 MatrixRowStatic<K, Row> MatrixRowStatic<K, Row>::Dot(const MatrixRowStatic<K, OppRow> mat)
     requires concepts::SingleFloatingPoint<K>
 {
+    if (this->ColumnSize() != OppRow) {
+        std::string errorString = "Mismatch matrix size for matrix product.\n";
+        errorString += "this size    : " + this->GetSizeString() + "\n";
+        errorString += "opponent size: " + mat.GetSizeString() + ".\n";
+
+        throw std::domain_error(errorString);
+    }
+
     auto res = MatrixRowStatic<K, Row>(mat.ColumnSize());
     cblas_sgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, Row, static_cast<blasint>(mat.ColumnSize()), OppRow, 1.0,
         this->ElementsPointer(), Row, mat.ElementsPointer(), OppRow, 0.0, res.ElementsPointer(), Row);

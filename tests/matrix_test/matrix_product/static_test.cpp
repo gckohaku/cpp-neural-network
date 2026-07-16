@@ -216,7 +216,4 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(matrix_static_test, T, MatrixProductCheckType) {
     auto typeCheckKK = std::is_same<decltype(KK), MatrixStatic<T, rowK, columnK>>::value;
     BOOST_CHECK(typeCheckKK);
     CheckCloseEachArrayElement(KK.Elements(), expectedKK, acceptableErrorKK);
-
-    // throw exception test
-    
 }
