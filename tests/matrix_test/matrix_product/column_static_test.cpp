@@ -200,4 +200,13 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(matrix_column_static_test, T, MatrixProductCheckTy
     auto typeCheckKK = std::is_same<decltype(KK), MatrixColumnStatic<T, columnK>>::value;
     BOOST_CHECK(typeCheckKK);
     CheckCloseEachVectorElement(KK.Elements(), expectedKK, acceptableErrorKK);
+
+    // throw exception test
+    auto mArray = std::vector<T>{2.4f, 5.4f, 7.1f, 3.1f, 2.4f, 4.8f};
+    auto nArray = std::vector<T>{2.3f, 2.9f, 3.5f, 5.7f, 3.8f, 7.3f, 4.2f, 1.5f, 2.7f};
+    auto M = MatrixColumnStatic<T, 2>(3, mArray);
+    auto N = MatrixColumnStatic<T, 3>(3, nArray);
+
+    BOOST_CHECK_THROW(M.Dot(N), std::domain_error);
+    BOOST_CHECK_NO_THROW(N.Dot(M));
 }

@@ -75,6 +75,7 @@ public:
     size_t RowSize() const;
     size_t ColumnSize();
     size_t ColumnSize() const;
+    std::string GetSizeString() const;
     std::vector<float>& Elements();
     K* ElementsPointer();
     const K* ElementsPointer() const;
@@ -169,6 +170,11 @@ size_t MatrixDynamic<K>::ColumnSize() const {
 }
 
 template <typename K>
+std::string MatrixDynamic<K>::GetSizeString() const {
+    return "(" + std::to_string(this->RowSize()) + ", " + std::to_string(this->ColumnSize()) + ")";
+}
+
+template <typename K>
 inline std::vector<float>& MatrixDynamic<K>::Elements() {
     return this->_elements;
 }
@@ -189,6 +195,14 @@ template <typename K>
 MatrixDynamic<K> MatrixDynamic<K>::Dot(MatrixDynamic<K> mat)
     requires concepts::SingleFloatingPoint<K>
 {
+    if (this->ColumnSize() != mat.RowSize()) {
+        std::string errorString = "Mismatch matrix size for matrix product.\n";
+        errorString += "this size    : " + this->GetSizeString() + "\n";
+        errorString += "opponent size: " + mat.GetSizeString() + ".\n";
+
+        throw std::domain_error(errorString);
+    }
+
     auto res = MatrixDynamic<K>(this->RowSize(), mat.ColumnSize());
     cblas_sgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, static_cast<blasint>(this->RowSize()),
         static_cast<blasint>(mat.ColumnSize()), static_cast<blasint>(this->ColumnSize()), 1.0, this->ElementsPointer(),

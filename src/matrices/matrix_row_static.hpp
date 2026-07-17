@@ -219,6 +219,14 @@ template <typename K, size_t Row>
 template <size_t OppRow, size_t OppCol>
 MatrixStatic<K, Row, OppCol> MatrixRowStatic<K, Row>::Dot(const MatrixStatic<K, OppRow, OppCol> mat) requires
 concepts::SingleFloatingPoint<K> {
+    if (this->ColumnSize() != OppRow) {
+        std::string errorString = "Mismatch matrix size for matrix product.\n";
+        errorString += "this size    : " + this->GetSizeString() + "\n";
+        errorString += "opponent size: " + mat.GetSizeString() + ".\n";
+
+        throw std::domain_error(errorString);
+    }
+
     auto res = MatrixStatic<K, Row, OppCol>();
     cblas_sgemm(
         CblasColMajor, CblasNoTrans, CblasNoTrans, Row, OppCol, static_cast<blasint>(this->ColumnSize()), 1.0, this->ElementsPointer(), Row,

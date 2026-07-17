@@ -142,6 +142,16 @@
 			],
 			"group": "build",
 			"detail": "コンパイラ: /usr/bin/clang++"
+		},
+		{
+			"type": "shell",
+			"label": "Boost.Test を行う",
+			"command": "ASAN_OPTIONS=alloc_dealloc_mismatch=0 ${workspaceFolder}/bin/debug/test",
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"group": "build",
+			"detail": "Boost.Test for Matrices"
 		}
 	]
 }
