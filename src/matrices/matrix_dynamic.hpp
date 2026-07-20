@@ -58,9 +58,9 @@ public:
     MatrixDynamic<K>& operator=(const MatrixDynamic<K>& x);
     // arithmetics
     MatrixDynamic<K>& operator+=(const MatrixDynamic<K>& x)
-        requires concepts::SingleFloatingPoint<K>;
+        requires mk_concepts::SingleFloatingPoint<K>;
     MatrixDynamic<K>& operator-=(const MatrixDynamic<K>& x)
-        requires concepts::SingleFloatingPoint<K>;
+        requires mk_concepts::SingleFloatingPoint<K>;
     MatrixDynamic<K>& operator*=(const MatrixDynamic<K>& x);
 
     // 2 dimensions index
@@ -83,7 +83,19 @@ public:
 
     /* begin matrix unique arithmetics declaration */
     MatrixDynamic<K> Dot(const MatrixDynamic<K> mat)
-        requires concepts::SingleFloatingPoint<K>;
+        requires mk_concepts::SingleFloatingPoint<K>;
+
+    template <size_t OppRow, size_t OppCol>
+    MatrixColumnStatic<K, OppCol> Dot(const MatrixStatic<K, OppRow, OppCol>)
+        requires mk_concepts::SingleFloatingPoint<K>;
+
+    template <size_t OppRow>
+    MatrixDynamic<K> Dot(const MatrixRowStatic<K, OppRow>)
+        requires mk_concepts::SingleFloatingPoint<K>;
+
+    template <size_t OppCol>
+    MatrixColumnStatic<K, OppCol> Dot(const MatrixColumnStatic<K, OppCol>)
+        requires mk_concepts::SingleFloatingPoint<K>;
     /* end matrix unique arithmetics declaration */
 };
 
@@ -114,7 +126,7 @@ MatrixDynamic<K>::MatrixDynamic(const MatrixDynamic<K>& mat) :
 // arithmetics
 template <typename K>
 inline MatrixDynamic<K>& MatrixDynamic<K>::operator+=(const MatrixDynamic<K>& x)
-    requires concepts::SingleFloatingPoint<K>
+    requires mk_concepts::SingleFloatingPoint<K>
 {
     cblas_saxpy(this->_rowSize * this->_columnSize, 1.0, x.ElementsPointer(), 1, this->ElementsPointer(), 1);
     return *this;
@@ -122,7 +134,7 @@ inline MatrixDynamic<K>& MatrixDynamic<K>::operator+=(const MatrixDynamic<K>& x)
 
 template <typename K>
 inline MatrixDynamic<K>& MatrixDynamic<K>::operator-=(const MatrixDynamic<K>& x)
-    requires concepts::SingleFloatingPoint<K>
+    requires mk_concepts::SingleFloatingPoint<K>
 {
     cblas_saxpy(this->_rowSize * this->_columnSize, -1.0, x.ElementsPointer(), 1, this->ElementsPointer(), 1);
     return *this;
@@ -193,8 +205,9 @@ inline const K* MatrixDynamic<K>::ElementsPointer() const {
 /* begin matrix unique arithmetics definition */
 template <typename K>
 MatrixDynamic<K> MatrixDynamic<K>::Dot(MatrixDynamic<K> mat)
-    requires concepts::SingleFloatingPoint<K>
+    requires mk_concepts::SingleFloatingPoint<K>
 {
+#if !defined(NDEBUG)
     if (this->ColumnSize() != mat.RowSize()) {
         std::string errorString = "Mismatch matrix size for matrix product.\n";
         errorString += "this size    : " + this->GetSizeString() + "\n";
@@ -202,12 +215,81 @@ MatrixDynamic<K> MatrixDynamic<K>::Dot(MatrixDynamic<K> mat)
 
         throw std::domain_error(errorString);
     }
+#endif
 
     auto res = MatrixDynamic<K>(this->RowSize(), mat.ColumnSize());
     cblas_sgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, static_cast<blasint>(this->RowSize()),
         static_cast<blasint>(mat.ColumnSize()), static_cast<blasint>(this->ColumnSize()), 1.0, this->ElementsPointer(),
         static_cast<blasint>(this->RowSize()), mat.ElementsPointer(), static_cast<blasint>(mat.RowSize()), 0.0,
         res.ElementsPointer(), static_cast<blasint>(this->RowSize()));
+    return res;
+}
+
+template <typename K>
+template <size_t OppRow, size_t OppCol>
+MatrixColumnStatic<K, OppCol> MatrixDynamic<K>::Dot(MatrixStatic<K, OppRow, OppCol> mat)
+    requires mk_concepts::SingleFloatingPoint<K>
+{
+#if !defined(NDEBUG)
+    if (this->ColumnSize() != OppRow) {
+        std::string errorString = "Mismatch matrix size for matrix product.\n";
+        errorString += "this size    : " + this->GetSizeString() + "\n";
+        errorString += "opponent size: " + mat.GetSizeString() + ".\n";
+
+        throw std::domain_error(errorString);
+    }
+#endif
+
+    auto res = MatrixColumnStatic<K, OppCol>(this->RowSize());
+    cblas_sgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, static_cast<blasint>(this->RowSize()), OppCol,
+        static_cast<blasint>(this->ColumnSize()), 1.0, this->ElementsPointer(), static_cast<blasint>(this->RowSize()),
+        mat.ElementsPointer(), OppRow, 0.0, res.ElementsPointer(), static_cast<blasint>(this->RowSize()));
+    return res;
+}
+
+template <typename K>
+template <size_t OppRow>
+MatrixDynamic<K> MatrixDynamic<K>::Dot(MatrixRowStatic<K, OppRow> mat)
+    requires mk_concepts::SingleFloatingPoint<K>
+{
+#if !defined(NDEBUG)
+    if (this->ColumnSize() != OppRow) {
+        std::string errorString = "Mismatch matrix size for matrix product.\n";
+        errorString += "this size    : " + this->GetSizeString() + "\n";
+        errorString += "opponent size: " + mat.GetSizeString() + ".\n";
+
+        throw std::domain_error(errorString);
+    }
+#endif
+
+    auto res = MatrixDynamic<K>(this->RowSize(), mat.ColumnSize());
+    cblas_sgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, static_cast<blasint>(this->RowSize()),
+        static_cast<blasint>(mat.ColumnSize()), static_cast<blasint>(this->ColumnSize()), 1.0, this->ElementsPointer(),
+        static_cast<blasint>(this->RowSize()), mat.ElementsPointer(), OppRow, 0.0, res.ElementsPointer(),
+        static_cast<blasint>(this->RowSize()));
+    return res;
+}
+
+template <typename K>
+template <size_t OppCol>
+MatrixColumnStatic<K, OppCol> MatrixDynamic<K>::Dot(MatrixColumnStatic<K, OppCol> mat)
+    requires mk_concepts::SingleFloatingPoint<K>
+{
+#if !defined(NDEBUG)
+    if (this->ColumnSize() != mat.RowSize()) {
+        std::string errorString = "Mismatch matrix size for matrix product.\n";
+        errorString += "this size    : " + this->GetSizeString() + "\n";
+        errorString += "opponent size: " + mat.GetSizeString() + ".\n";
+
+        throw std::domain_error(errorString);
+    }
+#endif
+
+    auto res = MatrixColumnStatic<K, OppCol>(this->RowSize());
+    cblas_sgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, static_cast<blasint>(this->RowSize()),
+        OppCol, static_cast<blasint>(this->ColumnSize()), 1.0, this->ElementsPointer(),
+        static_cast<blasint>(this->RowSize()), mat.ElementsPointer(), static_cast<blasint>(mat.RowSize()), 0.0, res.ElementsPointer(),
+        static_cast<blasint>(this->RowSize()));
     return res;
 }
 /* end matrix unique arithmetics definition */

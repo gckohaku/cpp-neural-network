@@ -8,7 +8,7 @@
 #include <stdfloat>
 #endif
 
-namespace mknnlib::concepts {
+namespace mknnlib::mk_concepts {
 
 #if defined(__STDCPP_FLOAT16_T__)
 template <typename T>

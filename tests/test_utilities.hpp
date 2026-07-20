@@ -51,8 +51,16 @@ void CheckCloseEachVectorElement(const std::vector<T> left, const std::vector<T>
 }
 
 template<typename T, size_t Size>
-std::vector<T> ArrayToVector(std::array<float, Size> arr) {
+std::vector<T> ArrayToVector(std::array<T, Size> arr) {
     return std::vector<T>(arr.begin(), arr.end());
+}
+
+template<typename T, size_t Size>
+std::array<T, Size> VectorToArray(std::vector<T> vec) {
+    auto arr = std::array<T, Size>();
+    std::copy_n(vec.begin(), Size, arr.begin());
+
+    return arr;
 }
 
 #endif
