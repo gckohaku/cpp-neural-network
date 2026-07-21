@@ -7,7 +7,7 @@
 
 #include "src/matrices/matrix_dynamic.hpp"
 #include "tests/test_utilities.hpp"
-#include "tests/test_defines.hpp"
+#include "tests/test_matrix_product_defines.hpp"
 
 using mknnlib::matrix::MatrixDynamic;
 

@@ -76,7 +76,7 @@ public:
     size_t ColumnSize();
     size_t ColumnSize() const;
     std::string GetSizeString() const;
-    std::vector<float>& Elements();
+    std::vector<K>& Elements();
     K* ElementsPointer();
     const K* ElementsPointer() const;
     /* end matrix unique functions declaration */
@@ -187,7 +187,7 @@ std::string MatrixDynamic<K>::GetSizeString() const {
 }
 
 template <typename K>
-inline std::vector<float>& MatrixDynamic<K>::Elements() {
+inline std::vector<K>& MatrixDynamic<K>::Elements() {
     return this->_elements;
 }
 

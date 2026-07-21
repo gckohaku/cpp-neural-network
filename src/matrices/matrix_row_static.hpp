@@ -76,7 +76,7 @@ public:
     size_t ColumnSize();
     size_t ColumnSize() const;
     std::string GetSizeString() const;
-    std::vector<float>& Elements();
+    std::vector<K>& Elements();
     K* ElementsPointer();
     const K* ElementsPointer() const;
 
@@ -189,7 +189,7 @@ std::string MatrixRowStatic<K, Row>::GetSizeString() const {
 }
 
 template <typename K, size_t Row>
-inline std::vector<float>& MatrixRowStatic<K, Row>::Elements() {
+inline std::vector<K>& MatrixRowStatic<K, Row>::Elements() {
     return this->_elements;
 }
 

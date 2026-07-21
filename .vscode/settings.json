@@ -10,6 +10,7 @@
     "cSpell.words": [
         "blasint",
         "cblas",
+        "dgemm",
         "Dont",
         "Eigen",
         "hadamard",

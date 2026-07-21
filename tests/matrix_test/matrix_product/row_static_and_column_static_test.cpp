@@ -7,7 +7,7 @@
 
 #include "src/matrices/matrix_column_static.hpp"
 #include "src/matrices/matrix_static.hpp"
-#include "tests/test_defines.hpp"
+#include "tests/test_matrix_product_defines.hpp"
 #include "tests/test_utilities.hpp"
 
 using mknnlib::matrix::MatrixColumnStatic;
