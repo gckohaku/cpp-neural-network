@@ -10,7 +10,8 @@
 #include "src/matrices/matrix_row_static.hpp"
 #include "src/matrices/matrix_dynamic.hpp"
 #include "src/matrices/matrix_static.hpp"
-#include "tests/test_matrix_product_defines.hpp"
+#include "tests/test_matrix_product_vector_defines.hpp"
+#include "tests/test_type_defines.hpp"
 #include "tests/test_utilities.hpp"
 
 using mknnlib::matrix::MatrixDynamic;
