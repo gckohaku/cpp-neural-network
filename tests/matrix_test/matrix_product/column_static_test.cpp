@@ -20,17 +20,17 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(matrix_column_static_test, T, MatrixProductCheckTy
     constexpr size_t column1 = 3;
     constexpr size_t elementSize1 = row1 * column1;
 
-    auto arrayA = MakeArrayA<T>();
-    auto arrayB = MakeArrayB<T>();
+    auto arrayA = MakeVectorA<T>();
+    auto arrayB = MakeVectorB<T>();
 
-    auto expectedAB = MakeExpectedAB<T>();
-    auto expectedBA = MakeExpectedBA<T>();
+    auto expectedAB = MakeExpectedVectorAB<T>();
+    auto expectedBA = MakeExpectedVectorBA<T>();
 
     auto A = MatrixColumnStatic<T, column1>(row1, arrayA);
     auto B = MatrixColumnStatic<T, column1>(row1, arrayB);
 
-    auto acceptableErrorAB = MakeAcceptableErrorAB<T>();
-    auto acceptableErrorBA = MakeAcceptableErrorBA<T>();
+    auto acceptableErrorAB = MakeAcceptableErrorVectorAB<T>();
+    auto acceptableErrorBA = MakeAcceptableErrorVectorBA<T>();
 
     for (size_t i = 0; i < elementSize1; i++) {
         acceptableErrorAB[i] *= std::numeric_limits<T>::epsilon();

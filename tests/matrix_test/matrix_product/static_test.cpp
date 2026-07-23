@@ -7,8 +7,9 @@
 #include <type_traits>
 
 #include "src/matrices/matrix_static.hpp"
+#include "tests/test_matrix_product_array_defines.hpp"
+#include "tests/test_type_defines.hpp"
 #include "tests/test_utilities.hpp"
-#include "tests/test_defines.hpp"
 
 using mknnlib::matrix::MatrixStatic;
 
@@ -19,21 +20,17 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(matrix_static_test, T, MatrixProductCheckType) {
     constexpr size_t column1 = 3;
     constexpr size_t elementSize1 = row1 * column1;
 
-    auto arrayA = std::array<T, elementSize1>{5.3f, 6.7f, 3.7f, 4.1f, 7.4f, 8.0f, 3.4f, 8.2f, 4.5f};
-    auto arrayB = std::array<T, elementSize1>{5.7f, 5.5f, 0.3f, 8.3f, 2.0f, 1.4f, 7.2f, 3.1f, 7.9f};
+    auto arrayA = MakeArrayA<T, elementSize1>();
+    auto arrayB = MakeArrayB<T, elementSize1>();
 
-    auto expectedAB =
-        std::array<T, elementSize1>{53.78f, 81.35f, 66.44f, 56.95f, 81.89f, 53.01f, 77.73f, 135.96f, 86.99f};
-    auto expectedBA =
-        std::array<T, elementSize1>{112.46f, 54.02f, 40.2f, 142.39f, 62.15f, 74.79f, 119.84f, 49.05f, 48.05f};
+    auto expectedAB = MakeExpectedArrayAB<T, elementSize1>();
+    auto expectedBA = MakeExpectedArrayBA<T, elementSize1>();
 
     auto A = MatrixStatic<T, row1, column1>(arrayA);
     auto B = MatrixStatic<T, row1, column1>(arrayB);
 
-    auto acceptableErrorAB =
-        std::array<T, elementSize1>{83.85f, 105.65f, 104.525f, 98.0f, 129.0f, 88.3f, 100.0f, 178.8f, 119.6f};
-    auto acceptableErrorBA =
-        std::array<T, elementSize1>{160.0f, 78.2f, 45.425f, 221.2f, 102.0f, 110.425f, 203.8f, 78.4f, 70.45f};
+    auto acceptableErrorAB = MakeAcceptableErrorArrayAB<T, elementSize1>();
+    auto acceptableErrorBA = MakeAcceptableErrorArrayBA<T, elementSize1>();
 
     for (size_t i = 0; i < elementSize1; i++) {
         acceptableErrorAB[i] *= std::numeric_limits<T>::epsilon();
@@ -55,27 +52,17 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(matrix_static_test, T, MatrixProductCheckType) {
     constexpr size_t column2 = 5;
     constexpr size_t elementSize2 = row2 * column2;
 
-    auto arrayC = std::array<T, elementSize2>{2.1f, 1.5f, 0.7f, 6.0f, 2.6f, 3.4f, 3.4f, 5.1f, 4.2f, 4.3f, 6.3f,
-        1.7f, 6.7f, 7.3f, 3.7f, 5.4f, 3.4f, 2.4f, 3.5f, 1.4f, 3.7f, 5.6f, 5.2f, 1.4f, 0.8f};
-    auto arrayD = std::array<T, elementSize2>{2.4f, 1.5f, 3.6f, 6.3f, 1.4f, 5.4f, 2.4f, 0.4f, 2.2f, 3.2f, 7.0f,
-        3.0f, 2.3f, 4.7f, 4.4f, 3.6f, 7.5f, 0.8f, 3.0f, 0.3f, 3.0f, 3.1f, 2.4f, 0.1f, 0.8f};
+    auto arrayC = MakeArrayC<T, elementSize2>();
+    auto arrayD = MakeArrayD<T, elementSize2>();
 
-    auto expectedCD = std::array<T, elementSize2>{72.02f, 44.08f, 55.85f, 70.99f, 35.95f, 45.74f, 42.34f, 40.62f,
-        57.58f, 31.48f, 81.05f, 65.23f, 69.77f, 94.0f, 49.71f, 55.41f, 44.14f, 54.89f, 69.86f, 49.01f, 35.46f, 23.94f,
-        38.39f, 50.01f, 30.79f};
-    auto expectedDC = std::array<T, elementSize2>{47.44f, 61.91f, 20.81f, 38.08f, 14.7f, 90.24f, 73.39f, 39.01f,
-        65.9f, 42.78f, 108.58f, 99.85f, 53.49f, 97.19f, 48.89f, 64.92f, 54.05f, 32.48f, 63.42f, 31.17f, 82.96f, 47.57f,
-        30.56f, 64.35f, 47.04f};
+    auto expectedCD = MakeExpectedArrayCD<T, elementSize2>();
+    auto expectedDC = MakeExpectedArrayDC<T, elementSize2>();
 
     auto C = MatrixStatic<T, row2, column2>(arrayC);
     auto D = MatrixStatic<T, row2, column2>(arrayD);
 
-    auto acceptableErrorCD = std::array<T, elementSize2>{95.7f, 56.2f, 74.5f, 90.2f, 48.3f, 67.375f, 59.025f,
-        60.975f, 84.425f, 49.325f, 121.0f, 94.5f, 108.5f, 129.6f, 72.7f, 70.675f, 52.25f, 73.45f, 93.7f, 69.2f,
-        49.5875f, 31.2125f, 54.65f, 70.91875f, 45.3875f};
-    auto acceptableErrorDC = std::array<T, elementSize2>{64.3f, 78.8f, 30.925f, 55.7125f, 21.7f, 127.8f, 108.0f,
-        58.55f, 97.66875f, 65.0f, 131.6f, 116.3f, 69.475f, 128.63125f, 69.375f, 88.4f, 68.7f, 44.8f, 90.1875f, 45.575f,
-        114.5f, 66.15f, 41.5f, 92.9f, 70.35f};
+    auto acceptableErrorCD = MakeAcceptableErrorArrayCD<T, elementSize2>();
+    auto acceptableErrorDC = MakeAcceptableErrorArrayDC<T, elementSize2>();
 
     for (size_t i = 0; i < elementSize2; i++) {
         acceptableErrorCD[i] *= std::numeric_limits<T>::epsilon();
@@ -102,23 +89,17 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(matrix_static_test, T, MatrixProductCheckType) {
     constexpr size_t resultSizeEF = rowE * columnF;
     constexpr size_t resultSizeFE = rowF * columnE;
 
-    auto arrayE =
-        std::array<T, elementSizeE>{3.1f, 2.1f, 6.3f, 4.6f, 3.7f, 4.7f, 5.1f, 2.2f, 5.7f, 3.4f, 2.7f, 3.1f};
-    auto arrayF =
-        std::array<T, elementSizeF>{1.7f, 4.5f, 5.3f, 1.7f, 3.4f, 3.7f, 0.5f, 3.5f, 1.5f, 1.4f, 3.4f, 4.3f};
+    auto arrayE = MakeArrayE<T, elementSizeE>();
+    auto arrayF = MakeArrayF<T, elementSizeF>();
 
-    auto expectedEF =
-        std::array<T, resultSizeEF>{58.78f, 36.47f, 67.34f, 42.01f, 31.38f, 52.51f, 43.05f, 27.42f, 48.74f};
-    auto expectedFE = std::array<T, resultSizeFE>{21.86f, 30.54f, 38.9f, 39.71f, 27.45f, 40.97f, 42.21f, 40.98f,
-        24.7f, 39.07f, 47.51f, 40.88f, 19.61f, 29.63f, 29.91f, 28.56f};
+    auto expectedEF = MakeExpectedArrayEF<T, resultSizeEF>();
+    auto expectedFE = MakeExpectedArrayFE<T, resultSizeFE>();
 
     auto E = MatrixStatic<T, rowE, columnE>(arrayE);
     auto F = MatrixStatic<T, rowF, columnF>(arrayF);
 
-    auto acceptableErrorEF =
-        std::array<T, resultSizeEF>{91.3f, 54.8f, 100.4f, 55.35f, 40.3f, 68.45f, 62.3f, 42.2f, 68.6f};
-    auto acceptableErrorFE = std::array<T, resultSizeFE>{29.8f, 44.9f, 51.25f, 60.1f, 36.3f, 61.5f, 65.45f, 61.8f,
-        34.8f, 61.5f, 68.7f, 63.3f, 25.1f, 41.3f, 39.55f, 40.2f};
+    auto acceptableErrorEF = MakeAcceptableErrorArrayEF<T, resultSizeEF>();
+    auto acceptableErrorFE = MakeAcceptableErrorArrayFE<T, resultSizeFE>();
 
     for (size_t i = 0; i < resultSizeEF; i++) {
         acceptableErrorEF[i] *= std::numeric_limits<T>::epsilon();
@@ -146,16 +127,15 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(matrix_static_test, T, MatrixProductCheckType) {
     constexpr size_t elementSizeH = rowH * columnH;
     constexpr size_t resultSizeHG = rowH * columnG;
 
-    auto arrayG = std::array<T, elementSizeG>{3.5f, 6.2f, 4.0f, 5.4f};
-    auto arrayH = std::array<T, elementSizeH>{
-        1.2f, 3.4f, 5.1f, 3.4f, 3.4f, 1.4f, 3.6f, 3.6f, 5.1f, 0.7f, 7.2f, 2.5f, 2.0f, 3.4f, 3.4f, 1.4f};
+    auto arrayG = MakeArrayG<T, elementSizeG>();
+    auto arrayH = MakeArrayH<T, elementSizeH>();
 
-    auto expectedHG = std::array<T, resultSizeHG>{56.48f, 41.74f, 87.33f, 51.78f};
+    auto expectedHG = MakeExpectedArrayHG<T, resultSizeHG>();
 
     auto G = MatrixStatic<T, rowG, columnG>(arrayG);
     auto H = MatrixStatic<T, rowH, columnH>(arrayH);
 
-    auto acceptableErrorHG = std::array<T, resultSizeHG>{87.1f, 54.8f, 120.2f, 69.6f};
+    auto acceptableErrorHG = MakeAcceptableErrorArrayHG<T, resultSizeHG>();
     for (size_t i = 0; i < resultSizeHG; i++) {
         acceptableErrorHG[i] *= std::numeric_limits<T>::epsilon();
     }
@@ -175,18 +155,15 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(matrix_static_test, T, MatrixProductCheckType) {
     constexpr size_t elementSizeJ = rowJ * columnJ;
     constexpr size_t resultSizeJI = rowJ * columnI;
 
-    auto arrayI = std::array<T, elementSizeI>{
-        4.1f, 3.6f, 1.7f, 2.4f, 2.7f, 3.7f, 0.8f, 3.0f, 5.4f, 3.5f, 3.2f, 1.7f, 1.7f, 4.6f, 3.3f};
-    auto arrayJ = std::array<T, elementSizeJ>{2.7f, 1.6f, 3.5f, 2.2f, 1.7f, 0.9f};
+    auto arrayI = MakeArrayI<T, elementSizeI>();
+    auto arrayJ = MakeArrayJ<T, elementSizeJ>();
 
-    auto expectedJI =
-        std::array<T, resultSizeJI>{26.56f, 16.01f, 22.22f, 13.11f, 21.84f, 12.74f, 23.54f, 14.17f, 26.3f, 15.81f};
+    auto expectedJI = MakeExpectedArrayJI<T, resultSizeJI>();
 
     auto I = MatrixStatic<T, rowI, columnI>(arrayI);
     auto J = MatrixStatic<T, rowJ, columnJ>(arrayJ);
 
-    auto acceptableErrorJI =
-        std::array<T, resultSizeJI>{36.6f, 23.85f, 29.7f, 19.05f, 28.15f, 18.3f, 29.2f, 19.25f, 36.0f, 24.75f};
+    auto acceptableErrorJI = MakeAcceptableErrorArrayJI<T, resultSizeJI>();
     for (size_t i = 0; i < resultSizeJI; i++) {
         acceptableErrorJI[i] *= std::numeric_limits<T>::epsilon();
     }
@@ -201,13 +178,13 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(matrix_static_test, T, MatrixProductCheckType) {
     constexpr size_t columnK = 2;
     constexpr size_t elementSizeK = rowK * columnK;
 
-    auto arrayK = std::array<T, elementSizeK>{0.0f, -1.0f, 1.0f, 0.0f};
+    auto arrayK = MakeArrayK<T, elementSizeK>();
 
-    auto expectedKK = std::array<T, elementSizeK>{-1.0f, 0.0f, 0.0f, -1.0f};
+    auto expectedKK = MakeExpectedArrayKK<T, elementSizeK>();
 
     auto K = MatrixStatic<T, rowK, columnK>(arrayK);
 
-    auto acceptableErrorKK = std::array<T, elementSizeK>{0.0f, 0.0f, 0.0f, 0.0f};
+    auto acceptableErrorKK = MakeAcceptableErrorArrayKK<T, elementSizeK>();
     for (size_t i = 0; i < elementSizeK; i++) {
         acceptableErrorJI[i] *= std::numeric_limits<T>::epsilon();
     }
