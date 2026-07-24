@@ -13,7 +13,7 @@
 
 using mknnlib::matrix::MatrixStatic;
 
-BOOST_AUTO_TEST_CASE_TEMPLATE(matrix_static_test, T, MatrixProductCheckType) {
+BOOST_AUTO_TEST_CASE_TEMPLATE(matrix_add_static_test, T, MatrixProductCheckType) {
     // square x square
     // 3x3
     constexpr size_t row1 = 3;
@@ -186,7 +186,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(matrix_static_test, T, MatrixProductCheckType) {
 
     auto acceptableErrorKK = MakeAcceptableErrorArrayKK<T, elementSizeK>();
     for (size_t i = 0; i < elementSizeK; i++) {
-        acceptableErrorJI[i] *= std::numeric_limits<T>::epsilon();
+        acceptableErrorKK[i] *= std::numeric_limits<T>::epsilon();
     }
 
     auto KK = K.Dot(K);

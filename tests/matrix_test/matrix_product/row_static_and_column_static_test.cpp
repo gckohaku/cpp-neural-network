@@ -85,7 +85,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(matrix_row_static_and_matrix_column_static_test, T
     // non-square x non-square -> square
     constexpr size_t rowE = 3;
     constexpr size_t columnE = 4;
-    constexpr size_t elementSizeE = rowE * columnE;
+    // constexpr size_t elementSizeE = rowE * columnE;
     constexpr size_t rowF = 4;
     constexpr size_t columnF = 3;
     // constexpr size_t elementSizeF = rowF * columnF;
@@ -124,7 +124,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(matrix_row_static_and_matrix_column_static_test, T
     // other matrix x matrix
     constexpr size_t rowG = 4;
     constexpr size_t columnG = 1;
-    constexpr size_t elementSizeG = rowG * columnG;
+    // constexpr size_t elementSizeG = rowG * columnG;
     constexpr size_t rowH = 4;
     constexpr size_t columnH = 4;
     // constexpr size_t elementSizeH = rowH * columnH;
@@ -151,7 +151,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(matrix_row_static_and_matrix_column_static_test, T
 
     constexpr size_t rowI = 3;
     constexpr size_t columnI = 5;
-    constexpr size_t elementSizeI = rowI * columnI;
+    // constexpr size_t elementSizeI = rowI * columnI;
     constexpr size_t rowJ = 2;
     constexpr size_t columnJ = 3;
     constexpr size_t elementSizeJ = rowJ * columnJ;

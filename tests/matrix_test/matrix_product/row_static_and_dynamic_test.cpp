@@ -24,18 +24,18 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(matrix_row_static_and_matrix_dynamic_test, T, Matr
     constexpr size_t column1 = 3;
     constexpr size_t elementSize1 = row1 * column1;
 
-    auto arrayA = MakeArrayA<T>();
-    auto arrayB = MakeArrayB<T>();
+    auto arrayA = MakeVectorA<T>();
+    auto arrayB = MakeVectorB<T>();
 
-    auto expectedAB = MakeExpectedAB<T>();
-    auto expectedBA = MakeExpectedBA<T>();
+    auto expectedAB = MakeExpectedVectorAB<T>();
+    auto expectedBA = MakeExpectedVectorBA<T>();
 
 
     auto A = MatrixRowStatic<T, row1>(column1, arrayA);
     auto B = MatrixDynamic<T>(row1, column1,  arrayB);
 
-    auto acceptableErrorAB = MakeAcceptableErrorAB<T>();
-    auto acceptableErrorBA = MakeAcceptableErrorBA<T>();
+    auto acceptableErrorAB = MakeAcceptableErrorVectorAB<T>();
+    auto acceptableErrorBA = MakeAcceptableErrorVectorBA<T>();
 
     for (size_t i = 0; i < elementSize1; i++) {
         acceptableErrorAB[i] *= std::numeric_limits<T>::epsilon();
@@ -188,16 +188,16 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(matrix_row_static_and_matrix_dynamic_test, T, Matr
     CheckCloseEachVectorElement(LK.Elements(), expectedJI, acceptableErrorJI);
 
     // throw exception test
-    auto mArray = MakeVectorM<T>();
-    auto nArray = MakeVectorN<T>();
-    auto M = MatrixRowStatic<T, 3>(2, mArray);
-    auto N = MatrixDynamic<T>(3, 3, nArray);
+    auto mVector = MakeVectorM<T>();
+    auto nVector = MakeVectorN<T>();
+    auto M = MatrixRowStatic<T, 3>(2, mVector);
+    auto N = MatrixDynamic<T>(3, 3, nVector);
 
     BOOST_CHECK_THROW(M.Dot(N), std::domain_error);
     BOOST_CHECK_NO_THROW(N.Dot(M));
 
-    auto O = MatrixDynamic<T>(3, 2, mArray);
-    auto P = MatrixRowStatic<T, 3>(3, nArray);
+    auto O = MatrixDynamic<T>(3, 2, mVector);
+    auto P = MatrixRowStatic<T, 3>(3, nVector);
 
     BOOST_CHECK_THROW(O.Dot(P), std::domain_error);
     BOOST_CHECK_NO_THROW(P.Dot(O));

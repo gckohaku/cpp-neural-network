@@ -387,7 +387,7 @@ MatrixColumnStatic<K, OppCol> MatrixDynamic<K>::Dot(MatrixColumnStatic<K, OppCol
 #endif
 
     auto res = MatrixColumnStatic<K, OppCol>(this->RowSize());
-    cblas_sgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, static_cast<blasint>(this->RowSize()),
+    cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, static_cast<blasint>(this->RowSize()),
         OppCol, static_cast<blasint>(this->ColumnSize()), 1.0, this->ElementsPointer(),
         static_cast<blasint>(this->RowSize()), mat.ElementsPointer(), static_cast<blasint>(mat.RowSize()), 0.0, res.ElementsPointer(),
         static_cast<blasint>(this->RowSize()));

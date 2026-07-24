@@ -2,7 +2,7 @@
 #define TESTS_TEST_MATRIX_PRODUCT_ARRAY_DEFINES_HPP
 
 #include <cstddef>
-#include <vector>
+#include <array>
 
 /* define A and B */
 template <typename T, size_t Size>

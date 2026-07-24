@@ -176,7 +176,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(matrix_dynamic_test, T, MatrixProductCheckType) {
 
     auto acceptableErrorKK = MakeAcceptableErrorVectorKK<T>();
     for (size_t i = 0; i < elementSizeK; i++) {
-        acceptableErrorJI[i] *= std::numeric_limits<T>::epsilon();
+        acceptableErrorKK[i] *= std::numeric_limits<T>::epsilon();
     }
 
     auto KK = K.Dot(K);

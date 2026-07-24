@@ -6,7 +6,6 @@
 #include <limits>
 #include <stdexcept>
 #include <type_traits>
-#include <vector>
 
 #include "src/matrices/matrix_row_static.hpp"
 #include "tests/test_matrix_product_vector_defines.hpp"
@@ -182,7 +181,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(matrix_row_static_test, T, MatrixProductCheckType)
 
     auto acceptableErrorKK = MakeAcceptableErrorVectorKK<T>();
     for (size_t i = 0; i < elementSizeK; i++) {
-        acceptableErrorJI[i] *= std::numeric_limits<T>::epsilon();
+        acceptableErrorKK[i] *= std::numeric_limits<T>::epsilon();
     }
 
     auto KK = K.Dot(K);

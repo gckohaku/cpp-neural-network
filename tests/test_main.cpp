@@ -12,3 +12,5 @@
 #include "tests/matrix_test/matrix_product/static_test.cpp"
 #include "tests/matrix_test/matrix_product/row_static_and_dynamic_test.cpp"
 #include "tests/matrix_test/matrix_product/column_static_and_dynamic_test.cpp"
+
+#include "tests/matrix_test/add/static_test.cpp"
