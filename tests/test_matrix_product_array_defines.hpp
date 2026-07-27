@@ -1,9 +1,10 @@
 #ifndef TESTS_TEST_MATRIX_PRODUCT_ARRAY_DEFINES_HPP
 #define TESTS_TEST_MATRIX_PRODUCT_ARRAY_DEFINES_HPP
 
-#include <cstddef>
 #include <array>
+#include <cstddef>
 
+namespace matrix_test_matrix_product {
 /* define A and B */
 template <typename T, size_t Size>
 std::array<T, Size> MakeArrayA() {
@@ -90,13 +91,13 @@ std::array<T, Size> MakeExpectedArrayDC() {
 
 template <typename T, size_t Size>
 std::array<T, Size> MakeAcceptableErrorArrayCD() {
-    return std::array<T, Size>{static_cast<T>(95.7), static_cast<T>(56.2), static_cast<T>(74.5),
-        static_cast<T>(90.2), static_cast<T>(48.3), static_cast<T>(67.375), static_cast<T>(59.025),
-        static_cast<T>(60.975), static_cast<T>(84.425), static_cast<T>(49.325), static_cast<T>(121),
-        static_cast<T>(94.5), static_cast<T>(108.5), static_cast<T>(129.6), static_cast<T>(72.7),
-        static_cast<T>(70.675), static_cast<T>(52.25), static_cast<T>(73.45), static_cast<T>(93.7),
-        static_cast<T>(69.2), static_cast<T>(49.5875), static_cast<T>(31.2125), static_cast<T>(54.65),
-        static_cast<T>(70.91875), static_cast<T>(45.3875)};
+    return std::array<T, Size>{static_cast<T>(95.7), static_cast<T>(56.2), static_cast<T>(74.5), static_cast<T>(90.2),
+        static_cast<T>(48.3), static_cast<T>(67.375), static_cast<T>(59.025), static_cast<T>(60.975),
+        static_cast<T>(84.425), static_cast<T>(49.325), static_cast<T>(121), static_cast<T>(94.5),
+        static_cast<T>(108.5), static_cast<T>(129.6), static_cast<T>(72.7), static_cast<T>(70.675),
+        static_cast<T>(52.25), static_cast<T>(73.45), static_cast<T>(93.7), static_cast<T>(69.2),
+        static_cast<T>(49.5875), static_cast<T>(31.2125), static_cast<T>(54.65), static_cast<T>(70.91875),
+        static_cast<T>(45.3875)};
 }
 
 template <typename T, size_t Size>
@@ -127,17 +128,18 @@ std::array<T, Size> MakeArrayF() {
 
 template <typename T, size_t Size>
 std::array<T, Size> MakeExpectedArrayEF() {
-    return std::array<T, Size>{static_cast<T>(58.78), static_cast<T>(36.47), static_cast<T>(67.34), static_cast<T>(42.01),
-        static_cast<T>(31.38), static_cast<T>(52.51), static_cast<T>(43.05), static_cast<T>(27.42),
-        static_cast<T>(48.74)};
+    return std::array<T, Size>{static_cast<T>(58.78), static_cast<T>(36.47), static_cast<T>(67.34),
+        static_cast<T>(42.01), static_cast<T>(31.38), static_cast<T>(52.51), static_cast<T>(43.05),
+        static_cast<T>(27.42), static_cast<T>(48.74)};
 }
 
 template <typename T, size_t Size>
 std::array<T, Size> MakeExpectedArrayFE() {
-    return std::array<T, Size>{static_cast<T>(21.86), static_cast<T>(30.54), static_cast<T>(38.9), static_cast<T>(39.71),
-        static_cast<T>(27.45), static_cast<T>(40.97), static_cast<T>(42.21), static_cast<T>(40.98),
-        static_cast<T>(24.7), static_cast<T>(39.07), static_cast<T>(47.51), static_cast<T>(40.88),
-        static_cast<T>(19.61), static_cast<T>(29.63), static_cast<T>(29.91), static_cast<T>(28.56)};
+    return std::array<T, Size>{static_cast<T>(21.86), static_cast<T>(30.54), static_cast<T>(38.9),
+        static_cast<T>(39.71), static_cast<T>(27.45), static_cast<T>(40.97), static_cast<T>(42.21),
+        static_cast<T>(40.98), static_cast<T>(24.7), static_cast<T>(39.07), static_cast<T>(47.51),
+        static_cast<T>(40.88), static_cast<T>(19.61), static_cast<T>(29.63), static_cast<T>(29.91),
+        static_cast<T>(28.56)};
 }
 
 template <typename T, size_t Size>
@@ -170,7 +172,8 @@ std::array<T, Size> MakeArrayH() {
 
 template <typename T, size_t Size>
 std::array<T, Size> MakeExpectedArrayHG() {
-    return std::array<T, Size>{static_cast<T>(56.48), static_cast<T>(41.74), static_cast<T>(87.33), static_cast<T>(51.78)};
+    return std::array<T, Size>{
+        static_cast<T>(56.48), static_cast<T>(41.74), static_cast<T>(87.33), static_cast<T>(51.78)};
 }
 
 template <typename T, size_t Size>
@@ -195,9 +198,9 @@ std::array<T, Size> MakeArrayJ() {
 
 template <typename T, size_t Size>
 std::array<T, Size> MakeExpectedArrayJI() {
-    return std::array<T, Size>{static_cast<T>(26.56), static_cast<T>(16.01), static_cast<T>(22.22), static_cast<T>(13.11),
-        static_cast<T>(21.84), static_cast<T>(12.74), static_cast<T>(23.54), static_cast<T>(14.17),
-        static_cast<T>(26.3), static_cast<T>(15.81)};
+    return std::array<T, Size>{static_cast<T>(26.56), static_cast<T>(16.01), static_cast<T>(22.22),
+        static_cast<T>(13.11), static_cast<T>(21.84), static_cast<T>(12.74), static_cast<T>(23.54),
+        static_cast<T>(14.17), static_cast<T>(26.3), static_cast<T>(15.81)};
 }
 
 template <typename T, size_t Size>
@@ -235,4 +238,5 @@ std::array<T, Size> MakeArrayN() {
     return std::array<T, Size>{static_cast<T>(2.3), static_cast<T>(2.9), static_cast<T>(3.5), static_cast<T>(5.7),
         static_cast<T>(3.8), static_cast<T>(7.3), static_cast<T>(4.2), static_cast<T>(1.5), static_cast<T>(2.7)};
 }
+}  // namespace matrix_test_matrix_product
 #endif

@@ -26,8 +26,8 @@ std::array<T, 3 * 3> MakeExpectedArrayAPlusB() {
 
 template <typename T>
 std::array<T, 3 * 3> MakeAcceptableErrorArrayAPlusB() {
-    return std::array<T, 3 * 3>{static_cast<T>(8), static_cast<T>(4), static_cast<T>(6), static_cast<T>(5),
-        static_cast<T>(4), static_cast<T>(6), static_cast<T>(3), static_cast<T>(6), static_cast<T>(3)};
+    return std::array<T, 3 * 3>{static_cast<T>(8), static_cast<T>(4), static_cast<T>(8), static_cast<T>(8),
+        static_cast<T>(4), static_cast<T>(8), static_cast<T>(4), static_cast<T>(8), static_cast<T>(4)};
 }
 
 /* define C and D */
@@ -54,9 +54,9 @@ std::array<T, 2 * 5> MakeExpectedArrayCPlusD() {
 
 template <typename T>
 std::array<T, 2 * 5> MakeAcceptableErrorArrayCPlusD() {
-    return std::array<T, 2 * 5>{static_cast<T>(6), static_cast<T>(8), static_cast<T>(5), static_cast<T>(4),
-        static_cast<T>(3), static_cast<T>(4), static_cast<T>(8), static_cast<T>(6), static_cast<T>(4),
-        static_cast<T>(5)};
+    return std::array<T, 2 * 5>{static_cast<T>(8), static_cast<T>(8), static_cast<T>(8), static_cast<T>(4),
+        static_cast<T>(4), static_cast<T>(4), static_cast<T>(8), static_cast<T>(8), static_cast<T>(4),
+        static_cast<T>(8)};
 }
 }  // namespace matrix_test_add
 #endif

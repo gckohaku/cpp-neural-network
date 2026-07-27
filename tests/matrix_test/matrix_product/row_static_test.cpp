@@ -14,6 +14,7 @@
 
 using mknnlib::matrix::MatrixRowStatic;
 
+namespace matrix_test_matrix_product {
 BOOST_AUTO_TEST_CASE_TEMPLATE(matrix_row_static_test, T, MatrixProductCheckType) {
     // square x square
     // 3x3
@@ -198,3 +199,4 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(matrix_row_static_test, T, MatrixProductCheckType)
     BOOST_CHECK_THROW(M.Dot(N), std::domain_error);
     BOOST_CHECK_NO_THROW(N.Dot(M));
 }
+}  // namespace matrix_test_matrix_product

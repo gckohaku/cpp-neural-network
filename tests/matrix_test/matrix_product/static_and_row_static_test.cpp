@@ -11,14 +11,15 @@
 
 #include "src/matrices/matrix_row_static.hpp"
 #include "src/matrices/matrix_static.hpp"
-#include "tests/test_type_defines.hpp"
-#include "tests/test_utilities.hpp"
 #include "tests/test_matrix_product_array_defines.hpp"
 #include "tests/test_matrix_product_vector_defines.hpp"
+#include "tests/test_type_defines.hpp"
+#include "tests/test_utilities.hpp"
 
 using mknnlib::matrix::MatrixRowStatic;
 using mknnlib::matrix::MatrixStatic;
 
+namespace matrix_test_matrix_product {
 BOOST_AUTO_TEST_CASE_TEMPLATE(matrix_static_and_matrix_row_static_test, T, MatrixProductCheckType) {
     // square x square
     // 3x3
@@ -200,3 +201,4 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(matrix_static_and_matrix_row_static_test, T, Matri
     BOOST_CHECK_THROW(M.Dot(N), std::domain_error);
     BOOST_CHECK_NO_THROW(N.Dot(M));
 }
+}  // namespace matrix_test_matrix_product

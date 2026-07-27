@@ -7,8 +7,8 @@
 #include <stdexcept>
 
 #include "src/matrices/matrix_column_static.hpp"
-#include "src/matrices/matrix_row_static.hpp"
 #include "src/matrices/matrix_dynamic.hpp"
+#include "src/matrices/matrix_row_static.hpp"
 #include "src/matrices/matrix_static.hpp"
 #include "tests/test_matrix_product_vector_defines.hpp"
 #include "tests/test_type_defines.hpp"
@@ -17,6 +17,7 @@
 using mknnlib::matrix::MatrixDynamic;
 using mknnlib::matrix::MatrixRowStatic;
 
+namespace matrix_test_matrix_product {
 BOOST_AUTO_TEST_CASE_TEMPLATE(matrix_row_static_and_matrix_dynamic_test, T, MatrixProductCheckType) {
     // square x square
     // 3x3
@@ -30,9 +31,8 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(matrix_row_static_and_matrix_dynamic_test, T, Matr
     auto expectedAB = MakeExpectedVectorAB<T>();
     auto expectedBA = MakeExpectedVectorBA<T>();
 
-
     auto A = MatrixRowStatic<T, row1>(column1, arrayA);
-    auto B = MatrixDynamic<T>(row1, column1,  arrayB);
+    auto B = MatrixDynamic<T>(row1, column1, arrayB);
 
     auto acceptableErrorAB = MakeAcceptableErrorVectorAB<T>();
     auto acceptableErrorBA = MakeAcceptableErrorVectorBA<T>();
@@ -202,3 +202,4 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(matrix_row_static_and_matrix_dynamic_test, T, Matr
     BOOST_CHECK_THROW(O.Dot(P), std::domain_error);
     BOOST_CHECK_NO_THROW(P.Dot(O));
 }
+}  // namespace matrix_test_matrix_product

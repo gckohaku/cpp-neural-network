@@ -4,6 +4,7 @@
 #include <cstddef>
 #include <vector>
 
+namespace matrix_test_matrix_product {
 /* define A and B */
 template <typename T>
 std::vector<T> MakeVectorA() {
@@ -232,5 +233,5 @@ std::vector<T> MakeVectorN() {
     return std::vector<T>{static_cast<T>(2.3), static_cast<T>(2.9), static_cast<T>(3.5), static_cast<T>(5.7),
         static_cast<T>(3.8), static_cast<T>(7.3), static_cast<T>(4.2), static_cast<T>(1.5), static_cast<T>(2.7)};
 }
-
+}  // namespace matrix_test_matrix_product
 #endif

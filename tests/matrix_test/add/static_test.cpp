@@ -38,5 +38,29 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(matrix_static_test, T, boost::mpl::list<float>) {
     auto typeCheckAPlusB = std::is_same<decltype(APlusB), MatrixStatic<T, rowAAndB, columnAAndB>>::value;
     BOOST_CHECK(typeCheckAPlusB);
     CheckCloseEachArrayElement<T, elementSizeAAndB>(APlusB.Elements(), expectedAPlusB, acceptableErrorAPlusB);
+
+    // 2x5
+    constexpr size_t rowCAndD = 2;
+    constexpr size_t columnCAndD = 5;
+    constexpr size_t elementSizeCAndD = rowCAndD * columnCAndD;
+
+    auto arrayC = MakeArrayC<T>();
+    auto arrayD = MakeArrayD<T>();
+
+    auto C = MatrixStatic<T, rowCAndD, columnCAndD>(arrayC);
+    auto D = MatrixStatic<T, rowCAndD, columnCAndD>(arrayD);
+
+    auto expectedCPlusD = MakeExpectedArrayCPlusD<T>();
+
+    auto acceptableErrorCPlusD = MakeAcceptableErrorArrayCPlusD<T>();
+    for (size_t i = 0; i < elementSizeCAndD; i++) {
+        acceptableErrorCPlusD[i] *= std::numeric_limits<T>::epsilon();
+    }
+
+    auto CPlusD = C + D;
+
+    auto typeCheckCPlusD = std::is_same<decltype(CPlusD), MatrixStatic<T, rowCAndD, columnCAndD>>::value;
+    BOOST_CHECK(typeCheckCPlusD);
+    CheckCloseEachArrayElement<T, elementSizeCAndD>(CPlusD.Elements(), expectedCPlusD, acceptableErrorCPlusD);
 }
 }  // namespace matrix_test_add

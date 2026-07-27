@@ -17,6 +17,7 @@
 using mknnlib::matrix::MatrixColumnStatic;
 using mknnlib::matrix::MatrixDynamic;
 
+namespace matrix_test_matrix_product {
 BOOST_AUTO_TEST_CASE_TEMPLATE(matrix_column_static_and_matrix_dynamic_test, T, MatrixProductCheckType) {
     // square x square
     // 3x3
@@ -57,10 +58,12 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(matrix_column_static_and_matrix_dynamic_test, T, M
     constexpr size_t elementSize2 = row2 * column2;
 
     auto arrayC = MakeVectorC<T>();
-    auto arrayD = MakeVectorD<T>();;
+    auto arrayD = MakeVectorD<T>();
+    ;
 
     auto expectedCD = MakeExpectedVectorCD<T>();
-    auto expectedDC = MakeExpectedVectorDC<T>();;
+    auto expectedDC = MakeExpectedVectorDC<T>();
+    ;
 
     auto C = MatrixColumnStatic<T, column2>(row2, arrayC);
     auto D = MatrixDynamic<T>(row2, column2, arrayD);
@@ -201,3 +204,4 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(matrix_column_static_and_matrix_dynamic_test, T, M
     BOOST_CHECK_THROW(O.Dot(P), std::domain_error);
     BOOST_CHECK_NO_THROW(P.Dot(O));
 }
+}  // namespace matrix_test_matrix_product
