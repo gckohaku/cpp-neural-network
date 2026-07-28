@@ -8,13 +8,13 @@
 #include <type_traits>
 
 #include "src/matrices/matrix_static.hpp"
-#include "tests/test_matrix_add_array_defines.hpp"
+#include "tests/test_matrix_sub_array_defines.hpp"
 #include "tests/test_utilities.hpp"
 
 using mknnlib::matrix::MatrixStatic;
 
-namespace matrix_test_add {
-BOOST_AUTO_TEST_CASE_TEMPLATE(add_matrix_static_test, T, boost::mpl::list<float>) {
+namespace matrix_test_sub {
+BOOST_AUTO_TEST_CASE_TEMPLATE(sub_matrix_static_test, T, boost::mpl::list<float>) {
     // 3x3
     constexpr size_t rowAAndB = 3;
     constexpr size_t columnAAndB = 3;
@@ -26,19 +26,19 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(add_matrix_static_test, T, boost::mpl::list<float>
     auto A = MatrixStatic<T, rowAAndB, columnAAndB>(arrayA);
     auto B = MatrixStatic<T, rowAAndB, columnAAndB>(arrayB);
 
-    auto expectedAPlusB = MakeExpectedArrayAAndB<T>();
+    auto expectedAMinusB = MakeExpectedArrayAAndB<T>();
 
-    auto acceptableErrorAPlusB = MakeAcceptableErrorArrayAAndB<T>();
+    auto acceptableErrorAMinusB = MakeAcceptableErrorArrayAAndB<T>();
 
     for (size_t i = 0; i < elementSizeAAndB; i++) {
-        acceptableErrorAPlusB[i] *= std::numeric_limits<T>::epsilon();
+        acceptableErrorAMinusB[i] *= std::numeric_limits<T>::epsilon();
     }
 
-    auto APlusB = A + B;
+    auto AMinusB = A - B;
 
-    auto typeCheckAPlusB = std::is_same<decltype(APlusB), MatrixStatic<T, rowAAndB, columnAAndB>>::value;
-    BOOST_CHECK(typeCheckAPlusB);
-    CheckCloseEachArrayElement<T, elementSizeAAndB>(APlusB.Elements(), expectedAPlusB, acceptableErrorAPlusB);
+    auto typeCheckAMinusB = std::is_same<decltype(AMinusB), MatrixStatic<T, rowAAndB, columnAAndB>>::value;
+    BOOST_CHECK(typeCheckAMinusB);
+    CheckCloseEachArrayElement<T, elementSizeAAndB>(AMinusB.Elements(), expectedAMinusB, acceptableErrorAMinusB);
 
     // 2x5
     constexpr size_t rowCAndD = 2;
@@ -51,18 +51,18 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(add_matrix_static_test, T, boost::mpl::list<float>
     auto C = MatrixStatic<T, rowCAndD, columnCAndD>(arrayC);
     auto D = MatrixStatic<T, rowCAndD, columnCAndD>(arrayD);
 
-    auto expectedCPlusD = MakeExpectedArrayCAndD<T>();
+    auto expectedCMinusD = MakeExpectedArrayCAndD<T>();
 
-    auto acceptableErrorCPlusD = MakeAcceptableErrorArrayCAndD<T>();
+    auto acceptableErrorCMinusD = MakeAcceptableErrorArrayCAndD<T>();
     for (size_t i = 0; i < elementSizeCAndD; i++) {
-        acceptableErrorCPlusD[i] *= std::numeric_limits<T>::epsilon();
+        acceptableErrorCMinusD[i] *= std::numeric_limits<T>::epsilon();
     }
 
-    auto CPlusD = C + D;
+    auto CMinusD = C - D;
 
-    auto typeCheckCPlusD = std::is_same<decltype(CPlusD), MatrixStatic<T, rowCAndD, columnCAndD>>::value;
-    BOOST_CHECK(typeCheckCPlusD);
-    CheckCloseEachArrayElement<T, elementSizeCAndD>(CPlusD.Elements(), expectedCPlusD, acceptableErrorCPlusD);
+    auto typeCheckCMinusD = std::is_same<decltype(CMinusD), MatrixStatic<T, rowCAndD, columnCAndD>>::value;
+    BOOST_CHECK(typeCheckCMinusD);
+    CheckCloseEachArrayElement<T, elementSizeCAndD>(CMinusD.Elements(), expectedCMinusD, acceptableErrorCMinusD);
 
     // throw exception test
     // auto arrayE = MakeArrayE<T>();
@@ -73,9 +73,9 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(add_matrix_static_test, T, boost::mpl::list<float>
     auto F = MatrixStatic<T, 3, 3>(arrayF);
     auto G = MatrixStatic<T, 3, 3>(arrayG);
 
-    // BOOST_CHECK_THROW(E + F, std::domain_error);
-    // BOOST_CHECK_THROW(F + E, std::domain_error);
-    BOOST_CHECK_NO_THROW(F + G);
-    BOOST_CHECK_NO_THROW(G + F);
+    // BOOST_CHECK_THROW(E - F, std::domain_error);
+    // BOOST_CHECK_THROW(F - E, std::domain_error);
+    BOOST_CHECK_NO_THROW(F - G);
+    BOOST_CHECK_NO_THROW(G - F);
 }
 }  // namespace matrix_test_add

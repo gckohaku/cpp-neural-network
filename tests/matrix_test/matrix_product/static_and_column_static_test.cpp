@@ -16,7 +16,7 @@ using mknnlib::matrix::MatrixColumnStatic;
 using mknnlib::matrix::MatrixStatic;
 
 namespace matrix_test_matrix_product {
-BOOST_AUTO_TEST_CASE_TEMPLATE(matrix_static_and_matrix_column_static_test, T, MatrixProductCheckType) {
+BOOST_AUTO_TEST_CASE_TEMPLATE(matrix_product_matrix_static_and_matrix_column_static_test, T, MatrixProductCheckType) {
     // square x square
     // 3x3
     constexpr size_t row1 = 3;

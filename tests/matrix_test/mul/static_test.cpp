@@ -5,16 +5,16 @@
 #include <boost/test/unit_test_suite.hpp>
 #include <cstddef>
 #include <limits>
+#include <stdexcept>
 #include <type_traits>
 
 #include "src/matrices/matrix_static.hpp"
-#include "tests/test_matrix_add_array_defines.hpp"
-#include "tests/test_utilities.hpp"
+#include "tests/test_matrix_mul_array_defines.hpp"
 
 using mknnlib::matrix::MatrixStatic;
 
-namespace matrix_test_add {
-BOOST_AUTO_TEST_CASE_TEMPLATE(add_matrix_static_test, T, boost::mpl::list<float>) {
+namespace matrix_test_mul {
+BOOST_AUTO_TEST_CASE_TEMPLATE(mul_matrix_static_test, T, boost::mpl::list<float>) {
     // 3x3
     constexpr size_t rowAAndB = 3;
     constexpr size_t columnAAndB = 3;
@@ -34,7 +34,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(add_matrix_static_test, T, boost::mpl::list<float>
         acceptableErrorAPlusB[i] *= std::numeric_limits<T>::epsilon();
     }
 
-    auto APlusB = A + B;
+    auto APlusB = A * B;
 
     auto typeCheckAPlusB = std::is_same<decltype(APlusB), MatrixStatic<T, rowAAndB, columnAAndB>>::value;
     BOOST_CHECK(typeCheckAPlusB);
@@ -58,7 +58,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(add_matrix_static_test, T, boost::mpl::list<float>
         acceptableErrorCPlusD[i] *= std::numeric_limits<T>::epsilon();
     }
 
-    auto CPlusD = C + D;
+    auto CPlusD = C * D;
 
     auto typeCheckCPlusD = std::is_same<decltype(CPlusD), MatrixStatic<T, rowCAndD, columnCAndD>>::value;
     BOOST_CHECK(typeCheckCPlusD);
@@ -73,9 +73,9 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(add_matrix_static_test, T, boost::mpl::list<float>
     auto F = MatrixStatic<T, 3, 3>(arrayF);
     auto G = MatrixStatic<T, 3, 3>(arrayG);
 
-    // BOOST_CHECK_THROW(E + F, std::domain_error);
-    // BOOST_CHECK_THROW(F + E, std::domain_error);
-    BOOST_CHECK_NO_THROW(F + G);
-    BOOST_CHECK_NO_THROW(G + F);
+    // BOOST_CHECK_THROW(E * F, std::domain_error);
+    // BOOST_CHECK_THROW(F * E, std::domain_error);
+    BOOST_CHECK_NO_THROW(F * G);
+    BOOST_CHECK_NO_THROW(G * F);
 }
 }  // namespace matrix_test_add
