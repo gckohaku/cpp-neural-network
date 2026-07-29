@@ -9,12 +9,13 @@
 
 #include "src/matrices/matrix_static.hpp"
 #include "tests/test_matrix_sub_array_defines.hpp"
+#include "tests/test_type_defines.hpp"
 #include "tests/test_utilities.hpp"
 
 using mknnlib::matrix::MatrixStatic;
 
 namespace matrix_test_sub {
-BOOST_AUTO_TEST_CASE_TEMPLATE(sub_matrix_static_test, T, boost::mpl::list<float>) {
+BOOST_AUTO_TEST_CASE_TEMPLATE(sub_matrix_static_test, T, CheckMatrixElementType) {
     // 3x3
     constexpr size_t rowAAndB = 3;
     constexpr size_t columnAAndB = 3;

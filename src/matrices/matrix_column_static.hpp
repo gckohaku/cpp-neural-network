@@ -56,8 +56,12 @@ public:
     // arithmetics
     MatrixColumnStatic<K, Col>& operator+=(const MatrixColumnStatic<K, Col>& x)
         requires mk_concepts::SingleFloatingPoint<K>;
+    MatrixColumnStatic<K, Col>& operator+=(const MatrixColumnStatic<K, Col>& x)
+        requires mk_concepts::DoubleFloatingPoint<K>;
     MatrixColumnStatic<K, Col>& operator-=(const MatrixColumnStatic<K, Col>& x)
         requires mk_concepts::SingleFloatingPoint<K>;
+    MatrixColumnStatic<K, Col>& operator-=(const MatrixColumnStatic<K, Col>& x)
+        requires mk_concepts::DoubleFloatingPoint<K>;
     MatrixColumnStatic<K, Col>& operator*=(const MatrixColumnStatic<K, Col>& x);
 
     // 2 dimensions index
@@ -141,7 +145,33 @@ template <typename K, size_t Col>
 inline MatrixColumnStatic<K, Col>& MatrixColumnStatic<K, Col>::operator+=(const MatrixColumnStatic<K, Col>& x)
     requires mk_concepts::SingleFloatingPoint<K>
 {
+#if !defined(NDEBUG)
+    if (this->RowSize() != x.RowSize()) {
+        std::string errorString = "Mismatch matrix size for matrix product.\n";
+        errorString += "this size    : " + this->GetSizeString() + "\n";
+        errorString += "opponent size: " + x.GetSizeString() + ".\n";
+
+        throw std::domain_error(errorString);
+    }
+#endif
     cblas_saxpy(this->_rowSize * Col, 1.0, x.ElementsPointer(), 1, this->ElementsPointer(), 1);
+    return *this;
+}
+
+template <typename K, size_t Col>
+inline MatrixColumnStatic<K, Col>& MatrixColumnStatic<K, Col>::operator+=(const MatrixColumnStatic<K, Col>& x)
+    requires mk_concepts::DoubleFloatingPoint<K>
+{
+#if !defined(NDEBUG)
+    if (this->RowSize() != x.RowSize()) {
+        std::string errorString = "Mismatch matrix size for matrix product.\n";
+        errorString += "this size    : " + this->GetSizeString() + "\n";
+        errorString += "opponent size: " + x.GetSizeString() + ".\n";
+
+        throw std::domain_error(errorString);
+    }
+#endif
+    cblas_daxpy(this->_rowSize * Col, 1.0, x.ElementsPointer(), 1, this->ElementsPointer(), 1);
     return *this;
 }
 
@@ -149,12 +179,47 @@ template <typename K, size_t Col>
 inline MatrixColumnStatic<K, Col>& MatrixColumnStatic<K, Col>::operator-=(const MatrixColumnStatic<K, Col>& x)
     requires mk_concepts::SingleFloatingPoint<K>
 {
+#if !defined(NDEBUG)
+    if (this->RowSize() != x.RowSize()) {
+        std::string errorString = "Mismatch matrix size for matrix product.\n";
+        errorString += "this size    : " + this->GetSizeString() + "\n";
+        errorString += "opponent size: " + x.GetSizeString() + ".\n";
+
+        throw std::domain_error(errorString);
+    }
+#endif
     cblas_saxpy(this->_rowSize * Col, -1.0, x.ElementsPointer(), 1, this->ElementsPointer(), 1);
     return *this;
 }
 
 template <typename K, size_t Col>
+inline MatrixColumnStatic<K, Col>& MatrixColumnStatic<K, Col>::operator-=(const MatrixColumnStatic<K, Col>& x)
+    requires mk_concepts::DoubleFloatingPoint<K>
+{
+#if !defined(NDEBUG)
+    if (this->RowSize() != x.RowSize()) {
+        std::string errorString = "Mismatch matrix size for matrix product.\n";
+        errorString += "this size    : " + this->GetSizeString() + "\n";
+        errorString += "opponent size: " + x.GetSizeString() + ".\n";
+
+        throw std::domain_error(errorString);
+    }
+#endif
+    cblas_daxpy(this->_rowSize * Col, -1.0, x.ElementsPointer(), 1, this->ElementsPointer(), 1);
+    return *this;
+}
+
+template <typename K, size_t Col>
 MatrixColumnStatic<K, Col>& MatrixColumnStatic<K, Col>::operator*=(const MatrixColumnStatic<K, Col>& x) {
+#if !defined(NDEBUG)
+    if (this->RowSize() != x.RowSize()) {
+        std::string errorString = "Mismatch matrix size for matrix product.\n";
+        errorString += "this size    : " + this->GetSizeString() + "\n";
+        errorString += "opponent size: " + x.GetSizeString() + ".\n";
+
+        throw std::domain_error(errorString);
+    }
+#endif
     // hadamard product is not into BLAS
     std::ranges::transform(this->_elements, x._elements, this->_elements.begin(), std::multiplies<>());
     return *this;

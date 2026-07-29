@@ -57,8 +57,12 @@ public:
     // arithmetics
     MatrixStatic<K, Row, Col>& operator+=(const MatrixStatic<K, Row, Col>& x)
         requires mk_concepts::SingleFloatingPoint<K>;
+    MatrixStatic<K, Row, Col>& operator+=(const MatrixStatic<K, Row, Col>& x)
+        requires mk_concepts::DoubleFloatingPoint<K>;
     MatrixStatic<K, Row, Col>& operator-=(const MatrixStatic<K, Row, Col>& x)
         requires mk_concepts::SingleFloatingPoint<K>;
+    MatrixStatic<K, Row, Col>& operator-=(const MatrixStatic<K, Row, Col>& x)
+        requires mk_concepts::DoubleFloatingPoint<K>;
     MatrixStatic<K, Row, Col>& operator*=(const MatrixStatic<K, Row, Col>& x);
 
     // 2 dimensions index
@@ -141,10 +145,26 @@ inline MatrixStatic<K, Row, Col>& MatrixStatic<K, Row, Col>::operator+=(const Ma
 }
 
 template <typename K, size_t Row, size_t Col>
+inline MatrixStatic<K, Row, Col>& MatrixStatic<K, Row, Col>::operator+=(const MatrixStatic<K, Row, Col>& x)
+    requires mk_concepts::DoubleFloatingPoint<K>
+{
+    cblas_daxpy(Row * Col, 1.0, x.ElementsPointer(), 1, this->ElementsPointer(), 1);
+    return *this;
+}
+
+template <typename K, size_t Row, size_t Col>
 inline MatrixStatic<K, Row, Col>& MatrixStatic<K, Row, Col>::operator-=(const MatrixStatic<K, Row, Col>& x)
     requires mk_concepts::SingleFloatingPoint<K>
 {
     cblas_saxpy(Row * Col, -1.0, x.ElementsPointer(), 1, this->ElementsPointer(), 1);
+    return *this;
+}
+
+template <typename K, size_t Row, size_t Col>
+inline MatrixStatic<K, Row, Col>& MatrixStatic<K, Row, Col>::operator-=(const MatrixStatic<K, Row, Col>& x)
+    requires mk_concepts::DoubleFloatingPoint<K>
+{
+    cblas_daxpy(Row * Col, -1.0, x.ElementsPointer(), 1, this->ElementsPointer(), 1);
     return *this;
 }
 

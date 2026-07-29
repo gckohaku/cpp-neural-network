@@ -5,16 +5,16 @@
 #include <boost/test/unit_test_suite.hpp>
 #include <cstddef>
 #include <limits>
-#include <stdexcept>
 #include <type_traits>
 
 #include "src/matrices/matrix_static.hpp"
 #include "tests/test_matrix_mul_array_defines.hpp"
+#include "tests/test_type_defines.hpp"
 
 using mknnlib::matrix::MatrixStatic;
 
 namespace matrix_test_mul {
-BOOST_AUTO_TEST_CASE_TEMPLATE(mul_matrix_static_test, T, boost::mpl::list<float>) {
+BOOST_AUTO_TEST_CASE_TEMPLATE(mul_matrix_static_test, T, CheckMatrixElementType) {
     // 3x3
     constexpr size_t rowAAndB = 3;
     constexpr size_t columnAAndB = 3;
@@ -78,4 +78,4 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(mul_matrix_static_test, T, boost::mpl::list<float>
     BOOST_CHECK_NO_THROW(F * G);
     BOOST_CHECK_NO_THROW(G * F);
 }
-}  // namespace matrix_test_add
+}  // namespace matrix_test_mul

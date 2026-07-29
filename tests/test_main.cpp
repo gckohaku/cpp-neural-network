@@ -2,6 +2,7 @@
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/included/unit_test.hpp>
 
+#include "tests/matrix_test/add/row_static_test.cpp"
 #include "tests/matrix_test/add/static_test.cpp"
 #include "tests/matrix_test/matrix_product/column_static_and_dynamic_test.cpp"
 #include "tests/matrix_test/matrix_product/column_static_test.cpp"
@@ -13,5 +14,8 @@
 #include "tests/matrix_test/matrix_product/static_and_dynamic_test.cpp"
 #include "tests/matrix_test/matrix_product/static_and_row_static_test.cpp"
 #include "tests/matrix_test/matrix_product/static_test.cpp"
+#include "tests/matrix_test/mul/row_static_test.cpp"
 #include "tests/matrix_test/mul/static_test.cpp"
+#include "tests/matrix_test/sub/row_static_test.cpp"
 #include "tests/matrix_test/sub/static_test.cpp"
+#include "tests/matrix_test/add/column_static_test.cpp"
