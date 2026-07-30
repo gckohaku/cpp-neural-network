@@ -71,8 +71,8 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(sub_matrix_static_test, T, CheckMatrixElementType)
     auto arrayG = MakeArrayG<T>();
 
     // auto E = MatrixStatic<T, 3, 2>(arrayE);
-    auto F = MatrixStatic<T, 3, 3>(arrayF);
-    auto G = MatrixStatic<T, 3, 3>(arrayG);
+    auto F = MatrixStatic<T, 2, 3>(arrayF);
+    auto G = MatrixStatic<T, 2, 3>(arrayG);
 
     // BOOST_CHECK_THROW(E - F, std::domain_error);
     // BOOST_CHECK_THROW(F - E, std::domain_error);

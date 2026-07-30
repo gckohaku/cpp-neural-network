@@ -1,8 +1,8 @@
 #ifndef TESTS_TEST_MATRIX_MUL_VECTOR_DEFINES_HPP
 #define TESTS_TEST_MATRIX_MUL_VECTOR_DEFINES_HPP
 
-#include <vector>
 #include <cstddef>
+#include <vector>
 
 namespace matrix_test_mul {
 /* define A and B */
@@ -47,12 +47,16 @@ std::vector<T> MakeVectorD() {
 
 template <typename T>
 std::vector<T> MakeExpectedVectorCAndD() {
-    return std::vector<T>{static_cast<T>(18.72), static_cast<T>(20.64), static_cast<T>(10.26), static_cast<T>(8.5), static_cast<T>(5.4), static_cast<T>(9.99), static_cast<T>(27.47), static_cast<T>(22.05), static_cast<T>(7.5), static_cast<T>(8.47)};
+    return std::vector<T>{static_cast<T>(18.72), static_cast<T>(20.64), static_cast<T>(10.26), static_cast<T>(8.5),
+        static_cast<T>(5.4), static_cast<T>(9.99), static_cast<T>(27.47), static_cast<T>(22.05), static_cast<T>(7.5),
+        static_cast<T>(8.47)};
 }
 
 template <typename T>
 std::vector<T> MakeAcceptableErrorVectorCAndD() {
-    return std::vector<T>{static_cast<T>(24.8), static_cast<T>(36.4), static_cast<T>(12.9), static_cast<T>(11.8), static_cast<T>(6.6), static_cast<T>(12.8), static_cast<T>(43.2), static_cast<T>(26.6), static_cast<T>(11), static_cast<T>(12.1)};
+    return std::vector<T>{static_cast<T>(24.8), static_cast<T>(36.4), static_cast<T>(12.9), static_cast<T>(11.8),
+        static_cast<T>(6.6), static_cast<T>(12.8), static_cast<T>(43.2), static_cast<T>(26.6), static_cast<T>(11),
+        static_cast<T>(12.1)};
 }
 
 template <typename T>
@@ -70,9 +74,6 @@ std::vector<T> MakeVectorF() {
         static_cast<T>(3.7),
         static_cast<T>(6.2),
         static_cast<T>(4.2),
-        static_cast<T>(5.1),
-        static_cast<T>(2.8),
-        static_cast<T>(2.0),
     };
 }
 
@@ -85,10 +86,12 @@ std::vector<T> MakeVectorG() {
         static_cast<T>(4.0),
         static_cast<T>(1.7),
         static_cast<T>(2.7),
-        static_cast<T>(2.6),
-        static_cast<T>(1.2),
-        static_cast<T>(3.4),
     };
+}
+
+template <typename T>
+std::vector<T> MakeVectorH() {
+    return std::vector<T>{static_cast<T>(6.7), static_cast<T>(1.7), static_cast<T>(2.4), static_cast<T>(3)};
 }
 }  // namespace matrix_test_mul
 #endif

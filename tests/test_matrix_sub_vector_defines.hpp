@@ -1,8 +1,8 @@
 #ifndef TESTS_TEST_MATRIX_SUB_VECTOR_DEFINES_HPP
 #define TESTS_TEST_MATRIX_SUB_VECTOR_DEFINES_HPP
 
-#include <vector>
 #include <cstddef>
+#include <vector>
 
 namespace matrix_test_sub {
 /* define A and B */
@@ -26,8 +26,8 @@ std::vector<T> MakeExpectedVectorAAndB() {
 
 template <typename T>
 std::vector<T> MakeAcceptableErrorVectorAAndB() {
-    return std::vector<T>{static_cast<T>(8), static_cast<T>(4), static_cast<T>(8), static_cast<T>(8),
-        static_cast<T>(4), static_cast<T>(8), static_cast<T>(4), static_cast<T>(8), static_cast<T>(4)};
+    return std::vector<T>{static_cast<T>(8), static_cast<T>(4), static_cast<T>(8), static_cast<T>(8), static_cast<T>(4),
+        static_cast<T>(8), static_cast<T>(4), static_cast<T>(8), static_cast<T>(4)};
 }
 
 /* define C and D */
@@ -54,9 +54,8 @@ std::vector<T> MakeExpectedVectorCAndD() {
 
 template <typename T>
 std::vector<T> MakeAcceptableErrorVectorCAndD() {
-    return std::vector<T>{static_cast<T>(8), static_cast<T>(8), static_cast<T>(8), static_cast<T>(4),
-        static_cast<T>(4), static_cast<T>(4), static_cast<T>(8), static_cast<T>(8), static_cast<T>(4),
-        static_cast<T>(8)};
+    return std::vector<T>{static_cast<T>(8), static_cast<T>(8), static_cast<T>(8), static_cast<T>(4), static_cast<T>(4),
+        static_cast<T>(4), static_cast<T>(8), static_cast<T>(8), static_cast<T>(4), static_cast<T>(8)};
 }
 
 template <typename T>
@@ -74,9 +73,6 @@ std::vector<T> MakeVectorF() {
         static_cast<T>(3.7),
         static_cast<T>(6.2),
         static_cast<T>(4.2),
-        static_cast<T>(5.1),
-        static_cast<T>(2.8),
-        static_cast<T>(2.0),
     };
 }
 
@@ -89,10 +85,12 @@ std::vector<T> MakeVectorG() {
         static_cast<T>(4.0),
         static_cast<T>(1.7),
         static_cast<T>(2.7),
-        static_cast<T>(2.6),
-        static_cast<T>(1.2),
-        static_cast<T>(3.4),
     };
+}
+
+template <typename T>
+std::vector<T> MakeVectorH() {
+    return std::vector<T>{static_cast<T>(6.7), static_cast<T>(1.7), static_cast<T>(2.4), static_cast<T>(3)};
 }
 }  // namespace matrix_test_sub
 #endif

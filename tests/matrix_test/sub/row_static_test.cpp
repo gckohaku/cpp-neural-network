@@ -69,14 +69,20 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(sub_matrix_row_static_test, T, CheckMatrixElementT
     auto arrayE = MakeVectorE<T>();
     auto arrayF = MakeVectorF<T>();
     auto arrayG = MakeVectorG<T>();
+    auto arrayH = MakeVectorH<T>();
 
     auto E = MatrixRowStatic<T, 3>(2, arrayE);
-    auto F = MatrixRowStatic<T, 3>(3, arrayF);
-    auto G = MatrixRowStatic<T, 3>(3, arrayG);
+    auto F = MatrixRowStatic<T, 2>(3, arrayF);
+    auto G = MatrixRowStatic<T, 2>(3, arrayG);
+    auto H = MatrixRowStatic<T, 2>(2, arrayH);
 
-    BOOST_CHECK_THROW(E - F, std::domain_error);
-    BOOST_CHECK_THROW(F - E, std::domain_error);
+    // BOOST_CHECK_THROW(E - F, std::domain_error);
+    // BOOST_CHECK_THROW(F - E, std::domain_error);
     BOOST_CHECK_NO_THROW(F - G);
     BOOST_CHECK_NO_THROW(G - F);
+    // BOOST_CHECK_THROW(E - H, std::domain_error);
+    // BOOST_CHECK_THROW(H - E, std::domain_error);
+    BOOST_CHECK_THROW(F - H, std::domain_error);
+    BOOST_CHECK_THROW(H - F, std::domain_error);
 }
 }  // namespace matrix_test_add

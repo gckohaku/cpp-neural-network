@@ -66,33 +66,32 @@ std::array<T, 3 * 2> MakeArrayE() {
 }
 
 template <typename T>
-std::array<T, 3 * 3> MakeArrayF() {
-    return std::array<T, 3 * 3>{
+std::array<T, 2 * 3> MakeArrayF() {
+    return std::array<T, 2 * 3>{
         static_cast<T>(5.1),
         static_cast<T>(3.9),
         static_cast<T>(6.7),
         static_cast<T>(3.7),
         static_cast<T>(6.2),
         static_cast<T>(4.2),
-        static_cast<T>(5.1),
-        static_cast<T>(2.8),
-        static_cast<T>(2.0),
     };
 }
 
 template <typename T>
-std::array<T, 3 * 3> MakeArrayG() {
-    return std::array<T, 3 * 3>{
+std::array<T, 2 * 3> MakeArrayG() {
+    return std::array<T, 2 * 3>{
         static_cast<T>(3.7),
         static_cast<T>(5.7),
         static_cast<T>(2.3),
         static_cast<T>(4.0),
         static_cast<T>(1.7),
         static_cast<T>(2.7),
-        static_cast<T>(2.6),
-        static_cast<T>(1.2),
-        static_cast<T>(3.4),
     };
+}
+
+template <typename T>
+std::array<T, 2 * 2> MakeArrayH() {
+    return std::array<T, 2 * 2>{static_cast<T>(6.7), static_cast<T>(1.7), static_cast<T>(2.4), static_cast<T>(3)};
 }
 }  // namespace matrix_test_sub
 #endif

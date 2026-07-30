@@ -154,7 +154,7 @@ inline MatrixColumnStatic<K, Col>& MatrixColumnStatic<K, Col>::operator+=(const 
         throw std::domain_error(errorString);
     }
 #endif
-    cblas_saxpy(this->_rowSize * Col, 1.0, x.ElementsPointer(), 1, this->ElementsPointer(), 1);
+    cblas_saxpy(static_cast<blasint>(this->_rowSize * Col), 1.0, x.ElementsPointer(), 1, this->ElementsPointer(), 1);
     return *this;
 }
 
@@ -171,7 +171,7 @@ inline MatrixColumnStatic<K, Col>& MatrixColumnStatic<K, Col>::operator+=(const 
         throw std::domain_error(errorString);
     }
 #endif
-    cblas_daxpy(this->_rowSize * Col, 1.0, x.ElementsPointer(), 1, this->ElementsPointer(), 1);
+    cblas_daxpy(static_cast<blasint>(this->_rowSize * Col), 1.0, x.ElementsPointer(), 1, this->ElementsPointer(), 1);
     return *this;
 }
 
@@ -188,7 +188,7 @@ inline MatrixColumnStatic<K, Col>& MatrixColumnStatic<K, Col>::operator-=(const 
         throw std::domain_error(errorString);
     }
 #endif
-    cblas_saxpy(this->_rowSize * Col, -1.0, x.ElementsPointer(), 1, this->ElementsPointer(), 1);
+    cblas_saxpy(static_cast<blasint>(this->_rowSize * Col), -1.0, x.ElementsPointer(), 1, this->ElementsPointer(), 1);
     return *this;
 }
 
@@ -205,7 +205,7 @@ inline MatrixColumnStatic<K, Col>& MatrixColumnStatic<K, Col>::operator-=(const 
         throw std::domain_error(errorString);
     }
 #endif
-    cblas_daxpy(this->_rowSize * Col, -1.0, x.ElementsPointer(), 1, this->ElementsPointer(), 1);
+    cblas_daxpy(static_cast<blasint>(this->_rowSize * Col), -1.0, x.ElementsPointer(), 1, this->ElementsPointer(), 1);
     return *this;
 }
 

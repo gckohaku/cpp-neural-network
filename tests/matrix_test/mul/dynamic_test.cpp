@@ -5,17 +5,18 @@
 #include <boost/test/unit_test_suite.hpp>
 #include <cstddef>
 #include <limits>
+#include <stdexcept>
 #include <type_traits>
 
-#include "src/matrices/matrix_static.hpp"
-#include "tests/test_matrix_add_vector_defines.hpp"
+#include "src/matrices/matrix_column_static.hpp"
+#include "tests/test_matrix_mul_vector_defines.hpp"
 #include "tests/test_type_defines.hpp"
 #include "tests/test_utilities.hpp"
 
-using mknnlib::matrix::MatrixRowStatic;
+using mknnlib::matrix::MatrixDynamic;
 
-namespace matrix_test_add {
-BOOST_AUTO_TEST_CASE_TEMPLATE(add_matrix_row_static_test, T, CheckMatrixElementType) {
+namespace matrix_test_mul {
+BOOST_AUTO_TEST_CASE_TEMPLATE(mul_matrix_dynamic_test, T, CheckMatrixElementType) {
     // 3x3
     constexpr size_t rowAAndB = 3;
     constexpr size_t columnAAndB = 3;
@@ -24,8 +25,8 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(add_matrix_row_static_test, T, CheckMatrixElementT
     auto arrayA = MakeVectorA<T>();
     auto arrayB = MakeVectorB<T>();
 
-    auto A = MatrixRowStatic<T, rowAAndB>(columnAAndB, arrayA);
-    auto B = MatrixRowStatic<T, rowAAndB>(columnAAndB, arrayB);
+    auto A = MatrixDynamic<T>(rowAAndB, columnAAndB, arrayA);
+    auto B = MatrixDynamic<T>(rowAAndB, columnAAndB, arrayB);
 
     auto expectedAPlusB = MakeExpectedVectorAAndB<T>();
 
@@ -35,9 +36,9 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(add_matrix_row_static_test, T, CheckMatrixElementT
         acceptableErrorAPlusB[i] *= std::numeric_limits<T>::epsilon();
     }
 
-    auto APlusB = A + B;
+    auto APlusB = A * B;
 
-    auto typeCheckAPlusB = std::is_same<decltype(APlusB), MatrixRowStatic<T, rowAAndB>>::value;
+    auto typeCheckAPlusB = std::is_same<decltype(APlusB), MatrixDynamic<T>>::value;
     BOOST_CHECK(typeCheckAPlusB);
     CheckCloseEachVectorElement<T>(APlusB.Elements(), expectedAPlusB, acceptableErrorAPlusB);
 
@@ -49,8 +50,8 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(add_matrix_row_static_test, T, CheckMatrixElementT
     auto arrayC = MakeVectorC<T>();
     auto arrayD = MakeVectorD<T>();
 
-    auto C = MatrixRowStatic<T, rowCAndD>(columnCAndD, arrayC);
-    auto D = MatrixRowStatic<T, rowCAndD>(columnCAndD, arrayD);
+    auto C = MatrixDynamic<T>(rowCAndD, columnCAndD, arrayC);
+    auto D = MatrixDynamic<T>(rowCAndD, columnCAndD, arrayD);
 
     auto expectedCPlusD = MakeExpectedVectorCAndD<T>();
 
@@ -59,9 +60,9 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(add_matrix_row_static_test, T, CheckMatrixElementT
         acceptableErrorCPlusD[i] *= std::numeric_limits<T>::epsilon();
     }
 
-    auto CPlusD = C + D;
+    auto CPlusD = C * D;
 
-    auto typeCheckCPlusD = std::is_same<decltype(CPlusD), MatrixRowStatic<T, rowCAndD>>::value;
+    auto typeCheckCPlusD = std::is_same<decltype(CPlusD), MatrixDynamic<T>>::value;
     BOOST_CHECK(typeCheckCPlusD);
     CheckCloseEachVectorElement<T>(CPlusD.Elements(), expectedCPlusD, acceptableErrorCPlusD);
 
@@ -71,18 +72,18 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(add_matrix_row_static_test, T, CheckMatrixElementT
     auto arrayG = MakeVectorG<T>();
     auto arrayH = MakeVectorH<T>();
 
-    auto E = MatrixRowStatic<T, 3>(2, arrayE);
-    auto F = MatrixRowStatic<T, 2>(3, arrayF);
-    auto G = MatrixRowStatic<T, 2>(3, arrayG);
-    auto H = MatrixRowStatic<T, 2>(2, arrayH);
+    auto E = MatrixDynamic<T>(3, 2, arrayE);
+    auto F = MatrixDynamic<T>(2, 3, arrayF);
+    auto G = MatrixDynamic<T>(2, 3, arrayG);
+    auto H = MatrixDynamic<T>(2, 2, arrayH);
 
-    // BOOST_CHECK_THROW(E + F, std::domain_error);
-    // BOOST_CHECK_THROW(F + E, std::domain_error);
-    BOOST_CHECK_NO_THROW(F + G);
-    BOOST_CHECK_NO_THROW(G + F);
-    // BOOST_CHECK_THROW(E + H, std::domain_error);
-    // BOOST_CHECK_THROW(H + E, std::domain_error);
-    BOOST_CHECK_THROW(F + H, std::domain_error);
-    BOOST_CHECK_THROW(H + F, std::domain_error);
+    BOOST_CHECK_THROW(E * F, std::domain_error);
+    BOOST_CHECK_THROW(F * E, std::domain_error);
+    BOOST_CHECK_NO_THROW(F * G);
+    BOOST_CHECK_NO_THROW(G * F);
+    BOOST_CHECK_THROW(E * H, std::domain_error);
+    BOOST_CHECK_THROW(H * E, std::domain_error);
+    BOOST_CHECK_THROW(F * H, std::domain_error);
+    BOOST_CHECK_THROW(H * F, std::domain_error);
 }
 }  // namespace matrix_test_add
