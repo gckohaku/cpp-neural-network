@@ -81,6 +81,7 @@ public:
     size_t ColumnSize() const;
     std::string GetSizeString() const;
     std::vector<K>& Elements();
+    const std::vector<K>& Elements() const;
     K* ElementsPointer();
     const K* ElementsPointer() const;
 
@@ -193,7 +194,8 @@ inline MatrixRowStatic<K, Row>& MatrixRowStatic<K, Row>::operator-=(const Matrix
         throw std::domain_error(errorString);
     }
 #endif
-    cblas_saxpy(static_cast<blasint>(Row * this->_columnSize), -1.0, x.ElementsPointer(), 1, this->ElementsPointer(), 1);
+    cblas_saxpy(
+        static_cast<blasint>(Row * this->_columnSize), -1.0, x.ElementsPointer(), 1, this->ElementsPointer(), 1);
     return *this;
 }
 
@@ -210,9 +212,12 @@ inline MatrixRowStatic<K, Row>& MatrixRowStatic<K, Row>::operator-=(const Matrix
         throw std::domain_error(errorString);
     }
 #endif
-    cblas_daxpy(static_cast<blasint>(Row * this->_columnSize), -1.0, x.ElementsPointer(), 1, this->ElementsPointer(), 1);
+    cblas_daxpy(
+        static_cast<blasint>(Row * this->_columnSize), -1.0, x.ElementsPointer(), 1, this->ElementsPointer(), 1);
     return *this;
 }
+
+
 
 template <typename K, size_t Row>
 MatrixRowStatic<K, Row>& MatrixRowStatic<K, Row>::operator*=(const MatrixRowStatic<K, Row>& x) {
@@ -266,6 +271,11 @@ std::string MatrixRowStatic<K, Row>::GetSizeString() const {
 
 template <typename K, size_t Row>
 inline std::vector<K>& MatrixRowStatic<K, Row>::Elements() {
+    return this->_elements;
+}
+
+template <typename K, size_t Row>
+inline const std::vector<K>& MatrixRowStatic<K, Row>::Elements() const {
     return this->_elements;
 }
 
