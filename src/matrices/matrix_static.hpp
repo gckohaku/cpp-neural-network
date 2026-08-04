@@ -32,8 +32,7 @@ class MatrixStatic :
     private boost::addable<MatrixStatic<K, Row, Col>>,
     private boost::addable<MatrixStatic<K, Row, Col>, MatrixRowStatic<K, Row>>,
     private boost::subtractable<MatrixStatic<K, Row, Col>>,
-    private boost::subtractable<MatrixStatic<K, Row, Col>, MatrixRowStatic<K, Row>>,
-    private boost::subtractable2_left<MatrixStatic<K, Row, Col>, MatrixRowStatic<K, Row>>,
+    // private boost::subtractable<MatrixStatic<K, Row, Col>, MatrixRowStatic<K, Row>>,
     private boost::multipliable<MatrixStatic<K, Row, Col>>,
     private boost::multipliable<MatrixStatic<K, Row, Col>, MatrixRowStatic<K, Row>> {
     // type alias
