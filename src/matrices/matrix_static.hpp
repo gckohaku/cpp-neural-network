@@ -11,30 +11,35 @@
 #include <functional>
 #include <mdspan>
 #include <ostream>
+#include <span>
 
 #include "src/concept_defines/types/type_concepts.hpp"
+#include "src/matrices/matrix_template_base.hpp"
 
 namespace mknnlib::matrix {
 template <typename K, size_t Row, size_t Col>
-class MatrixStatic;
-template <typename K, size_t Row, size_t Col>
-std::ostream& operator<<(std::ostream& os, const MatrixStatic<K, Row, Col>& mat);
-
-template <typename K, size_t Row>
-class MatrixRowStatic;
-template <typename K, size_t Col>
-class MatrixColumnStatic;
-template <typename K>
-class MatrixDynamic;
+std::ostream& operator<<(std::ostream& os, const Matrix<K, Row, Col>& mat);
+// template <typename K, size_t Row, size_t Col, size_t OppCol>
+// Matrix<K, Row, OppCol> Dot<OppCol>(const Matrix<K, Col, OppCol> mat)
+//         requires mk_concepts::SingleFloatingPoint<K>;
 
 template <typename K, size_t Row, size_t Col>
-class MatrixStatic :
-    private boost::addable<MatrixStatic<K, Row, Col>>,
-    private boost::addable<MatrixStatic<K, Row, Col>, MatrixRowStatic<K, Row>>,
-    private boost::subtractable<MatrixStatic<K, Row, Col>>,
-    private boost::subtractable<MatrixStatic<K, Row, Col>, MatrixRowStatic<K, Row>>,
-    private boost::multipliable<MatrixStatic<K, Row, Col>>,
-    private boost::multipliable<MatrixStatic<K, Row, Col>, MatrixRowStatic<K, Row>> {
+class Matrix;
+
+template <typename K, size_t Row, size_t Col>
+class Matrix :
+    private boost::addable<Matrix<K, Row, Col>>,
+    private boost::addable<Matrix<K, Row, Col>, Matrix<K, Row>>,
+    private boost::subtractable<Matrix<K, Row, Col>>,
+    private boost::subtractable<Matrix<K, Row, Col>, Matrix<K, Row>>,
+    private boost::multipliable<Matrix<K, Row, Col>>,
+    private boost::multipliable<Matrix<K, Row, Col>, Matrix<K, Row>> {
+    static_assert(Row != std::dynamic_extent);
+    static_assert(Col != std::dynamic_extent);
+
+    template <typename, std::size_t, std::size_t>
+    friend class Matrix;
+
     // type alias
     using MatrixExtent = std::extents<size_t, Row, Col>;
     using MdView = std::mdspan<K, MatrixExtent, std::layout_left>;
@@ -48,40 +53,40 @@ private:
 public:
     // TODO: ドキュメントをちゃんと書く
     /* begin constructors declaration */
-    MatrixStatic();
-    MatrixStatic(const std::array<K, Row * Col> elements);
+    Matrix();
+    Matrix(const std::array<K, Row * Col> elements);
     // copy constructor
-    MatrixStatic(const MatrixStatic<K, Row, Col>& mat);
+    Matrix(const Matrix<K, Row, Col>& mat);
     /* end constructors declaration */
 
     /* begin operator overloads declaration */
     // copy assignment operator
-    MatrixStatic<K, Row, Col>& operator=(const MatrixStatic<K, Row, Col>& x);
+    Matrix<K, Row, Col>& operator=(const Matrix<K, Row, Col>& x);
     // arithmetics
-    MatrixStatic<K, Row, Col>& operator+=(const MatrixStatic<K, Row, Col>& x)
+    Matrix<K, Row, Col>& operator+=(const Matrix<K, Row, Col>& x)
         requires mk_concepts::SingleFloatingPoint<K>;
-    MatrixStatic<K, Row, Col>& operator+=(const MatrixStatic<K, Row, Col>& x)
+    Matrix<K, Row, Col>& operator+=(const Matrix<K, Row, Col>& x)
         requires mk_concepts::DoubleFloatingPoint<K>;
-    MatrixStatic<K, Row, Col>& operator+=(const MatrixRowStatic<K, Row>& x)
+    Matrix<K, Row, Col>& operator+=(const Matrix<K, Row>& x)
         requires mk_concepts::SingleFloatingPoint<K>;
-    MatrixStatic<K, Row, Col>& operator+=(const MatrixRowStatic<K, Row>& x)
+    Matrix<K, Row, Col>& operator+=(const Matrix<K, Row>& x)
         requires mk_concepts::DoubleFloatingPoint<K>;
-    MatrixStatic<K, Row, Col>& operator-=(const MatrixStatic<K, Row, Col>& x)
+    Matrix<K, Row, Col>& operator-=(const Matrix<K, Row, Col>& x)
         requires mk_concepts::SingleFloatingPoint<K>;
-    MatrixStatic<K, Row, Col>& operator-=(const MatrixStatic<K, Row, Col>& x)
+    Matrix<K, Row, Col>& operator-=(const Matrix<K, Row, Col>& x)
         requires mk_concepts::DoubleFloatingPoint<K>;
-    MatrixStatic<K, Row, Col>& operator-=(const MatrixRowStatic<K, Row>& x)
+    Matrix<K, Row, Col>& operator-=(const Matrix<K, Row>& x)
         requires mk_concepts::SingleFloatingPoint<K>;
-    MatrixStatic<K, Row, Col>& operator-=(const MatrixRowStatic<K, Row>& x)
+    Matrix<K, Row, Col>& operator-=(const Matrix<K, Row>& x)
         requires mk_concepts::DoubleFloatingPoint<K>;
-    MatrixStatic<K, Row, Col>& operator*=(const MatrixStatic<K, Row, Col>& x);
-    MatrixStatic<K, Row, Col>& operator*=(const MatrixRowStatic<K, Row>& x);
+    Matrix<K, Row, Col>& operator*=(const Matrix<K, Row, Col>& x);
+    Matrix<K, Row, Col>& operator*=(const Matrix<K, Row>& x);
 
     // 2 dimensions index
     K& operator[](const size_t a, const size_t b);
 
     // ostream
-    friend std::ostream& operator<< <>(std::ostream& os, const MatrixStatic<K, Row, Col>& mat);
+    friend std::ostream& operator<< <>(std::ostream& os, const Matrix<K, Row, Col>& mat);
     /* end operator overloads declaration */
 
     /* begin matrix unique functions declaration */
@@ -89,67 +94,66 @@ public:
     constexpr size_t ColumnSize();
     std::string GetSizeString() const;
     std::array<K, Row * Col>& Elements();
-    K* ElementsPointer();
-    const K* ElementsPointer() const;
+    // K* ElementsPointer();
+    // const K* ElementsPointer() const;
 
     /* end matrix unique functions declaration */
 
     /* begin matrix unique arithmetics declaration */
     template <size_t OppCol>
-    MatrixStatic<K, Row, OppCol> Dot(const MatrixStatic<K, Col, OppCol> mat)
+    Matrix<K, Row, OppCol> Dot(const Matrix<K, Col, OppCol> mat)
         requires mk_concepts::SingleFloatingPoint<K>;
     template <size_t OppCol>
-    MatrixStatic<K, Row, OppCol> Dot(const MatrixStatic<K, Col, OppCol> mat)
+    Matrix<K, Row, OppCol> Dot(const Matrix<K, Col, OppCol> mat)
         requires mk_concepts::DoubleFloatingPoint<K>;
 
-    MatrixRowStatic<K, Row> Dot(const MatrixRowStatic<K, Col>& mat)
+    Matrix<K, Row> Dot(const Matrix<K, Col>& mat)
         requires mk_concepts::SingleFloatingPoint<K>;
-    MatrixRowStatic<K, Row> Dot(const MatrixRowStatic<K, Col>& mat)
+    Matrix<K, Row> Dot(const Matrix<K, Col>& mat)
         requires mk_concepts::DoubleFloatingPoint<K>;
 
     template <size_t OppCol>
-    MatrixStatic<K, Row, OppCol> Dot(const MatrixColumnStatic<K, OppCol>& mat)
+    Matrix<K, Row, OppCol> Dot(const MatrixColumnStatic<K, OppCol>& mat)
         requires mk_concepts::SingleFloatingPoint<K>;
     template <size_t OppCol>
-    MatrixStatic<K, Row, OppCol> Dot(const MatrixColumnStatic<K, OppCol>& mat)
+    Matrix<K, Row, OppCol> Dot(const MatrixColumnStatic<K, OppCol>& mat)
         requires mk_concepts::DoubleFloatingPoint<K>;
 
-    MatrixRowStatic<K, Row> Dot(const MatrixDynamic<K>& mat)
+    Matrix<K, Row> Dot(const MatrixDynamic<K>& mat)
         requires mk_concepts::SingleFloatingPoint<K>;
-    MatrixRowStatic<K, Row> Dot(const MatrixDynamic<K>& mat)
+    Matrix<K, Row> Dot(const MatrixDynamic<K>& mat)
         requires mk_concepts::DoubleFloatingPoint<K>;
     /* end matrix unique arithmetics declaration */
 };
 
 /* begin constructors definition */
 template <typename K, size_t Row, size_t Col>
-MatrixStatic<K, Row, Col>::MatrixStatic() :
-    _rowSize(Row), _columnSize(Col), _elements{}, _span(_elements.data(), MatrixExtent{}) {}
+Matrix<K, Row, Col>::Matrix() : _rowSize(Row), _columnSize(Col), _elements{}, _span(_elements.data(), MatrixExtent{}) {}
 
 template <typename K, size_t Row, size_t Col>
-MatrixStatic<K, Row, Col>::MatrixStatic(const std::array<K, Row * Col> elements) :
+Matrix<K, Row, Col>::Matrix(const std::array<K, Row * Col> elements) :
     _rowSize(Row), _columnSize(Col), _elements(elements), _span(_elements.data(), MatrixExtent{}) {}
 
 // copy constructor
 template <typename K, size_t Row, size_t Col>
-MatrixStatic<K, Row, Col>::MatrixStatic(const MatrixStatic<K, Row, Col>& mat) :
+Matrix<K, Row, Col>::Matrix(const Matrix<K, Row, Col>& mat) :
     _rowSize(Row), _columnSize(Col), _elements(mat._elements), _span(_elements.data(), MatrixExtent{}) {}
 /* end constructors definition */
 
 /* begin operator overloads definition */
 // copy assignment operator
 template <typename K, size_t Row, size_t Col>
-MatrixStatic<K, Row, Col>& MatrixStatic<K, Row, Col>::operator=(const MatrixStatic<K, Row, Col>& x) {
+Matrix<K, Row, Col>& Matrix<K, Row, Col>::operator=(const Matrix<K, Row, Col>& x) {
     if (this != &x) {
         _elements = x._elements;
-        _span = MdView(ElementsPointer(), MatrixExtent{});
+        _span = MdView(_elements, MatrixExtent{});
     }
     return *this;
 }
 
 // arithmetics
 template <typename K, size_t Row, size_t Col>
-inline MatrixStatic<K, Row, Col>& MatrixStatic<K, Row, Col>::operator+=(const MatrixStatic<K, Row, Col>& x)
+inline Matrix<K, Row, Col>& Matrix<K, Row, Col>::operator+=(const Matrix<K, Row, Col>& x)
     requires mk_concepts::SingleFloatingPoint<K>
 {
     cblas_saxpy(Row * Col, 1.0, x.ElementsPointer(), 1, this->ElementsPointer(), 1);
@@ -157,7 +161,7 @@ inline MatrixStatic<K, Row, Col>& MatrixStatic<K, Row, Col>::operator+=(const Ma
 }
 
 template <typename K, size_t Row, size_t Col>
-inline MatrixStatic<K, Row, Col>& MatrixStatic<K, Row, Col>::operator+=(const MatrixStatic<K, Row, Col>& x)
+inline Matrix<K, Row, Col>& Matrix<K, Row, Col>::operator+=(const Matrix<K, Row, Col>& x)
     requires mk_concepts::DoubleFloatingPoint<K>
 {
     cblas_daxpy(Row * Col, 1.0, x.ElementsPointer(), 1, this->ElementsPointer(), 1);
@@ -165,7 +169,7 @@ inline MatrixStatic<K, Row, Col>& MatrixStatic<K, Row, Col>::operator+=(const Ma
 }
 
 template <typename K, size_t Row, size_t Col>
-inline MatrixStatic<K, Row, Col>& MatrixStatic<K, Row, Col>::operator+=(const MatrixRowStatic<K, Row>& x)
+inline Matrix<K, Row, Col>& Matrix<K, Row, Col>::operator+=(const Matrix<K, Row>& x)
     requires mk_concepts::SingleFloatingPoint<K>
 {
 #if !defined(NDEBUG)
@@ -182,7 +186,7 @@ inline MatrixStatic<K, Row, Col>& MatrixStatic<K, Row, Col>::operator+=(const Ma
 }
 
 template <typename K, size_t Row, size_t Col>
-inline MatrixStatic<K, Row, Col>& MatrixStatic<K, Row, Col>::operator+=(const MatrixRowStatic<K, Row>& x)
+inline Matrix<K, Row, Col>& Matrix<K, Row, Col>::operator+=(const Matrix<K, Row>& x)
     requires mk_concepts::DoubleFloatingPoint<K>
 {
 #if !defined(NDEBUG)
@@ -199,7 +203,7 @@ inline MatrixStatic<K, Row, Col>& MatrixStatic<K, Row, Col>::operator+=(const Ma
 }
 
 template <typename K, size_t Row, size_t Col>
-inline MatrixStatic<K, Row, Col>& MatrixStatic<K, Row, Col>::operator-=(const MatrixStatic<K, Row, Col>& x)
+inline Matrix<K, Row, Col>& Matrix<K, Row, Col>::operator-=(const Matrix<K, Row, Col>& x)
     requires mk_concepts::SingleFloatingPoint<K>
 {
     cblas_saxpy(Row * Col, -1.0, x.ElementsPointer(), 1, this->ElementsPointer(), 1);
@@ -207,7 +211,7 @@ inline MatrixStatic<K, Row, Col>& MatrixStatic<K, Row, Col>::operator-=(const Ma
 }
 
 template <typename K, size_t Row, size_t Col>
-inline MatrixStatic<K, Row, Col>& MatrixStatic<K, Row, Col>::operator-=(const MatrixStatic<K, Row, Col>& x)
+inline Matrix<K, Row, Col>& Matrix<K, Row, Col>::operator-=(const Matrix<K, Row, Col>& x)
     requires mk_concepts::DoubleFloatingPoint<K>
 {
     cblas_daxpy(Row * Col, -1.0, x.ElementsPointer(), 1, this->ElementsPointer(), 1);
@@ -215,7 +219,7 @@ inline MatrixStatic<K, Row, Col>& MatrixStatic<K, Row, Col>::operator-=(const Ma
 }
 
 template <typename K, size_t Row, size_t Col>
-inline MatrixStatic<K, Row, Col>& MatrixStatic<K, Row, Col>::operator-=(const MatrixRowStatic<K, Row>& x)
+inline Matrix<K, Row, Col>& Matrix<K, Row, Col>::operator-=(const Matrix<K, Row>& x)
     requires mk_concepts::SingleFloatingPoint<K>
 {
 #if !defined(NDEBUG)
@@ -232,7 +236,7 @@ inline MatrixStatic<K, Row, Col>& MatrixStatic<K, Row, Col>::operator-=(const Ma
 }
 
 template <typename K, size_t Row, size_t Col>
-inline MatrixStatic<K, Row, Col>& MatrixStatic<K, Row, Col>::operator-=(const MatrixRowStatic<K, Row>& x)
+inline Matrix<K, Row, Col>& Matrix<K, Row, Col>::operator-=(const Matrix<K, Row>& x)
     requires mk_concepts::DoubleFloatingPoint<K>
 {
 #if !defined(NDEBUG)
@@ -249,14 +253,14 @@ inline MatrixStatic<K, Row, Col>& MatrixStatic<K, Row, Col>::operator-=(const Ma
 }
 
 template <typename K, size_t Row, size_t Col>
-MatrixStatic<K, Row, Col>& MatrixStatic<K, Row, Col>::operator*=(const MatrixStatic<K, Row, Col>& x) {
+Matrix<K, Row, Col>& Matrix<K, Row, Col>::operator*=(const Matrix<K, Row, Col>& x) {
     // hadamard product is not into BLAS
     std::ranges::transform(this->_elements, x._elements, this->_elements.begin(), std::multiplies<>());
     return *this;
 }
 
 template <typename K, size_t Row, size_t Col>
-MatrixStatic<K, Row, Col>& MatrixStatic<K, Row, Col>::operator*=(const MatrixRowStatic<K, Row>& x) {
+Matrix<K, Row, Col>& Matrix<K, Row, Col>::operator*=(const Matrix<K, Row>& x) {
 #if !defined(NDEBUG)
     if (Col != x.ColumnSize()) {
         std::string errorString = "Mismatch matrix size for matrix product.\n";
@@ -273,7 +277,7 @@ MatrixStatic<K, Row, Col>& MatrixStatic<K, Row, Col>::operator*=(const MatrixRow
 
 // ostream
 template <typename K, size_t Row, size_t Col>
-std::ostream& operator<<(std::ostream& os, const MatrixStatic<K, Row, Col>& mat) {
+std::ostream& operator<<(std::ostream& os, const Matrix<K, Row, Col>& mat) {
     for (size_t i = 0; i < Row; i++) {
         for (size_t j = 0; j < Col; j++) {
             os << mat._span[i, j] << " ";
@@ -286,17 +290,17 @@ std::ostream& operator<<(std::ostream& os, const MatrixStatic<K, Row, Col>& mat)
 
 /* begin matrix unique functions definition */
 template <typename K, size_t Row, size_t Col>
-constexpr size_t MatrixStatic<K, Row, Col>::RowSize() {
+constexpr size_t Matrix<K, Row, Col>::RowSize() {
     return Row;
 }
 
 template <typename K, size_t Row, size_t Col>
-constexpr size_t MatrixStatic<K, Row, Col>::ColumnSize() {
+constexpr size_t Matrix<K, Row, Col>::ColumnSize() {
     return Col;
 }
 
 template <typename K, size_t Row, size_t Col>
-std::string MatrixStatic<K, Row, Col>::GetSizeString() const {
+std::string Matrix<K, Row, Col>::GetSizeString() const {
     return "(" + std::to_string(Row) + ", " + std::to_string(Col) + ")";
 }
 
@@ -305,24 +309,24 @@ inline std::array<K, Row * Col>& MatrixStatic<K, Row, Col>::Elements() {
     return this->_elements;
 }
 
-template <typename K, size_t Row, size_t Col>
-inline K* MatrixStatic<K, Row, Col>::ElementsPointer() {
-    return this->_elements.data();
-}
+// template <typename K, size_t Row, size_t Col>
+// inline K* MatrixStatic<K, Row, Col>::ElementsPointer() {
+//     return this->_elements.data();
+// }
 
-template <typename K, size_t Row, size_t Col>
-inline const K* MatrixStatic<K, Row, Col>::ElementsPointer() const {
-    return this->_elements.data();
-}
+// template <typename K, size_t Row, size_t Col>
+// inline const K* MatrixStatic<K, Row, Col>::ElementsPointer() const {
+//     return this->_elements.data();
+// }
 /* end matrix unique functions definition */
 
 /* begin matrix unique arithmetics definition */
 template <typename K, size_t Row, size_t Col>
 template <size_t OppCol>
-inline MatrixStatic<K, Row, OppCol> MatrixStatic<K, Row, Col>::Dot(const MatrixStatic<K, Col, OppCol> mat)
+inline Matrix<K, Row, OppCol> Matrix<K, Row, Col>::Dot(const Matrix<K, Col, OppCol> mat)
     requires mk_concepts::SingleFloatingPoint<K>
 {
-    auto res = MatrixStatic<K, Row, OppCol>();
+    auto res = Matrix<K, Row, OppCol>();
     cblas_sgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, Row, OppCol, Col, 1.0, this->ElementsPointer(), Row,
         mat.ElementsPointer(), Col, 0.0, res.ElementsPointer(), Row);
     return res;
@@ -330,34 +334,34 @@ inline MatrixStatic<K, Row, OppCol> MatrixStatic<K, Row, Col>::Dot(const MatrixS
 
 template <typename K, size_t Row, size_t Col>
 template <size_t OppCol>
-inline MatrixStatic<K, Row, OppCol> MatrixStatic<K, Row, Col>::Dot(const MatrixStatic<K, Col, OppCol> mat)
+inline Matrix<K, Row, OppCol> Matrix<K, Row, Col>::Dot(const Matrix<K, Col, OppCol> mat)
     requires mk_concepts::DoubleFloatingPoint<K>
 {
-    auto res = MatrixStatic<K, Row, OppCol>();
+    auto res = Matrix<K, Row, OppCol>();
     cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, Row, OppCol, Col, 1.0, this->ElementsPointer(), Row,
         mat.ElementsPointer(), Col, 0.0, res.ElementsPointer(), Row);
     return res;
 }
 
 template <typename K, size_t Row, size_t Col>
-inline MatrixRowStatic<K, Row> MatrixStatic<K, Row, Col>::Dot(const MatrixRowStatic<K, Col>& mat)
+inline Matrix<K, Row> Matrix<K, Row, Col>::Dot(const Matrix<K, Col>& mat)
     requires mk_concepts::SingleFloatingPoint<K>
 {
     // const size_t matColumnSize = mat.ColumnSize();
     // assert(matColumnSize <= INT_MAX);
-    auto res = MatrixRowStatic<K, Row>(mat.ColumnSize());
+    auto res = Matrix<K, Row>(mat.ColumnSize());
     cblas_sgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, Row, static_cast<blasint>(mat.ColumnSize()), Col, 1.0,
-        this->ElementsPointer(), Row, mat.ElementsPointer(), Col, 0.0, res.ElementsPointer(), Row);
+        this->_elements.data(), Row, mat._elements.data(), Col, 0.0, res._elements.data(), Row);
     return res;
 }
 
 template <typename K, size_t Row, size_t Col>
-inline MatrixRowStatic<K, Row> MatrixStatic<K, Row, Col>::Dot(const MatrixRowStatic<K, Col>& mat)
+inline Matrix<K, Row> Matrix<K, Row, Col>::Dot(const Matrix<K, Col>& mat)
     requires mk_concepts::DoubleFloatingPoint<K>
 {
     // const size_t matColumnSize = mat.ColumnSize();
     // assert(matColumnSize <= INT_MAX);
-    auto res = MatrixRowStatic<K, Row>(mat.ColumnSize());
+    auto res = Matrix<K, Row>(mat.ColumnSize());
     cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, Row, static_cast<blasint>(mat.ColumnSize()), Col, 1.0,
         this->ElementsPointer(), Row, mat.ElementsPointer(), Col, 0.0, res.ElementsPointer(), Row);
     return res;
@@ -365,7 +369,7 @@ inline MatrixRowStatic<K, Row> MatrixStatic<K, Row, Col>::Dot(const MatrixRowSta
 
 template <typename K, size_t Row, size_t Col>
 template <size_t OppCol>
-inline MatrixStatic<K, Row, OppCol> MatrixStatic<K, Row, Col>::Dot(const MatrixColumnStatic<K, OppCol>& mat)
+inline Matrix<K, Row, OppCol> Matrix<K, Row, Col>::Dot(const MatrixColumnStatic<K, OppCol>& mat)
     requires mk_concepts::SingleFloatingPoint<K>
 {
 #if !defined(NDEBUG)
@@ -378,7 +382,7 @@ inline MatrixStatic<K, Row, OppCol> MatrixStatic<K, Row, Col>::Dot(const MatrixC
     }
 #endif
 
-    auto res = MatrixStatic<K, Row, OppCol>();
+    auto res = Matrix<K, Row, OppCol>();
     cblas_sgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, Row, OppCol, Col, 1.0, this->ElementsPointer(), Row,
         mat.ElementsPointer(), Col, 0.0, res.ElementsPointer(), Row);
     return res;
@@ -386,7 +390,7 @@ inline MatrixStatic<K, Row, OppCol> MatrixStatic<K, Row, Col>::Dot(const MatrixC
 
 template <typename K, size_t Row, size_t Col>
 template <size_t OppCol>
-inline MatrixStatic<K, Row, OppCol> MatrixStatic<K, Row, Col>::Dot(const MatrixColumnStatic<K, OppCol>& mat)
+inline Matrix<K, Row, OppCol> Matrix<K, Row, Col>::Dot(const MatrixColumnStatic<K, OppCol>& mat)
     requires mk_concepts::DoubleFloatingPoint<K>
 {
 #if !defined(NDEBUG)
@@ -399,14 +403,14 @@ inline MatrixStatic<K, Row, OppCol> MatrixStatic<K, Row, Col>::Dot(const MatrixC
     }
 #endif
 
-    auto res = MatrixStatic<K, Row, OppCol>();
+    auto res = Matrix<K, Row, OppCol>();
     cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, Row, OppCol, Col, 1.0, this->ElementsPointer(), Row,
         mat.ElementsPointer(), Col, 0.0, res.ElementsPointer(), Row);
     return res;
 }
 
 template <typename K, size_t Row, size_t Col>
-inline MatrixRowStatic<K, Row> MatrixStatic<K, Row, Col>::Dot(const MatrixDynamic<K>& mat)
+inline Matrix<K, Row> Matrix<K, Row, Col>::Dot(const MatrixDynamic<K>& mat)
     requires mk_concepts::SingleFloatingPoint<K>
 {
 #if !defined(NDEBUG)
@@ -419,14 +423,14 @@ inline MatrixRowStatic<K, Row> MatrixStatic<K, Row, Col>::Dot(const MatrixDynami
     }
 #endif
 
-    auto res = MatrixRowStatic<K, Row>(mat.ColumnSize());
+    auto res = Matrix<K, Row>(mat.ColumnSize());
     cblas_sgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, Row, static_cast<blasint>(mat.ColumnSize()), Col, 1.0,
         this->ElementsPointer(), Row, mat.ElementsPointer(), Col, 0.0, res.ElementsPointer(), Row);
     return res;
 }
 
 template <typename K, size_t Row, size_t Col>
-inline MatrixRowStatic<K, Row> MatrixStatic<K, Row, Col>::Dot(const MatrixDynamic<K>& mat)
+inline Matrix<K, Row> Matrix<K, Row, Col>::Dot(const MatrixDynamic<K>& mat)
     requires mk_concepts::DoubleFloatingPoint<K>
 {
 #if !defined(NDEBUG)
@@ -439,7 +443,7 @@ inline MatrixRowStatic<K, Row> MatrixStatic<K, Row, Col>::Dot(const MatrixDynami
     }
 #endif
 
-    auto res = MatrixRowStatic<K, Row>(mat.ColumnSize());
+    auto res = Matrix<K, Row>(mat.ColumnSize());
     cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, Row, static_cast<blasint>(mat.ColumnSize()), Col, 1.0,
         this->ElementsPointer(), Row, mat.ElementsPointer(), Col, 0.0, res.ElementsPointer(), Row);
     return res;

@@ -18,7 +18,7 @@
 using mknnlib::matrix::MatrixColumnStatic;
 using mknnlib::matrix::MatrixDynamic;
 using mknnlib::matrix::MatrixRowStatic;
-using mknnlib::matrix::MatrixStatic;
+using mknnlib::matrix::Matrix;
 
 namespace matrix_test_matrix_product {
 BOOST_AUTO_TEST_CASE_TEMPLATE(matrix_product_matrix_static_and_matrix_dynamic_test, T, CheckMatrixElementType) {
@@ -34,7 +34,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(matrix_product_matrix_static_and_matrix_dynamic_te
     auto expectedAB = MakeExpectedVectorAB<T>();
     auto expectedBA = MakeExpectedVectorBA<T>();
 
-    auto A = MatrixStatic<T, row1, column1>(arrayA);
+    auto A = Matrix<T, row1, column1>(arrayA);
     auto B = MatrixDynamic<T>(row1, column1, arrayB);
 
     auto acceptableErrorAB = MakeAcceptableErrorVectorAB<T>();
@@ -66,7 +66,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(matrix_product_matrix_static_and_matrix_dynamic_te
     auto expectedCD = MakeExpectedVectorCD<T>();
     auto expectedDC = MakeExpectedVectorDC<T>();
 
-    auto C = MatrixStatic<T, row2, column2>(arrayC);
+    auto C = Matrix<T, row2, column2>(arrayC);
     auto D = MatrixDynamic<T>(row2, column2, arrayD);
 
     auto acceptableErrorCD = MakeAcceptableErrorVectorCD<T>();
@@ -103,7 +103,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(matrix_product_matrix_static_and_matrix_dynamic_te
     auto expectedEF = MakeExpectedVectorEF<T>();
     auto expectedFE = MakeExpectedVectorFE<T>();
 
-    auto E = MatrixStatic<T, rowE, columnE>(arrayE);
+    auto E = Matrix<T, rowE, columnE>(arrayE);
     auto F = MatrixDynamic<T>(rowF, columnF, arrayF);
 
     auto acceptableErrorEF = MakeAcceptableErrorVectorEF<T>();
@@ -140,7 +140,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(matrix_product_matrix_static_and_matrix_dynamic_te
 
     auto expectedHG = MakeExpectedVectorHG<T>();
 
-    auto G = MatrixStatic<T, rowG, columnG>(arrayG);
+    auto G = Matrix<T, rowG, columnG>(arrayG);
     auto H = MatrixDynamic<T>(rowH, columnH, arrayH);
 
     auto acceptableErrorHG = MakeAcceptableErrorVectorHG<T>();
@@ -168,7 +168,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(matrix_product_matrix_static_and_matrix_dynamic_te
 
     auto expectedJI = MakeExpectedVectorJI<T>();
 
-    auto I = MatrixStatic<T, rowI, columnI>(arrayI);
+    auto I = Matrix<T, rowI, columnI>(arrayI);
     auto J = MatrixDynamic<T>(rowJ, columnJ, arrayJ);
 
     auto acceptableErrorJI = MakeAcceptableErrorVectorJI<T>();
@@ -185,7 +185,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(matrix_product_matrix_static_and_matrix_dynamic_te
     auto K = MatrixDynamic<T>(rowI, columnI, std::vector<T>(arrayI.begin(), arrayI.end()));
     auto arrayL = std::array<T, elementSizeJ>();
     std::copy_n(arrayJ.begin(), elementSizeJ, arrayL.begin());
-    auto L = MatrixStatic<T, rowJ, columnJ>(arrayL);
+    auto L = Matrix<T, rowJ, columnJ>(arrayL);
 
     auto LK = L.Dot(K);
 
@@ -196,14 +196,14 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(matrix_product_matrix_static_and_matrix_dynamic_te
     // throw exception test
     auto mArray = MakeArrayM<T, 3 * 2>();
     auto nArray = MakeVectorN<T>();
-    auto M = MatrixStatic<T, 3, 2>(mArray);
+    auto M = Matrix<T, 3, 2>(mArray);
     auto N = MatrixDynamic<T>(3, 3, nArray);
 
     BOOST_CHECK_THROW(M.Dot(N), std::domain_error);
     BOOST_CHECK_NO_THROW(N.Dot(M));
 
     auto O = MatrixDynamic<T>(3, 2, ArrayToVector<T>(mArray));
-    auto P = MatrixStatic<T, 3, 3>(VectorToArray<T, 9>(nArray));
+    auto P = Matrix<T, 3, 3>(VectorToArray<T, 9>(nArray));
 
     BOOST_CHECK_THROW(O.Dot(P), std::domain_error);
     BOOST_CHECK_NO_THROW(P.Dot(O));

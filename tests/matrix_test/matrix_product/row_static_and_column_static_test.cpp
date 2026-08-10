@@ -14,7 +14,7 @@
 using mknnlib::matrix::MatrixColumnStatic;
 using mknnlib::matrix::MatrixDynamic;
 using mknnlib::matrix::MatrixRowStatic;
-using mknnlib::matrix::MatrixStatic;
+using mknnlib::matrix::Matrix;
 
 namespace matrix_test_matrix_product {
 BOOST_AUTO_TEST_CASE_TEMPLATE(matrix_product_matrix_row_static_and_matrix_column_static_test, T, CheckMatrixElementType) {
@@ -44,7 +44,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(matrix_product_matrix_row_static_and_matrix_column
     auto AB = A.Dot(B);
     auto BA = B.Dot(A);
 
-    auto typeCheckAB = std::is_same<decltype(AB), MatrixStatic<T, row1, column1>>::value;
+    auto typeCheckAB = std::is_same<decltype(AB), Matrix<T, row1, column1>>::value;
     auto typeCheckBA = std::is_same<decltype(BA), MatrixDynamic<T>>::value;
     BOOST_CHECK(typeCheckAB);
     BOOST_CHECK(typeCheckBA);
@@ -76,7 +76,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(matrix_product_matrix_row_static_and_matrix_column
     auto CD = C.Dot(D);
     auto DC = D.Dot(C);
 
-    auto typeCheckCD = std::is_same<decltype(CD), MatrixStatic<T, row2, column2>>::value;
+    auto typeCheckCD = std::is_same<decltype(CD), Matrix<T, row2, column2>>::value;
     auto typeCheckDC = std::is_same<decltype(DC), MatrixDynamic<T>>::value;
     BOOST_CHECK(typeCheckCD);
     BOOST_CHECK(typeCheckDC);
@@ -115,7 +115,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(matrix_product_matrix_row_static_and_matrix_column
     auto EF = E.Dot(F);
     auto FE = F.Dot(E);
 
-    auto typeCheckEF = std::is_same<decltype(EF), MatrixStatic<T, rowE, columnF>>::value;
+    auto typeCheckEF = std::is_same<decltype(EF), Matrix<T, rowE, columnF>>::value;
     auto typeCheckFE = std::is_same<decltype(FE), MatrixDynamic<T>>::value;
     BOOST_CHECK(typeCheckEF);
     BOOST_CHECK(typeCheckFE);
@@ -185,7 +185,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(matrix_product_matrix_row_static_and_matrix_column
 
     auto LK = L.Dot(K);
 
-    auto typeCheckKL = std::is_same<decltype(LK), MatrixStatic<T, rowJ, columnI>>::value;
+    auto typeCheckKL = std::is_same<decltype(LK), Matrix<T, rowJ, columnI>>::value;
     BOOST_CHECK(typeCheckKL);
     CheckCloseEachVectorElement(ArrayToVector<T>(LK.Elements()), expectedJI, acceptableErrorJI);
 

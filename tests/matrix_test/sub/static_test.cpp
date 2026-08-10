@@ -12,7 +12,7 @@
 #include "tests/test_type_defines.hpp"
 #include "tests/test_utilities.hpp"
 
-using mknnlib::matrix::MatrixStatic;
+using mknnlib::matrix::Matrix;
 
 namespace matrix_test_sub {
 BOOST_AUTO_TEST_CASE_TEMPLATE(sub_matrix_static_test, T, CheckMatrixElementType) {
@@ -24,8 +24,8 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(sub_matrix_static_test, T, CheckMatrixElementType)
     auto arrayA = MakeArrayA<T>();
     auto arrayB = MakeArrayB<T>();
 
-    auto A = MatrixStatic<T, rowAAndB, columnAAndB>(arrayA);
-    auto B = MatrixStatic<T, rowAAndB, columnAAndB>(arrayB);
+    auto A = Matrix<T, rowAAndB, columnAAndB>(arrayA);
+    auto B = Matrix<T, rowAAndB, columnAAndB>(arrayB);
 
     auto expectedAMinusB = MakeExpectedArrayAAndB<T>();
 
@@ -37,7 +37,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(sub_matrix_static_test, T, CheckMatrixElementType)
 
     auto AMinusB = A - B;
 
-    auto typeCheckAMinusB = std::is_same<decltype(AMinusB), MatrixStatic<T, rowAAndB, columnAAndB>>::value;
+    auto typeCheckAMinusB = std::is_same<decltype(AMinusB), Matrix<T, rowAAndB, columnAAndB>>::value;
     BOOST_CHECK(typeCheckAMinusB);
     CheckCloseEachArrayElement<T, elementSizeAAndB>(AMinusB.Elements(), expectedAMinusB, acceptableErrorAMinusB);
 
@@ -49,8 +49,8 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(sub_matrix_static_test, T, CheckMatrixElementType)
     auto arrayC = MakeArrayC<T>();
     auto arrayD = MakeArrayD<T>();
 
-    auto C = MatrixStatic<T, rowCAndD, columnCAndD>(arrayC);
-    auto D = MatrixStatic<T, rowCAndD, columnCAndD>(arrayD);
+    auto C = Matrix<T, rowCAndD, columnCAndD>(arrayC);
+    auto D = Matrix<T, rowCAndD, columnCAndD>(arrayD);
 
     auto expectedCMinusD = MakeExpectedArrayCAndD<T>();
 
@@ -61,7 +61,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(sub_matrix_static_test, T, CheckMatrixElementType)
 
     auto CMinusD = C - D;
 
-    auto typeCheckCMinusD = std::is_same<decltype(CMinusD), MatrixStatic<T, rowCAndD, columnCAndD>>::value;
+    auto typeCheckCMinusD = std::is_same<decltype(CMinusD), Matrix<T, rowCAndD, columnCAndD>>::value;
     BOOST_CHECK(typeCheckCMinusD);
     CheckCloseEachArrayElement<T, elementSizeCAndD>(CMinusD.Elements(), expectedCMinusD, acceptableErrorCMinusD);
 
@@ -71,8 +71,8 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(sub_matrix_static_test, T, CheckMatrixElementType)
     auto arrayG = MakeArrayG<T>();
 
     // auto E = MatrixStatic<T, 3, 2>(arrayE);
-    auto F = MatrixStatic<T, 2, 3>(arrayF);
-    auto G = MatrixStatic<T, 2, 3>(arrayG);
+    auto F = Matrix<T, 2, 3>(arrayF);
+    auto G = Matrix<T, 2, 3>(arrayG);
 
     // BOOST_CHECK_THROW(E - F, std::domain_error);
     // BOOST_CHECK_THROW(F - E, std::domain_error);

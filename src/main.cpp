@@ -7,7 +7,7 @@
 #include "matrices/matrix_static.hpp"
 #include "src/matrices/matrix_row_static.hpp"
 
-using mknnlib::matrix::MatrixStatic;
+using mknnlib::matrix::Matrix;
 using mknnlib::matrix::MatrixRowStatic;
 
 int main() {
@@ -29,7 +29,7 @@ int main() {
 
     std::vector<float> c(m * n, 0.0);
 
-    auto x = MatrixStatic<float, m, k>(a);
+    auto x = Matrix<float, m, k>(a);
     // auto y = MatrixStatic<float, k, n>(b);
     
     // auto res = x.Dot(y);
