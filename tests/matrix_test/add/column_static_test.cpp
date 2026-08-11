@@ -7,10 +7,10 @@
 #include <limits>
 #include <type_traits>
 
-#include "src/matrices/matrix_column_static.hpp"
 #include "tests/test_matrix_add_vector_defines.hpp"
 #include "tests/test_type_defines.hpp"
 #include "tests/test_utilities.hpp"
+#include "src/matrices/matrix_template_base.hpp"
 
 using mknnlib::matrix::MatrixColumnStatic;
 

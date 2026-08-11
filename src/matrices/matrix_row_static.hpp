@@ -81,10 +81,10 @@ public:
     size_t ColumnSize();
     size_t ColumnSize() const;
     std::string GetSizeString() const;
-    // std::vector<K>& Elements();
-    // const std::vector<K>& Elements() const;
-    // K* ElementsPointer();
-    // const K* ElementsPointer() const;
+    std::vector<K>& Elements();
+    const std::vector<K>& Elements() const;
+    // K* _elements.data();
+    // const K* _elements.data() const;
 
     /* end matrix unique functions declaration */
 
@@ -160,7 +160,7 @@ inline Matrix<K, Row>& Matrix<K, Row>::operator+=(const Matrix<K, Row>& x)
         throw std::domain_error(errorString);
     }
 #endif
-    cblas_saxpy(static_cast<blasint>(Row * this->_columnSize), 1.0, x.ElementsPointer(), 1, this->ElementsPointer(), 1);
+    cblas_saxpy(static_cast<blasint>(Row * this->_columnSize), 1.0, x._elements.data(), 1, this->_elements.data(), 1);
     return *this;
 }
 
@@ -177,7 +177,7 @@ inline Matrix<K, Row>& Matrix<K, Row>::operator+=(const Matrix<K, Row>& x)
         throw std::domain_error(errorString);
     }
 #endif
-    cblas_daxpy(static_cast<blasint>(Row * this->_columnSize), 1.0, x.ElementsPointer(), 1, this->ElementsPointer(), 1);
+    cblas_daxpy(static_cast<blasint>(Row * this->_columnSize), 1.0, x._elements.data(), 1, this->_elements.data(), 1);
     return *this;
 }
 
@@ -195,7 +195,7 @@ inline Matrix<K, Row>& Matrix<K, Row>::operator-=(const Matrix<K, Row>& x)
     }
 #endif
     cblas_saxpy(
-        static_cast<blasint>(Row * this->_columnSize), -1.0, x.ElementsPointer(), 1, this->ElementsPointer(), 1);
+        static_cast<blasint>(Row * this->_columnSize), -1.0, x._elements.data(), 1, this->_elements.data(), 1);
     return *this;
 }
 
@@ -213,7 +213,7 @@ inline Matrix<K, Row>& Matrix<K, Row>::operator-=(const Matrix<K, Row>& x)
     }
 #endif
     cblas_daxpy(
-        static_cast<blasint>(Row * this->_columnSize), -1.0, x.ElementsPointer(), 1, this->ElementsPointer(), 1);
+        static_cast<blasint>(Row * this->_columnSize), -1.0, x._elements.data(), 1, this->_elements.data(), 1);
     return *this;
 }
 
@@ -267,23 +267,23 @@ std::string Matrix<K, Row>::GetSizeString() const {
     return "(" + std::to_string(Row) + ", " + std::to_string(this->ColumnSize()) + ")";
 }
 
-// template <typename K, size_t Row>
-// inline std::vector<K>& Matrix<K, Row>::Elements() {
-//     return this->_elements;
-// }
+template <typename K, size_t Row>
+inline std::vector<K>& Matrix<K, Row>::Elements() {
+    return this->_elements;
+}
+
+template <typename K, size_t Row>
+inline const std::vector<K>& Matrix<K, Row>::Elements() const {
+    return this->_elements;
+}
 
 // template <typename K, size_t Row>
-// inline const std::vector<K>& Matrix<K, Row>::Elements() const {
-//     return this->_elements;
-// }
-
-// template <typename K, size_t Row>
-// inline K* Matrix<K, Row>::ElementsPointer() {
+// inline K* Matrix<K, Row>::_elements.data() {
 //     return this->_elements.data();
 // }
 
 // template <typename K, size_t Row>
-// inline const K* Matrix<K, Row>::ElementsPointer() const {
+// inline const K* Matrix<K, Row>::_elements.data() const {
 //     return this->_elements.data();
 // }
 /* end matrix unique functions definition */
@@ -306,7 +306,7 @@ Matrix<K, Row> Matrix<K, Row>::Dot(const Matrix<K, OppRow> mat)
 
     auto res = Matrix<K, Row>(mat.ColumnSize());
     cblas_sgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, Row, static_cast<blasint>(mat.ColumnSize()), OppRow, 1.0,
-        this->ElementsPointer(), Row, mat.ElementsPointer(), OppRow, 0.0, res.ElementsPointer(), Row);
+        this->_elements.data(), Row, mat._elements.data(), OppRow, 0.0, res._elements.data(), Row);
     return res;
 }
 
@@ -327,7 +327,7 @@ Matrix<K, Row> Matrix<K, Row>::Dot(const Matrix<K, OppRow> mat)
 
     auto res = Matrix<K, Row>(mat.ColumnSize());
     cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, Row, static_cast<blasint>(mat.ColumnSize()), OppRow, 1.0,
-        this->ElementsPointer(), Row, mat.ElementsPointer(), OppRow, 0.0, res.ElementsPointer(), Row);
+        this->_elements.data(), Row, mat._elements.data(), OppRow, 0.0, res._elements.data(), Row);
     return res;
 }
 
@@ -348,8 +348,8 @@ Matrix<K, Row, OppCol> Matrix<K, Row>::Dot(const Matrix<K, OppRow, OppCol> mat)
 
     auto res = Matrix<K, Row, OppCol>();
     cblas_sgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, Row, OppCol, static_cast<blasint>(this->ColumnSize()), 1.0,
-        this->ElementsPointer(), Row, mat.ElementsPointer(), static_cast<blasint>(this->ColumnSize()), 0.0,
-        res.ElementsPointer(), Row);
+        this->_elements.data(), Row, mat._elements.data(), static_cast<blasint>(this->ColumnSize()), 0.0,
+        res._elements.data(), Row);
     return res;
 }
 
@@ -370,8 +370,8 @@ Matrix<K, Row, OppCol> Matrix<K, Row>::Dot(const Matrix<K, OppRow, OppCol> mat)
 
     auto res = Matrix<K, Row, OppCol>();
     cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, Row, OppCol, static_cast<blasint>(this->ColumnSize()), 1.0,
-        this->ElementsPointer(), Row, mat.ElementsPointer(), static_cast<blasint>(this->ColumnSize()), 0.0,
-        res.ElementsPointer(), Row);
+        this->_elements.data(), Row, mat._elements.data(), static_cast<blasint>(this->ColumnSize()), 0.0,
+        res._elements.data(), Row);
     return res;
 }
 
@@ -392,8 +392,8 @@ Matrix<K, Row, OppCol> Matrix<K, Row>::Dot(const MatrixColumnStatic<K, OppCol> m
 
     auto res = Matrix<K, Row, OppCol>();
     cblas_sgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, Row, OppCol, static_cast<blasint>(this->ColumnSize()), 1.0,
-        this->ElementsPointer(), Row, mat.ElementsPointer(), static_cast<blasint>(this->ColumnSize()), 0.0,
-        res.ElementsPointer(), Row);
+        this->_elements.data(), Row, mat._elements.data(), static_cast<blasint>(this->ColumnSize()), 0.0,
+        res._elements.data(), Row);
     return res;
 }
 
@@ -414,8 +414,8 @@ Matrix<K, Row, OppCol> Matrix<K, Row>::Dot(const MatrixColumnStatic<K, OppCol> m
 
     auto res = Matrix<K, Row, OppCol>();
     cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, Row, OppCol, static_cast<blasint>(this->ColumnSize()), 1.0,
-        this->ElementsPointer(), Row, mat.ElementsPointer(), static_cast<blasint>(this->ColumnSize()), 0.0,
-        res.ElementsPointer(), Row);
+        this->_elements.data(), Row, mat._elements.data(), static_cast<blasint>(this->ColumnSize()), 0.0,
+        res._elements.data(), Row);
     return res;
 }
 
@@ -435,8 +435,8 @@ Matrix<K, Row> Matrix<K, Row>::Dot(const MatrixDynamic<K> mat)
 
     auto res = Matrix<K, Row>(mat.ColumnSize());
     cblas_sgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, Row, static_cast<blasint>(mat.ColumnSize()),
-        static_cast<blasint>(this->ColumnSize()), 1.0, this->ElementsPointer(), Row, mat.ElementsPointer(),
-        static_cast<blasint>(this->ColumnSize()), 0.0, res.ElementsPointer(), Row);
+        static_cast<blasint>(this->ColumnSize()), 1.0, this->_elements.data(), Row, mat._elements.data(),
+        static_cast<blasint>(this->ColumnSize()), 0.0, res._elements.data(), Row);
     return res;
 }
 
@@ -456,8 +456,8 @@ Matrix<K, Row> Matrix<K, Row>::Dot(const MatrixDynamic<K> mat)
 
     auto res = Matrix<K, Row>(mat.ColumnSize());
     cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, Row, static_cast<blasint>(mat.ColumnSize()),
-        static_cast<blasint>(this->ColumnSize()), 1.0, this->ElementsPointer(), Row, mat.ElementsPointer(),
-        static_cast<blasint>(this->ColumnSize()), 0.0, res.ElementsPointer(), Row);
+        static_cast<blasint>(this->ColumnSize()), 1.0, this->_elements.data(), Row, mat._elements.data(),
+        static_cast<blasint>(this->ColumnSize()), 0.0, res._elements.data(), Row);
     return res;
 }
 /* end matrix unique arithmetics definition */
