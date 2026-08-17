@@ -16,21 +16,26 @@
 
 namespace mknnlib::matrix {
 template <typename K, size_t Col>
+    requires mk_concepts::BLASComputable<K>
 class Matrix<K, std::dynamic_extent, Col>;
 template <typename K, size_t Col>
+    requires mk_concepts::BLASComputable<K>
 std::ostream& operator<<(std::ostream& os, const Matrix<K, std::dynamic_extent, Col>& mat);
 
 template <typename K, size_t Row, size_t Col>
+    requires mk_concepts::BLASComputable<K>
 class Matrix;
 
 template <typename K, size_t Col>
+    requires mk_concepts::BLASComputable<K>
 class Matrix<K, std::dynamic_extent, Col> :
     private boost::addable<Matrix<K, std::dynamic_extent, Col>>,
     private boost::subtractable<Matrix<K, std::dynamic_extent, Col>>,
     private boost::multipliable<Matrix<K, std::dynamic_extent, Col>> {
     static_assert(Col != std::dynamic_extent);
 
-    template <typename, std::size_t, std::size_t>
+    template <typename T, size_t FRow, size_t FCol>
+        requires mk_concepts::BLASComputable<T>
     friend class Matrix;
     // type alias
     using MatrixExtent = std::extents<size_t, std::dynamic_extent, Col>;
@@ -114,19 +119,23 @@ public:
 
 /* begin constructors definition */
 template <typename K, size_t Col>
+    requires mk_concepts::BLASComputable<K>
 Matrix<K, std::dynamic_extent, Col>::Matrix() :
     _rowSize(0), _columnSize(Col), _elements{}, _span(_elements.data(), MatrixExtent{}) {}
 
 template <typename K, size_t Col>
+    requires mk_concepts::BLASComputable<K>
 Matrix<K, std::dynamic_extent, Col>::Matrix(const size_t rowSize) :
     _rowSize(rowSize), _columnSize(Col), _elements(rowSize * Col, K{}), _span(_elements.data(), MatrixExtent{}) {}
 
 template <typename K, size_t Col>
+    requires mk_concepts::BLASComputable<K>
 Matrix<K, std::dynamic_extent, Col>::Matrix(const size_t rowSize, const std::vector<K> elements) :
     _rowSize(rowSize), _columnSize(Col), _elements{elements}, _span(_elements.data(), MatrixExtent{}) {}
 
 // copy constructor
 template <typename K, size_t Col>
+    requires mk_concepts::BLASComputable<K>
 Matrix<K, std::dynamic_extent, Col>::Matrix(const Matrix<K, std::dynamic_extent, Col>& mat) :
     _rowSize(mat.RowSize()), _columnSize(Col), _elements(mat._elements), _span(_elements.data(), MatrixExtent{}) {}
 /* end constructors definition */
@@ -134,6 +143,7 @@ Matrix<K, std::dynamic_extent, Col>::Matrix(const Matrix<K, std::dynamic_extent,
 /* begin operator overloads definition */
 // copy assignment operator
 template <typename K, size_t Col>
+    requires mk_concepts::BLASComputable<K>
 Matrix<K, std::dynamic_extent, Col>& Matrix<K, std::dynamic_extent, Col>::operator=(
     const Matrix<K, std::dynamic_extent, Col>& x) {
     if (this != &x) {
@@ -145,6 +155,7 @@ Matrix<K, std::dynamic_extent, Col>& Matrix<K, std::dynamic_extent, Col>::operat
 
 // arithmetics
 template <typename K, size_t Col>
+    requires mk_concepts::BLASComputable<K>
 inline Matrix<K, std::dynamic_extent, Col>& Matrix<K, std::dynamic_extent, Col>::operator+=(
     const Matrix<K, std::dynamic_extent, Col>& x)
     requires mk_concepts::SingleFloatingPoint<K>
@@ -163,6 +174,7 @@ inline Matrix<K, std::dynamic_extent, Col>& Matrix<K, std::dynamic_extent, Col>:
 }
 
 template <typename K, size_t Col>
+    requires mk_concepts::BLASComputable<K>
 inline Matrix<K, std::dynamic_extent, Col>& Matrix<K, std::dynamic_extent, Col>::operator+=(
     const Matrix<K, std::dynamic_extent, Col>& x)
     requires mk_concepts::DoubleFloatingPoint<K>
@@ -181,6 +193,7 @@ inline Matrix<K, std::dynamic_extent, Col>& Matrix<K, std::dynamic_extent, Col>:
 }
 
 template <typename K, size_t Col>
+    requires mk_concepts::BLASComputable<K>
 inline Matrix<K, std::dynamic_extent, Col>& Matrix<K, std::dynamic_extent, Col>::operator-=(
     const Matrix<K, std::dynamic_extent, Col>& x)
     requires mk_concepts::SingleFloatingPoint<K>
@@ -199,6 +212,7 @@ inline Matrix<K, std::dynamic_extent, Col>& Matrix<K, std::dynamic_extent, Col>:
 }
 
 template <typename K, size_t Col>
+    requires mk_concepts::BLASComputable<K>
 inline Matrix<K, std::dynamic_extent, Col>& Matrix<K, std::dynamic_extent, Col>::operator-=(
     const Matrix<K, std::dynamic_extent, Col>& x)
     requires mk_concepts::DoubleFloatingPoint<K>
@@ -217,6 +231,7 @@ inline Matrix<K, std::dynamic_extent, Col>& Matrix<K, std::dynamic_extent, Col>:
 }
 
 template <typename K, size_t Col>
+    requires mk_concepts::BLASComputable<K>
 Matrix<K, std::dynamic_extent, Col>& Matrix<K, std::dynamic_extent, Col>::operator*=(
     const Matrix<K, std::dynamic_extent, Col>& x) {
 #if !defined(NDEBUG)
@@ -235,6 +250,7 @@ Matrix<K, std::dynamic_extent, Col>& Matrix<K, std::dynamic_extent, Col>::operat
 
 // ostream
 template <typename K, size_t Col>
+    requires mk_concepts::BLASComputable<K>
 std::ostream& operator<<(std::ostream& os, const Matrix<K, std::dynamic_extent, Col>& mat) {
     for (size_t i = 0; i < mat._rowSize; i++) {
         for (size_t j = 0; j < Col; j++) {
@@ -249,36 +265,43 @@ std::ostream& operator<<(std::ostream& os, const Matrix<K, std::dynamic_extent, 
 
 /* begin matrix unique functions definition */
 template <typename K, size_t Col>
+    requires mk_concepts::BLASComputable<K>
 size_t Matrix<K, std::dynamic_extent, Col>::RowSize() {
     return this->_rowSize;
 }
 
 template <typename K, size_t Col>
+    requires mk_concepts::BLASComputable<K>
 size_t Matrix<K, std::dynamic_extent, Col>::RowSize() const {
     return this->_rowSize;
 }
 
 template <typename K, size_t Col>
+    requires mk_concepts::BLASComputable<K>
 constexpr size_t Matrix<K, std::dynamic_extent, Col>::ColumnSize() {
     return Col;
 }
 
 template <typename K, size_t Col>
+    requires mk_concepts::BLASComputable<K>
 std::string Matrix<K, std::dynamic_extent, Col>::GetSizeString() const {
     return "(" + std::to_string(this->RowSize()) + ", " + std::to_string(Col) + ")";
 }
 
 template <typename K, size_t Col>
+    requires mk_concepts::BLASComputable<K>
 inline std::vector<K>& Matrix<K, std::dynamic_extent, Col>::Elements() {
     return this->_elements;
 }
 
 // template <typename K, size_t Col>
+// requires mk_concepts::BLASComputable<K>
 // inline K* Matrix<K, std::dynamic_extent, Col>::_elements.data() {
 //     return this->_elements.data();
 // }
 
 // template <typename K, size_t Col>
+// requires mk_concepts::BLASComputable<K>
 // inline const K* Matrix<K, std::dynamic_extent, Col>::_elements.data() const {
 //     return this->_elements.data();
 // }
@@ -286,6 +309,7 @@ inline std::vector<K>& Matrix<K, std::dynamic_extent, Col>::Elements() {
 
 /* begin matrix unique arithmetics definition */
 template <typename K, size_t Col>
+    requires mk_concepts::BLASComputable<K>
 template <size_t OppCol>
 Matrix<K, std::dynamic_extent, OppCol> Matrix<K, std::dynamic_extent, Col>::Dot(
     Matrix<K, std::dynamic_extent, OppCol> mat)
@@ -309,6 +333,7 @@ Matrix<K, std::dynamic_extent, OppCol> Matrix<K, std::dynamic_extent, Col>::Dot(
 }
 
 template <typename K, size_t Col>
+    requires mk_concepts::BLASComputable<K>
 template <size_t OppCol>
 Matrix<K, std::dynamic_extent, OppCol> Matrix<K, std::dynamic_extent, Col>::Dot(
     Matrix<K, std::dynamic_extent, OppCol> mat)
@@ -332,6 +357,7 @@ Matrix<K, std::dynamic_extent, OppCol> Matrix<K, std::dynamic_extent, Col>::Dot(
 }
 
 template <typename K, size_t Col>
+    requires mk_concepts::BLASComputable<K>
 template <size_t OppRow, size_t OppCol>
 Matrix<K, std::dynamic_extent, OppCol> Matrix<K, std::dynamic_extent, Col>::Dot(Matrix<K, OppRow, OppCol> mat)
     requires mk_concepts::SingleFloatingPoint<K>
@@ -344,6 +370,7 @@ Matrix<K, std::dynamic_extent, OppCol> Matrix<K, std::dynamic_extent, Col>::Dot(
 }
 
 template <typename K, size_t Col>
+    requires mk_concepts::BLASComputable<K>
 template <size_t OppRow, size_t OppCol>
 Matrix<K, std::dynamic_extent, OppCol> Matrix<K, std::dynamic_extent, Col>::Dot(Matrix<K, OppRow, OppCol> mat)
     requires mk_concepts::DoubleFloatingPoint<K>
@@ -356,32 +383,33 @@ Matrix<K, std::dynamic_extent, OppCol> Matrix<K, std::dynamic_extent, Col>::Dot(
 }
 
 template <typename K, size_t Col>
+    requires mk_concepts::BLASComputable<K>
 template <size_t OppRow>
 MatrixDynamic<K> Matrix<K, std::dynamic_extent, Col>::Dot(MatrixRowStatic<K, OppRow> mat)
     requires mk_concepts::SingleFloatingPoint<K>
 {
     auto res = MatrixDynamic<K>(this->RowSize(), mat.ColumnSize());
     cblas_sgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, static_cast<blasint>(this->RowSize()),
-        static_cast<blasint>(mat.ColumnSize()), Col, 1.0, this->_elements.data(),
-        static_cast<blasint>(this->RowSize()), mat._elements.data(), OppRow, 0.0, res._elements.data(),
-        static_cast<blasint>(this->RowSize()));
+        static_cast<blasint>(mat.ColumnSize()), Col, 1.0, this->_elements.data(), static_cast<blasint>(this->RowSize()),
+        mat._elements.data(), OppRow, 0.0, res._elements.data(), static_cast<blasint>(this->RowSize()));
     return res;
 }
 
 template <typename K, size_t Col>
+    requires mk_concepts::BLASComputable<K>
 template <size_t OppRow>
 MatrixDynamic<K> Matrix<K, std::dynamic_extent, Col>::Dot(MatrixRowStatic<K, OppRow> mat)
     requires mk_concepts::DoubleFloatingPoint<K>
 {
     auto res = MatrixDynamic<K>(this->RowSize(), mat.ColumnSize());
     cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, static_cast<blasint>(this->RowSize()),
-        static_cast<blasint>(mat.ColumnSize()), Col, 1.0, this->_elements.data(),
-        static_cast<blasint>(this->RowSize()), mat._elements.data(), OppRow, 0.0, res._elements.data(),
-        static_cast<blasint>(this->RowSize()));
+        static_cast<blasint>(mat.ColumnSize()), Col, 1.0, this->_elements.data(), static_cast<blasint>(this->RowSize()),
+        mat._elements.data(), OppRow, 0.0, res._elements.data(), static_cast<blasint>(this->RowSize()));
     return res;
 }
 
 template <typename K, size_t Col>
+    requires mk_concepts::BLASComputable<K>
 MatrixDynamic<K> Matrix<K, std::dynamic_extent, Col>::Dot(MatrixDynamic<K> mat)
     requires mk_concepts::SingleFloatingPoint<K>
 {
@@ -397,13 +425,14 @@ MatrixDynamic<K> Matrix<K, std::dynamic_extent, Col>::Dot(MatrixDynamic<K> mat)
 
     auto res = MatrixDynamic<K>(this->RowSize(), mat.ColumnSize());
     cblas_sgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, static_cast<blasint>(this->RowSize()),
-        static_cast<blasint>(mat.ColumnSize()), Col, 1.0, this->_elements.data(),
-        static_cast<blasint>(this->RowSize()), mat._elements.data(), static_cast<blasint>(mat.RowSize()), 0.0,
-        res._elements.data(), static_cast<blasint>(this->RowSize()));
+        static_cast<blasint>(mat.ColumnSize()), Col, 1.0, this->_elements.data(), static_cast<blasint>(this->RowSize()),
+        mat._elements.data(), static_cast<blasint>(mat.RowSize()), 0.0, res._elements.data(),
+        static_cast<blasint>(this->RowSize()));
     return res;
 }
 
 template <typename K, size_t Col>
+    requires mk_concepts::BLASComputable<K>
 MatrixDynamic<K> Matrix<K, std::dynamic_extent, Col>::Dot(MatrixDynamic<K> mat)
     requires mk_concepts::DoubleFloatingPoint<K>
 {
@@ -419,9 +448,9 @@ MatrixDynamic<K> Matrix<K, std::dynamic_extent, Col>::Dot(MatrixDynamic<K> mat)
 
     auto res = MatrixDynamic<K>(this->RowSize(), mat.ColumnSize());
     cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, static_cast<blasint>(this->RowSize()),
-        static_cast<blasint>(mat.ColumnSize()), Col, 1.0, this->_elements.data(),
-        static_cast<blasint>(this->RowSize()), mat._elements.data(), static_cast<blasint>(mat.RowSize()), 0.0,
-        res._elements.data(), static_cast<blasint>(this->RowSize()));
+        static_cast<blasint>(mat.ColumnSize()), Col, 1.0, this->_elements.data(), static_cast<blasint>(this->RowSize()),
+        mat._elements.data(), static_cast<blasint>(mat.RowSize()), 0.0, res._elements.data(),
+        static_cast<blasint>(this->RowSize()));
     return res;
 }
 /* end matrix unique arithmetics definition */

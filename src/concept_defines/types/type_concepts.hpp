@@ -32,6 +32,9 @@ concept SingleFloatingComplex = std::same_as<T, std::complex<float>>;
 
 template <typename T>
 concept DoubleFloatingComplex = std::same_as<T, std::complex<double>>;
-}  // namespace mknnlib::matrix
+
+template <typename T>
+concept BLASComputable = SingleFloatingPoint<T> || DoubleFloatingPoint<T>;
+}  // namespace mknnlib::mk_concepts
 
 #endif
