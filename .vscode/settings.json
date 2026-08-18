@@ -8,6 +8,7 @@
         "rgba(79,236,236,0.25)"
     ],
     "cSpell.words": [
+        "axpy",
         "blasint",
         "cblas",
         "daxpy",
@@ -19,6 +20,7 @@
         "mknnlib",
         "multipliable",
         "Multipliable",
+        "OPENBLAS",
         "saxpy",
         "sgemm"
     ],
