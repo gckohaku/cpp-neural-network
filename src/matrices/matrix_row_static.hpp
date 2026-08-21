@@ -19,11 +19,11 @@
 
 namespace mknnlib::matrix {
 template <typename K, size_t Row>
-    requires mk_concepts::BLASComputable<K>
+    requires mk_concepts::BLASSupported<K>
 std::ostream& operator<<(std::ostream& os, const Matrix<K, Row>& mat);
 
 template <typename K, size_t Row, size_t Col>
-    requires mk_concepts::BLASComputable<K>
+    requires mk_concepts::BLASSupported<K>
 class Matrix;
 
 template <typename K, size_t Row, size_t Col>
@@ -59,7 +59,7 @@ template <typename K, size_t Row, size_t Col>
 Matrix<K, Row, Col> operator-(Matrix<K, Row, Col> lhs, Matrix<K, Row> rhs);
 
 template <typename K, size_t Row>
-    requires mk_concepts::BLASComputable<K>
+    requires mk_concepts::BLASSupported<K>
 class Matrix<K, Row, std::dynamic_extent> :
     private boost::addable<Matrix<K, Row>>,
     private boost::subtractable<Matrix<K, Row>>,
@@ -67,7 +67,7 @@ class Matrix<K, Row, std::dynamic_extent> :
     static_assert(Row != std::dynamic_extent);
 
     template <typename T, size_t FRow, size_t FCol>
-        requires mk_concepts::BLASComputable<T>
+        requires mk_concepts::BLASSupported<T>
     friend class Matrix;
     // type alias
     using MatrixExtent = std::extents<size_t, Row, std::dynamic_extent>;
@@ -153,22 +153,22 @@ public:
 
 /* begin constructors definition */
 template <typename K, size_t Row>
-    requires mk_concepts::BLASComputable<K>
+    requires mk_concepts::BLASSupported<K>
 Matrix<K, Row>::Matrix() : _rowSize(Row), _columnSize(0), _elements{}, _span(_elements.data(), MatrixExtent{}) {}
 
 template <typename K, size_t Row>
-    requires mk_concepts::BLASComputable<K>
+    requires mk_concepts::BLASSupported<K>
 Matrix<K, Row>::Matrix(const size_t columnSize) :
     _rowSize(Row), _columnSize(columnSize), _elements(Row * columnSize, K{}), _span(_elements.data(), MatrixExtent{}) {}
 
 template <typename K, size_t Row>
-    requires mk_concepts::BLASComputable<K>
+    requires mk_concepts::BLASSupported<K>
 Matrix<K, Row>::Matrix(const size_t columnSize, const std::vector<K> elements) :
     _rowSize(Row), _columnSize(columnSize), _elements(elements), _span(_elements.data(), MatrixExtent{}) {}
 
 // copy constructor
 template <typename K, size_t Row>
-    requires mk_concepts::BLASComputable<K>
+    requires mk_concepts::BLASSupported<K>
 Matrix<K, Row>::Matrix(const Matrix<K, Row>& mat) :
     _rowSize(Row), _columnSize(mat.ColumnSize()), _elements(mat._elements), _span(_elements.data(), MatrixExtent{}) {}
 /* end constructors definition */
@@ -176,7 +176,7 @@ Matrix<K, Row>::Matrix(const Matrix<K, Row>& mat) :
 /* begin operator overloads definition */
 // copy assignment operator
 template <typename K, size_t Row>
-    requires mk_concepts::BLASComputable<K>
+    requires mk_concepts::BLASSupported<K>
 Matrix<K, Row>& Matrix<K, Row>::operator=(const Matrix<K, Row>& x) {
     if (this != &x) {
         _elements = x._elements;
@@ -187,7 +187,7 @@ Matrix<K, Row>& Matrix<K, Row>::operator=(const Matrix<K, Row>& x) {
 
 // arithmetics
 template <typename K, size_t Row>
-    requires mk_concepts::BLASComputable<K>
+    requires mk_concepts::BLASSupported<K>
 inline Matrix<K, Row>& Matrix<K, Row>::operator+=(const Matrix<K, Row>& x)
     requires mk_concepts::SingleFloatingPoint<K>
 {
@@ -205,7 +205,7 @@ inline Matrix<K, Row>& Matrix<K, Row>::operator+=(const Matrix<K, Row>& x)
 }
 
 template <typename K, size_t Row>
-    requires mk_concepts::BLASComputable<K>
+    requires mk_concepts::BLASSupported<K>
 inline Matrix<K, Row>& Matrix<K, Row>::operator+=(const Matrix<K, Row>& x)
     requires mk_concepts::DoubleFloatingPoint<K>
 {
@@ -223,7 +223,7 @@ inline Matrix<K, Row>& Matrix<K, Row>::operator+=(const Matrix<K, Row>& x)
 }
 
 template <typename K, size_t Row>
-    requires mk_concepts::BLASComputable<K>
+    requires mk_concepts::BLASSupported<K>
 inline Matrix<K, Row>& Matrix<K, Row>::operator-=(const Matrix<K, Row>& x)
     requires mk_concepts::SingleFloatingPoint<K>
 {
@@ -241,7 +241,7 @@ inline Matrix<K, Row>& Matrix<K, Row>::operator-=(const Matrix<K, Row>& x)
 }
 
 template <typename K, size_t Row>
-    requires mk_concepts::BLASComputable<K>
+    requires mk_concepts::BLASSupported<K>
 inline Matrix<K, Row>& Matrix<K, Row>::operator-=(const Matrix<K, Row>& x)
     requires mk_concepts::DoubleFloatingPoint<K>
 {
@@ -259,7 +259,7 @@ inline Matrix<K, Row>& Matrix<K, Row>::operator-=(const Matrix<K, Row>& x)
 }
 
 template <typename K, size_t Row>
-    requires mk_concepts::BLASComputable<K>
+    requires mk_concepts::BLASSupported<K>
 Matrix<K, Row>& Matrix<K, Row>::operator*=(const Matrix<K, Row>& x) {
 #if !defined(NDEBUG)
     if (this->ColumnSize() != x.ColumnSize()) {
@@ -277,7 +277,7 @@ Matrix<K, Row>& Matrix<K, Row>::operator*=(const Matrix<K, Row>& x) {
 
 // ostream
 template <typename K, size_t Row>
-    requires mk_concepts::BLASComputable<K>
+    requires mk_concepts::BLASSupported<K>
 std::ostream& operator<<(std::ostream& os, const Matrix<K, Row>& mat) {
     for (size_t i = 0; i < Row; i++) {
         for (size_t j = 0; j < mat._columnSize; j++) {
@@ -291,49 +291,49 @@ std::ostream& operator<<(std::ostream& os, const Matrix<K, Row>& mat) {
 
 /* begin matrix unique functions definition */
 template <typename K, size_t Row>
-    requires mk_concepts::BLASComputable<K>
+    requires mk_concepts::BLASSupported<K>
 constexpr size_t Matrix<K, Row>::RowSize() {
     return Row;
 }
 
 template <typename K, size_t Row>
-    requires mk_concepts::BLASComputable<K>
+    requires mk_concepts::BLASSupported<K>
 size_t Matrix<K, Row>::ColumnSize() {
     return this->_columnSize;
 }
 
 template <typename K, size_t Row>
-    requires mk_concepts::BLASComputable<K>
+    requires mk_concepts::BLASSupported<K>
 size_t Matrix<K, Row>::ColumnSize() const {
     return this->_columnSize;
 }
 
 template <typename K, size_t Row>
-    requires mk_concepts::BLASComputable<K>
+    requires mk_concepts::BLASSupported<K>
 std::string Matrix<K, Row>::GetSizeString() const {
     return "(" + std::to_string(Row) + ", " + std::to_string(this->ColumnSize()) + ")";
 }
 
 template <typename K, size_t Row>
-    requires mk_concepts::BLASComputable<K>
+    requires mk_concepts::BLASSupported<K>
 inline std::vector<K>& Matrix<K, Row>::Elements() {
     return this->_elements;
 }
 
 template <typename K, size_t Row>
-    requires mk_concepts::BLASComputable<K>
+    requires mk_concepts::BLASSupported<K>
 inline const std::vector<K>& Matrix<K, Row>::Elements() const {
     return this->_elements;
 }
 
 // template <typename K, size_t Row>
-// requires mk_concepts::BLASComputable<K>
+// requires mk_concepts::BLASSupported<K>
 // inline K* Matrix<K, Row>::_elements.data() {
 //     return this->_elements.data();
 // }
 
 // template <typename K, size_t Row>
-// requires mk_concepts::BLASComputable<K>
+// requires mk_concepts::BLASSupported<K>
 // inline const K* Matrix<K, Row>::_elements.data() const {
 //     return this->_elements.data();
 // }
@@ -341,7 +341,7 @@ inline const std::vector<K>& Matrix<K, Row>::Elements() const {
 
 /* begin matrix unique arithmetics definition */
 template <typename K, size_t Row>
-    requires mk_concepts::BLASComputable<K>
+    requires mk_concepts::BLASSupported<K>
 template <size_t OppRow>
 Matrix<K, Row> Matrix<K, Row>::Dot(const Matrix<K, OppRow> mat)
     requires mk_concepts::SingleFloatingPoint<K>
@@ -363,7 +363,7 @@ Matrix<K, Row> Matrix<K, Row>::Dot(const Matrix<K, OppRow> mat)
 }
 
 template <typename K, size_t Row>
-    requires mk_concepts::BLASComputable<K>
+    requires mk_concepts::BLASSupported<K>
 template <size_t OppRow>
 Matrix<K, Row> Matrix<K, Row>::Dot(const Matrix<K, OppRow> mat)
     requires mk_concepts::DoubleFloatingPoint<K>
@@ -385,7 +385,7 @@ Matrix<K, Row> Matrix<K, Row>::Dot(const Matrix<K, OppRow> mat)
 }
 
 template <typename K, size_t Row>
-    requires mk_concepts::BLASComputable<K>
+    requires mk_concepts::BLASSupported<K>
 template <size_t OppRow, size_t OppCol>
 Matrix<K, Row, OppCol> Matrix<K, Row>::Dot(const Matrix<K, OppRow, OppCol> mat)
     requires mk_concepts::SingleFloatingPoint<K>
@@ -408,7 +408,7 @@ Matrix<K, Row, OppCol> Matrix<K, Row>::Dot(const Matrix<K, OppRow, OppCol> mat)
 }
 
 template <typename K, size_t Row>
-    requires mk_concepts::BLASComputable<K>
+    requires mk_concepts::BLASSupported<K>
 template <size_t OppRow, size_t OppCol>
 Matrix<K, Row, OppCol> Matrix<K, Row>::Dot(const Matrix<K, OppRow, OppCol> mat)
     requires mk_concepts::DoubleFloatingPoint<K>
@@ -431,7 +431,7 @@ Matrix<K, Row, OppCol> Matrix<K, Row>::Dot(const Matrix<K, OppRow, OppCol> mat)
 }
 
 template <typename K, size_t Row>
-    requires mk_concepts::BLASComputable<K>
+    requires mk_concepts::BLASSupported<K>
 template <size_t OppCol>
 Matrix<K, Row, OppCol> Matrix<K, Row>::Dot(const MatrixColumnStatic<K, OppCol> mat)
     requires mk_concepts::SingleFloatingPoint<K>
@@ -454,7 +454,7 @@ Matrix<K, Row, OppCol> Matrix<K, Row>::Dot(const MatrixColumnStatic<K, OppCol> m
 }
 
 template <typename K, size_t Row>
-    requires mk_concepts::BLASComputable<K>
+    requires mk_concepts::BLASSupported<K>
 template <size_t OppCol>
 Matrix<K, Row, OppCol> Matrix<K, Row>::Dot(const MatrixColumnStatic<K, OppCol> mat)
     requires mk_concepts::DoubleFloatingPoint<K>
@@ -477,7 +477,7 @@ Matrix<K, Row, OppCol> Matrix<K, Row>::Dot(const MatrixColumnStatic<K, OppCol> m
 }
 
 template <typename K, size_t Row>
-    requires mk_concepts::BLASComputable<K>
+    requires mk_concepts::BLASSupported<K>
 Matrix<K, Row> Matrix<K, Row>::Dot(const MatrixDynamic<K> mat)
     requires mk_concepts::SingleFloatingPoint<K>
 {
@@ -499,7 +499,7 @@ Matrix<K, Row> Matrix<K, Row>::Dot(const MatrixDynamic<K> mat)
 }
 
 template <typename K, size_t Row>
-    requires mk_concepts::BLASComputable<K>
+    requires mk_concepts::BLASSupported<K>
 Matrix<K, Row> Matrix<K, Row>::Dot(const MatrixDynamic<K> mat)
     requires mk_concepts::DoubleFloatingPoint<K>
 {
