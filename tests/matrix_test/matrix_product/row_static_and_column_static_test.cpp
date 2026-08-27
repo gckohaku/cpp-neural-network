@@ -11,9 +11,9 @@
 #include "tests/test_type_defines.hpp"
 #include "tests/test_utilities.hpp"
 
-using mknnlib::matrix::MatrixColumnStatic;
-using mknnlib::matrix::MatrixDynamic;
-using mknnlib::matrix::MatrixRowStatic;
+using mknnlib::matrix::MatrixColumnStaticOpen;
+using mknnlib::matrix::MatrixDynamicOpen;
+using mknnlib::matrix::MatrixRowStaticOpen;
 using mknnlib::matrix::Matrix;
 
 namespace matrix_test_matrix_product {
@@ -30,8 +30,8 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(matrix_product_matrix_row_static_and_matrix_column
     auto expectedAB = MakeExpectedVectorAB<T>();
     auto expectedBA = MakeExpectedVectorBA<T>();
 
-    auto A = MatrixRowStatic<T, row1>(column1, arrayA);
-    auto B = MatrixColumnStatic<T, column1>(row1, arrayB);
+    auto A = MatrixRowStaticOpen<T, row1>(column1, arrayA);
+    auto B = MatrixColumnStaticOpen<T, column1>(row1, arrayB);
 
     auto acceptableErrorAB = MakeAcceptableErrorVectorAB<T>();
     auto acceptableErrorBA = MakeAcceptableErrorVectorBA<T>();
@@ -45,7 +45,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(matrix_product_matrix_row_static_and_matrix_column
     auto BA = B.Dot(A);
 
     auto typeCheckAB = std::is_same<decltype(AB), Matrix<T, row1, column1>>::value;
-    auto typeCheckBA = std::is_same<decltype(BA), MatrixDynamic<T>>::value;
+    auto typeCheckBA = std::is_same<decltype(BA), MatrixDynamicOpen<T>>::value;
     BOOST_CHECK(typeCheckAB);
     BOOST_CHECK(typeCheckBA);
     CheckCloseEachVectorElement<T>(ArrayToVector<T>(AB.Elements()), expectedAB, acceptableErrorAB);
@@ -62,8 +62,8 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(matrix_product_matrix_row_static_and_matrix_column
     auto expectedCD = MakeExpectedVectorCD<T>();
     auto expectedDC = MakeExpectedVectorDC<T>();
 
-    auto C = MatrixRowStatic<T, row2>(column2, arrayC);
-    auto D = MatrixColumnStatic<T, column2>(row2, arrayD);
+    auto C = MatrixRowStaticOpen<T, row2>(column2, arrayC);
+    auto D = MatrixColumnStaticOpen<T, column2>(row2, arrayD);
 
     auto acceptableErrorCD = MakeAcceptableErrorVectorCD<T>();
     auto acceptableErrorDC = MakeAcceptableErrorVectorDC<T>();
@@ -77,7 +77,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(matrix_product_matrix_row_static_and_matrix_column
     auto DC = D.Dot(C);
 
     auto typeCheckCD = std::is_same<decltype(CD), Matrix<T, row2, column2>>::value;
-    auto typeCheckDC = std::is_same<decltype(DC), MatrixDynamic<T>>::value;
+    auto typeCheckDC = std::is_same<decltype(DC), MatrixDynamicOpen<T>>::value;
     BOOST_CHECK(typeCheckCD);
     BOOST_CHECK(typeCheckDC);
     CheckCloseEachVectorElement(ArrayToVector<T>(CD.Elements()), expectedCD, acceptableErrorCD);
@@ -99,8 +99,8 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(matrix_product_matrix_row_static_and_matrix_column
     auto expectedEF = MakeExpectedVectorEF<T>();
     auto expectedFE = MakeExpectedVectorFE<T>();
 
-    auto E = MatrixRowStatic<T, rowE>(columnE, arrayE);
-    auto F = MatrixColumnStatic<T, columnF>(rowF, arrayF);
+    auto E = MatrixRowStaticOpen<T, rowE>(columnE, arrayE);
+    auto F = MatrixColumnStaticOpen<T, columnF>(rowF, arrayF);
 
     auto acceptableErrorEF = MakeAcceptableErrorVectorEF<T>();
     auto acceptableErrorFE = MakeAcceptableErrorVectorFE<T>();
@@ -116,7 +116,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(matrix_product_matrix_row_static_and_matrix_column
     auto FE = F.Dot(E);
 
     auto typeCheckEF = std::is_same<decltype(EF), Matrix<T, rowE, columnF>>::value;
-    auto typeCheckFE = std::is_same<decltype(FE), MatrixDynamic<T>>::value;
+    auto typeCheckFE = std::is_same<decltype(FE), MatrixDynamicOpen<T>>::value;
     BOOST_CHECK(typeCheckEF);
     BOOST_CHECK(typeCheckFE);
     CheckCloseEachVectorElement(ArrayToVector<T>(EF.Elements()), expectedEF, acceptableErrorEF);
@@ -136,8 +136,8 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(matrix_product_matrix_row_static_and_matrix_column
 
     auto expectedHG = MakeExpectedVectorHG<T>();
 
-    auto G = MatrixRowStatic<T, rowG>(columnG, arrayG);
-    auto H = MatrixColumnStatic<T, columnH>(rowH, arrayH);
+    auto G = MatrixRowStaticOpen<T, rowG>(columnG, arrayG);
+    auto H = MatrixColumnStaticOpen<T, columnH>(rowH, arrayH);
 
     auto acceptableErrorHG = MakeAcceptableErrorVectorHG<T>();
     for (size_t i = 0; i < resultSizeHG; i++) {
@@ -146,7 +146,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(matrix_product_matrix_row_static_and_matrix_column
 
     auto HG = H.Dot(G);
 
-    auto typeCheckHG = std::is_same<decltype(HG), MatrixDynamic<T>>::value;
+    auto typeCheckHG = std::is_same<decltype(HG), MatrixDynamicOpen<T>>::value;
     BOOST_CHECK(typeCheckHG);
     CheckCloseEachVectorElement(HG.Elements(), expectedHG, acceptableErrorHG);
 
@@ -164,8 +164,8 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(matrix_product_matrix_row_static_and_matrix_column
 
     auto expectedJI = MakeExpectedVectorJI<T>();
 
-    auto I = MatrixRowStatic<T, rowI>(columnI, arrayI);
-    auto J = MatrixColumnStatic<T, columnJ>(rowJ, arrayJ);
+    auto I = MatrixRowStaticOpen<T, rowI>(columnI, arrayI);
+    auto J = MatrixColumnStaticOpen<T, columnJ>(rowJ, arrayJ);
 
     auto acceptableErrorJI = MakeAcceptableErrorVectorJI<T>();
     for (size_t i = 0; i < resultSizeJI; i++) {
@@ -174,14 +174,14 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(matrix_product_matrix_row_static_and_matrix_column
 
     auto JI = J.Dot(I);
 
-    auto typeCheckJI = std::is_same<decltype(JI), MatrixDynamic<T>>::value;
+    auto typeCheckJI = std::is_same<decltype(JI), MatrixDynamicOpen<T>>::value;
     BOOST_CHECK(typeCheckJI);
     CheckCloseEachVectorElement(JI.Elements(), expectedJI, acceptableErrorJI);
 
-    auto K = MatrixColumnStatic<T, columnI>(rowI, std::vector<T>(arrayI.begin(), arrayI.end()));
+    auto K = MatrixColumnStaticOpen<T, columnI>(rowI, std::vector<T>(arrayI.begin(), arrayI.end()));
     auto arrayL = std::array<T, elementSizeJ>();
     std::copy_n(arrayJ.begin(), elementSizeJ, arrayL.begin());
-    auto L = MatrixRowStatic<T, rowJ>(columnJ, ArrayToVector(arrayL));
+    auto L = MatrixRowStaticOpen<T, rowJ>(columnJ, ArrayToVector(arrayL));
 
     auto LK = L.Dot(K);
 
@@ -192,8 +192,8 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(matrix_product_matrix_row_static_and_matrix_column
     // throw exception test
     auto mArray = MakeVectorM<T>();
     auto nArray = MakeVectorN<T>();
-    auto M = MatrixRowStatic<T, 3>(2, mArray);
-    auto N = MatrixColumnStatic<T, 3>(3, nArray);
+    auto M = MatrixRowStaticOpen<T, 3>(2, mArray);
+    auto N = MatrixColumnStaticOpen<T, 3>(3, nArray);
 
     BOOST_CHECK_THROW(M.Dot(N), std::domain_error);
     BOOST_CHECK_NO_THROW(N.Dot(M));

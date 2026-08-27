@@ -13,7 +13,7 @@
 #include "tests/test_type_defines.hpp"
 #include "tests/test_utilities.hpp"
 
-using mknnlib::matrix::MatrixDynamic;
+using mknnlib::matrix::MatrixDynamicOpen;
 
 namespace matrix_test_mul {
 BOOST_AUTO_TEST_CASE_TEMPLATE(mul_matrix_dynamic_test, T, CheckMatrixElementType) {
@@ -25,8 +25,8 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(mul_matrix_dynamic_test, T, CheckMatrixElementType
     auto arrayA = MakeVectorA<T>();
     auto arrayB = MakeVectorB<T>();
 
-    auto A = MatrixDynamic<T>(rowAAndB, columnAAndB, arrayA);
-    auto B = MatrixDynamic<T>(rowAAndB, columnAAndB, arrayB);
+    auto A = MatrixDynamicOpen<T>(rowAAndB, columnAAndB, arrayA);
+    auto B = MatrixDynamicOpen<T>(rowAAndB, columnAAndB, arrayB);
 
     auto expectedAPlusB = MakeExpectedVectorAAndB<T>();
 
@@ -38,7 +38,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(mul_matrix_dynamic_test, T, CheckMatrixElementType
 
     auto APlusB = A * B;
 
-    auto typeCheckAPlusB = std::is_same<decltype(APlusB), MatrixDynamic<T>>::value;
+    auto typeCheckAPlusB = std::is_same<decltype(APlusB), MatrixDynamicOpen<T>>::value;
     BOOST_CHECK(typeCheckAPlusB);
     CheckCloseEachVectorElement<T>(APlusB.Elements(), expectedAPlusB, acceptableErrorAPlusB);
 
@@ -50,8 +50,8 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(mul_matrix_dynamic_test, T, CheckMatrixElementType
     auto arrayC = MakeVectorC<T>();
     auto arrayD = MakeVectorD<T>();
 
-    auto C = MatrixDynamic<T>(rowCAndD, columnCAndD, arrayC);
-    auto D = MatrixDynamic<T>(rowCAndD, columnCAndD, arrayD);
+    auto C = MatrixDynamicOpen<T>(rowCAndD, columnCAndD, arrayC);
+    auto D = MatrixDynamicOpen<T>(rowCAndD, columnCAndD, arrayD);
 
     auto expectedCPlusD = MakeExpectedVectorCAndD<T>();
 
@@ -62,7 +62,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(mul_matrix_dynamic_test, T, CheckMatrixElementType
 
     auto CPlusD = C * D;
 
-    auto typeCheckCPlusD = std::is_same<decltype(CPlusD), MatrixDynamic<T>>::value;
+    auto typeCheckCPlusD = std::is_same<decltype(CPlusD), MatrixDynamicOpen<T>>::value;
     BOOST_CHECK(typeCheckCPlusD);
     CheckCloseEachVectorElement<T>(CPlusD.Elements(), expectedCPlusD, acceptableErrorCPlusD);
 
@@ -72,10 +72,10 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(mul_matrix_dynamic_test, T, CheckMatrixElementType
     auto arrayG = MakeVectorG<T>();
     auto arrayH = MakeVectorH<T>();
 
-    auto E = MatrixDynamic<T>(3, 2, arrayE);
-    auto F = MatrixDynamic<T>(2, 3, arrayF);
-    auto G = MatrixDynamic<T>(2, 3, arrayG);
-    auto H = MatrixDynamic<T>(2, 2, arrayH);
+    auto E = MatrixDynamicOpen<T>(3, 2, arrayE);
+    auto F = MatrixDynamicOpen<T>(2, 3, arrayF);
+    auto G = MatrixDynamicOpen<T>(2, 3, arrayG);
+    auto H = MatrixDynamicOpen<T>(2, 2, arrayH);
 
     BOOST_CHECK_THROW(E * F, std::domain_error);
     BOOST_CHECK_THROW(F * E, std::domain_error);

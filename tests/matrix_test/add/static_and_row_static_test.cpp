@@ -15,7 +15,7 @@
 #include "tests/test_utilities.hpp"
 
 using mknnlib::matrix::Matrix;
-using mknnlib::matrix::MatrixRowStatic;
+using mknnlib::matrix::MatrixRowStaticOpen;
 
 namespace matrix_test_add {
 BOOST_AUTO_TEST_CASE_TEMPLATE(add_matrix_static_and_row_static_test, T, CheckMatrixElementType) {
@@ -28,7 +28,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(add_matrix_static_and_row_static_test, T, CheckMat
     auto arrayB = MakeVectorB<T>();
 
     auto A = Matrix<T, rowAAndB, columnAAndB>(arrayA);
-    auto B = MatrixRowStatic<T, rowAAndB>(columnAAndB, arrayB);
+    auto B = MatrixRowStaticOpen<T, rowAAndB>(columnAAndB, arrayB);
 
     auto expectedAPlusB = MakeExpectedVectorAAndB<T>();
 
@@ -57,7 +57,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(add_matrix_static_and_row_static_test, T, CheckMat
     auto arrayD = MakeVectorD<T>();
 
     auto C = Matrix<T, rowCAndD, columnCAndD>(arrayC);
-    auto D = MatrixRowStatic<T, rowCAndD>(columnCAndD, arrayD);
+    auto D = MatrixRowStaticOpen<T, rowCAndD>(columnCAndD, arrayD);
 
     auto expectedCPlusD = MakeExpectedVectorCAndD<T>();
 
@@ -83,10 +83,10 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(add_matrix_static_and_row_static_test, T, CheckMat
     auto arrayH = MakeArrayH<T>();
     auto vectorH = MakeVectorH<T>();
 
-    // auto staticE = MatrixStatic<T, 3, 2>(arrayE);
-    auto rowStaticF = MatrixRowStatic<T, 2>(3, vectorF);
+    // auto staticE = MatrixStaticOpen<T, 3, 2>(arrayE);
+    auto rowStaticF = MatrixRowStaticOpen<T, 2>(3, vectorF);
     auto staticG = Matrix<T, 2, 3>(arrayG);
-    auto rowStaticH = MatrixRowStatic<T, 2>(2, vectorH);
+    auto rowStaticH = MatrixRowStaticOpen<T, 2>(2, vectorH);
     auto staticH = Matrix<T, 2, 2>(arrayH);
 
     // BOOST_CHECK_THROW(staticE + rowStaticF, std::domain_error);

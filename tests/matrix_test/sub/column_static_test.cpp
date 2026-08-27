@@ -12,7 +12,7 @@
 #include "tests/test_type_defines.hpp"
 #include "tests/test_utilities.hpp"
 
-using mknnlib::matrix::MatrixColumnStatic;
+using mknnlib::matrix::MatrixColumnStaticOpen;
 
 namespace matrix_test_sub {
 BOOST_AUTO_TEST_CASE_TEMPLATE(sub_matrix_column_static_test, T, CheckMatrixElementType) {
@@ -24,8 +24,8 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(sub_matrix_column_static_test, T, CheckMatrixEleme
     auto arrayA = MakeVectorA<T>();
     auto arrayB = MakeVectorB<T>();
 
-    auto A = MatrixColumnStatic<T, columnAAndB>(rowAAndB, arrayA);
-    auto B = MatrixColumnStatic<T, columnAAndB>(rowAAndB, arrayB);
+    auto A = MatrixColumnStaticOpen<T, columnAAndB>(rowAAndB, arrayA);
+    auto B = MatrixColumnStaticOpen<T, columnAAndB>(rowAAndB, arrayB);
 
     auto expectedAPlusB = MakeExpectedVectorAAndB<T>();
 
@@ -37,7 +37,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(sub_matrix_column_static_test, T, CheckMatrixEleme
 
     auto APlusB = A - B;
 
-    auto typeCheckAPlusB = std::is_same<decltype(APlusB), MatrixColumnStatic<T, columnAAndB>>::value;
+    auto typeCheckAPlusB = std::is_same<decltype(APlusB), MatrixColumnStaticOpen<T, columnAAndB>>::value;
     BOOST_CHECK(typeCheckAPlusB);
     CheckCloseEachVectorElement<T>(APlusB.Elements(), expectedAPlusB, acceptableErrorAPlusB);
 
@@ -49,8 +49,8 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(sub_matrix_column_static_test, T, CheckMatrixEleme
     auto arrayC = MakeVectorC<T>();
     auto arrayD = MakeVectorD<T>();
 
-    auto C = MatrixColumnStatic<T, columnCAndD>(rowCAndD, arrayC);
-    auto D = MatrixColumnStatic<T, columnCAndD>(rowCAndD, arrayD);
+    auto C = MatrixColumnStaticOpen<T, columnCAndD>(rowCAndD, arrayC);
+    auto D = MatrixColumnStaticOpen<T, columnCAndD>(rowCAndD, arrayD);
 
     auto expectedCPlusD = MakeExpectedVectorCAndD<T>();
 
@@ -61,7 +61,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(sub_matrix_column_static_test, T, CheckMatrixEleme
 
     auto CPlusD = C - D;
 
-    auto typeCheckCPlusD = std::is_same<decltype(CPlusD), MatrixColumnStatic<T, columnCAndD>>::value;
+    auto typeCheckCPlusD = std::is_same<decltype(CPlusD), MatrixColumnStaticOpen<T, columnCAndD>>::value;
     BOOST_CHECK(typeCheckCPlusD);
     CheckCloseEachVectorElement<T>(CPlusD.Elements(), expectedCPlusD, acceptableErrorCPlusD);
 
@@ -71,10 +71,10 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(sub_matrix_column_static_test, T, CheckMatrixEleme
     auto arrayG = MakeVectorG<T>();
     auto arrayH = MakeVectorH<T>();
 
-    auto E = MatrixColumnStatic<T, 2>(3, arrayE);
-    auto F = MatrixColumnStatic<T, 3>(2, arrayF);
-    auto G = MatrixColumnStatic<T, 3>(2, arrayG);
-    auto H = MatrixColumnStatic<T, 2>(2, arrayH);
+    auto E = MatrixColumnStaticOpen<T, 2>(3, arrayE);
+    auto F = MatrixColumnStaticOpen<T, 3>(2, arrayF);
+    auto G = MatrixColumnStaticOpen<T, 3>(2, arrayG);
+    auto H = MatrixColumnStaticOpen<T, 2>(2, arrayH);
 
     // BOOST_CHECK_THROW(E - F, std::domain_error);
     // BOOST_CHECK_THROW(F - E, std::domain_error);

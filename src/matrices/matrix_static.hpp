@@ -14,43 +14,29 @@
 #include <span>
 
 #include "src/concept_defines/types/type_concepts.hpp"
+#include "src/matrices/core/blas_backends.hpp"
 #include "src/matrices/matrix_template_base.hpp"
+#include "src/matrices/forward_declarations/static_operations.hpp"
 
 namespace mknnlib::matrix {
-template <typename K, size_t Row, size_t Col>
-    requires mk_concepts::BLASSupported<K>
-std::ostream& operator<<(std::ostream& os, const Matrix<K, Row, Col>& mat);
+template <typename K, size_t Row, size_t Col, typename Backend = core::OpenBLASBackend>
+    requires mk_concepts::BLASSupported<Backend, K>
+std::ostream& operator<<(std::ostream& os, const Matrix<K, Row, Col, Backend>& mat);
 
-template <typename K, size_t Row, size_t Col>
-    requires mk_concepts::BLASSupported<K>
+template <typename K, size_t Row, size_t Col, typename Backend>
+    requires mk_concepts::BLASSupported<Backend, K>
 class Matrix;
 
-template <typename K, size_t Row, size_t Col>
-    requires mk_concepts::BLASSupported<K>
-Matrix<K, Row, Col> operator+(Matrix<K, Row, Col> lhs, Matrix<K, Row, Col> rhs);
-
-template <typename K, size_t Row, size_t Col>
-    requires mk_concepts::BLASSupported<K>
-Matrix<K, Row, Col> operator+(Matrix<K, Row, Col> lhs, Matrix<K, Row> rhs);
-
-template <typename K, size_t Row, size_t Col>
-    requires mk_concepts::BLASSupported<K>
-Matrix<K, Row, Col> operator-(Matrix<K, Row, Col> lhs, Matrix<K, Row, Col> rhs);
-
-template <typename K, size_t Row, size_t Col>
-    requires mk_concepts::BLASSupported<K>
-Matrix<K, Row, Col> operator-(Matrix<K, Row, Col> lhs, Matrix<K, Row> rhs);
-
-template <typename K, size_t Row, size_t Col>
-    requires mk_concepts::BLASSupported<K>
+template <typename K, size_t Row, size_t Col, typename Backend>
+    requires mk_concepts::BLASSupported<Backend, K>
 class Matrix :
-    private boost::multipliable<Matrix<K, Row, Col>>,
-    private boost::multipliable<Matrix<K, Row, Col>, Matrix<K, Row>> {
+    private boost::multipliable<Matrix<K, Row, Col, Backend>>,
+    private boost::multipliable<Matrix<K, Row, Col, Backend>, Matrix<K, Row>> {
     static_assert(Row != std::dynamic_extent);
     static_assert(Col != std::dynamic_extent);
 
-    template <typename T, size_t FRow, size_t FCol>
-        requires mk_concepts::BLASSupported<T>
+    template <typename T, size_t FRow, size_t FCol, typename FBackend>
+        requires mk_concepts::BLASSupported<FBackend, T>
     friend class Matrix;
 
     // type alias
@@ -69,43 +55,31 @@ public:
     Matrix();
     Matrix(const std::array<K, Row * Col> elements);
     // copy constructor
-    Matrix(const Matrix<K, Row, Col>& mat);
+    Matrix(const Matrix& mat);
     /* end constructors declaration */
 
     /* begin operator overloads declaration */
     // copy assignment operator
-    Matrix<K, Row, Col>& operator=(const Matrix<K, Row, Col>& x);
+    Matrix& operator=(const Matrix& x);
     // arithmetics compound operators
-    Matrix<K, Row, Col>& operator+=(const Matrix<K, Row, Col>& x)
-        requires mk_concepts::SingleFloatingPoint<K>;
-    Matrix<K, Row, Col>& operator+=(const Matrix<K, Row, Col>& x)
-        requires mk_concepts::DoubleFloatingPoint<K>;
-    Matrix<K, Row, Col>& operator+=(const Matrix<K, Row>& x)
-        requires mk_concepts::SingleFloatingPoint<K>;
-    Matrix<K, Row, Col>& operator+=(const Matrix<K, Row>& x)
-        requires mk_concepts::DoubleFloatingPoint<K>;
-    Matrix<K, Row, Col>& operator-=(const Matrix<K, Row, Col>& x)
-        requires mk_concepts::SingleFloatingPoint<K>;
-    Matrix<K, Row, Col>& operator-=(const Matrix<K, Row, Col>& x)
-        requires mk_concepts::DoubleFloatingPoint<K>;
-    Matrix<K, Row, Col>& operator-=(const Matrix<K, Row>& x)
-        requires mk_concepts::SingleFloatingPoint<K>;
-    Matrix<K, Row, Col>& operator-=(const Matrix<K, Row>& x)
-        requires mk_concepts::DoubleFloatingPoint<K>;
-    Matrix<K, Row, Col>& operator*=(const Matrix<K, Row, Col>& x);
-    Matrix<K, Row, Col>& operator*=(const Matrix<K, Row>& x);
+    Matrix& operator+=(const Matrix& x);
+    Matrix& operator+=(const Matrix<K, Row, std::dynamic_extent, Backend>& x);
+    Matrix& operator-=(const Matrix& x);
+    Matrix& operator-=(const Matrix<K, Row, std::dynamic_extent, Backend>& x);
+    Matrix& operator*=(const Matrix& x);
+    Matrix& operator*=(const Matrix<K, Row, std::dynamic_extent, Backend>& x);
 
     // arithmetics binary operators
-    friend Matrix<K, Row, Col> operator+ <K, Row, Col>(Matrix<K, Row, Col> lhs, Matrix<K, Row, Col> rhs);
-    friend Matrix<K, Row, Col> operator+ <K, Row, Col>(Matrix<K, Row, Col> lhs, Matrix<K, Row> rhs);
-    friend Matrix<K, Row, Col> operator- <K, Row, Col>(Matrix<K, Row, Col> lhs, Matrix<K, Row, Col> rhs);
-    friend Matrix<K, Row, Col> operator- <K, Row, Col>(Matrix<K, Row, Col> lhs, Matrix<K, Row> rhs);
+    friend Matrix operator+ <K, Row, Col, Backend>(Matrix lhs, Matrix rhs);
+    friend Matrix operator+ <K, Row, Col, Backend>(Matrix lhs, Matrix<K, Row, std::dynamic_extent, Backend> rhs);
+    friend Matrix operator- <K, Row, Col, Backend>(Matrix lhs, Matrix rhs);
+    friend Matrix operator- <K, Row, Col, Backend>(Matrix lhs, Matrix<K, Row, std::dynamic_extent, Backend> rhs);
 
     // 2 dimensions index
     K& operator[](const size_t a, const size_t b);
 
     // ostream
-    friend std::ostream& operator<< <>(std::ostream& os, const Matrix<K, Row, Col>& mat);
+    friend std::ostream& operator<< <>(std::ostream& os, const Matrix& mat);
     /* end operator overloads declaration */
 
     /* begin matrix unique functions declaration */
@@ -120,53 +94,54 @@ public:
 
     /* begin matrix unique arithmetics declaration */
     template <size_t OppCol>
-    Matrix<K, Row, OppCol> Dot(const Matrix<K, Col, OppCol> mat)
+    Matrix<K, Row, OppCol, Backend> Dot(const Matrix<K, Col, OppCol, Backend> mat)
         requires mk_concepts::SingleFloatingPoint<K>;
     template <size_t OppCol>
-    Matrix<K, Row, OppCol> Dot(const Matrix<K, Col, OppCol> mat)
+    Matrix<K, Row, OppCol, Backend> Dot(const Matrix<K, Col, OppCol, Backend> mat)
         requires mk_concepts::DoubleFloatingPoint<K>;
 
-    Matrix<K, Row> Dot(const Matrix<K, Col>& mat)
+    Matrix<K, Row, std::dynamic_extent, Backend> Dot(const Matrix<K, std::dynamic_extent, Col, Backend>& mat)
         requires mk_concepts::SingleFloatingPoint<K>;
-    Matrix<K, Row> Dot(const Matrix<K, Col>& mat)
+    Matrix<K, Row, std::dynamic_extent, Backend> Dot(const Matrix<K, std::dynamic_extent, Col, Backend>& mat)
         requires mk_concepts::DoubleFloatingPoint<K>;
 
     template <size_t OppCol>
-    Matrix<K, Row, OppCol> Dot(const MatrixColumnStatic<K, OppCol>& mat)
+    Matrix<K, Row, OppCol, Backend> Dot(const Matrix<K, std::dynamic_extent, OppCol, Backend>& mat)
         requires mk_concepts::SingleFloatingPoint<K>;
     template <size_t OppCol>
-    Matrix<K, Row, OppCol> Dot(const MatrixColumnStatic<K, OppCol>& mat)
+    Matrix<K, Row, OppCol, Backend> Dot(const Matrix<K, std::dynamic_extent, OppCol, Backend>& mat)
         requires mk_concepts::DoubleFloatingPoint<K>;
 
-    Matrix<K, Row> Dot(const MatrixDynamic<K>& mat)
+    Matrix<K, Row, std::dynamic_extent, Backend> Dot(const Matrix<K, std::dynamic_extent, std::dynamic_extent, Backend>& mat)
         requires mk_concepts::SingleFloatingPoint<K>;
-    Matrix<K, Row> Dot(const MatrixDynamic<K>& mat)
+    Matrix<K, Row, std::dynamic_extent, Backend> Dot(const Matrix<K, std::dynamic_extent, std::dynamic_extent, Backend>& mat)
         requires mk_concepts::DoubleFloatingPoint<K>;
     /* end matrix unique arithmetics declaration */
 };
 
 /* begin constructors definition */
-template <typename K, size_t Row, size_t Col>
-    requires mk_concepts::BLASSupported<K>
-Matrix<K, Row, Col>::Matrix() : _rowSize(Row), _columnSize(Col), _elements{}, _span(_elements.data(), MatrixExtent{}) {}
+template <typename K, size_t Row, size_t Col, typename Backend>
+    requires mk_concepts::BLASSupported<Backend, K>
+Matrix<K, Row, Col, Backend>::Matrix() :
+    _rowSize(Row), _columnSize(Col), _elements{}, _span(_elements.data(), MatrixExtent{}) {}
 
-template <typename K, size_t Row, size_t Col>
-    requires mk_concepts::BLASSupported<K>
-Matrix<K, Row, Col>::Matrix(const std::array<K, Row * Col> elements) :
+template <typename K, size_t Row, size_t Col, typename Backend>
+    requires mk_concepts::BLASSupported<Backend, K>
+Matrix<K, Row, Col, Backend>::Matrix(const std::array<K, Row * Col> elements) :
     _rowSize(Row), _columnSize(Col), _elements(elements), _span(_elements.data(), MatrixExtent{}) {}
 
 // copy constructor
-template <typename K, size_t Row, size_t Col>
-    requires mk_concepts::BLASSupported<K>
-Matrix<K, Row, Col>::Matrix(const Matrix<K, Row, Col>& mat) :
+template <typename K, size_t Row, size_t Col, typename Backend>
+    requires mk_concepts::BLASSupported<Backend, K>
+Matrix<K, Row, Col, Backend>::Matrix(const Matrix<K, Row, Col, Backend>& mat) :
     _rowSize(Row), _columnSize(Col), _elements(mat._elements), _span(_elements.data(), MatrixExtent{}) {}
 /* end constructors definition */
 
 /* begin operator overloads definition */
 // copy assignment operator
-template <typename K, size_t Row, size_t Col>
-    requires mk_concepts::BLASSupported<K>
-Matrix<K, Row, Col>& Matrix<K, Row, Col>::operator=(const Matrix<K, Row, Col>& x) {
+template <typename K, size_t Row, size_t Col, typename Backend>
+    requires mk_concepts::BLASSupported<Backend, K>
+Matrix<K, Row, Col, Backend>& Matrix<K, Row, Col, Backend>::operator=(const Matrix<K, Row, Col, Backend>& x) {
     if (this != &x) {
         _elements = x._elements;
         _span = MdView(_elements, MatrixExtent{});
@@ -175,31 +150,21 @@ Matrix<K, Row, Col>& Matrix<K, Row, Col>::operator=(const Matrix<K, Row, Col>& x
 }
 
 // arithmetics compound operators
-template <typename K, size_t Row, size_t Col>
-    requires mk_concepts::BLASSupported<K>
-inline Matrix<K, Row, Col>& Matrix<K, Row, Col>::operator+=(const Matrix<K, Row, Col>& x)
-{
-    if constexpr (mk_concepts::BLASSupported<K>) {
+template <typename K, size_t Row, size_t Col, typename Backend>
+    requires mk_concepts::BLASSupported<Backend, K>
+inline auto Matrix<K, Row, Col, Backend>::operator+=(const Matrix& x) -> Matrix& {
+    if constexpr (mk_concepts::SingleFloatingPoint<K>) {
         cblas_saxpy(Row * Col, 1.0, x._elements.data(), 1, this->_elements.data(), 1);
-            return *this;
+        return *this;
+    } else if constexpr (mk_concepts::DoubleFloatingPoint<K>) {
+        cblas_daxpy(Row * Col, 1.0, x._elements.data(), 1, this->_elements.data(), 1);
+        return *this;
     }
-    
 }
 
-template <typename K, size_t Row, size_t Col>
-    requires mk_concepts::BLASSupported<K>
-inline Matrix<K, Row, Col>& Matrix<K, Row, Col>::operator+=(const Matrix<K, Row, Col>& x)
-    requires mk_concepts::DoubleFloatingPoint<K>
-{
-    cblas_daxpy(Row * Col, 1.0, x._elements.data(), 1, this->_elements.data(), 1);
-    return *this;
-}
-
-template <typename K, size_t Row, size_t Col>
-    requires mk_concepts::BLASSupported<K>
-inline Matrix<K, Row, Col>& Matrix<K, Row, Col>::operator+=(const Matrix<K, Row>& x)
-    requires mk_concepts::SingleFloatingPoint<K>
-{
+template <typename K, size_t Row, size_t Col, typename Backend>
+    requires mk_concepts::BLASSupported<Backend, K>
+inline auto Matrix<K, Row, Col, Backend>::operator+=(const Matrix<K, Row, std::dynamic_extent, Backend>& x) -> Matrix& {
 #if !defined(NDEBUG)
     if (Col != x.ColumnSize()) {
         std::string errorString = "Mismatch matrix size for matrix product.\n";
@@ -209,15 +174,31 @@ inline Matrix<K, Row, Col>& Matrix<K, Row, Col>::operator+=(const Matrix<K, Row>
         throw std::domain_error(errorString);
     }
 #endif
-    cblas_saxpy(Row * Col, 1.0, x._elements.data(), 1, this->_elements.data(), 1);
-    return *this;
+
+    if constexpr (mk_concepts::SingleFloatingPoint<K>) {
+        cblas_saxpy(Row * Col, 1.0, x._elements.data(), 1, this->_elements.data(), 1);
+        return *this;
+    } else if constexpr (mk_concepts::DoubleFloatingPoint<K>) {
+        cblas_daxpy(Row * Col, 1.0, x._elements.data(), 1, this->_elements.data(), 1);
+        return *this;
+    }
 }
 
-template <typename K, size_t Row, size_t Col>
-    requires mk_concepts::BLASSupported<K>
-inline Matrix<K, Row, Col>& Matrix<K, Row, Col>::operator+=(const Matrix<K, Row>& x)
-    requires mk_concepts::DoubleFloatingPoint<K>
-{
+template <typename K, size_t Row, size_t Col, typename Backend>
+    requires mk_concepts::BLASSupported<Backend, K>
+inline auto Matrix<K, Row, Col, Backend>::operator-=(const Matrix& x) -> Matrix& {
+    if constexpr (mk_concepts::SingleFloatingPoint<K>) {
+        cblas_saxpy(Row * Col, -1.0, x._elements.data(), 1, this->_elements.data(), 1);
+        return *this;
+    } else if constexpr (mk_concepts::DoubleFloatingPoint<K>) {
+        cblas_daxpy(Row * Col, -1.0, x._elements.data(), 1, this->_elements.data(), 1);
+        return *this;
+    }
+}
+
+template <typename K, size_t Row, size_t Col, typename Backend>
+    requires mk_concepts::BLASSupported<Backend, K>
+inline auto Matrix<K, Row, Col, Backend>::operator-=(const Matrix<K, Row, std::dynamic_extent, Backend>& x) -> Matrix& {
 #if !defined(NDEBUG)
     if (Col != x.ColumnSize()) {
         std::string errorString = "Mismatch matrix size for matrix product.\n";
@@ -227,75 +208,26 @@ inline Matrix<K, Row, Col>& Matrix<K, Row, Col>::operator+=(const Matrix<K, Row>
         throw std::domain_error(errorString);
     }
 #endif
-    cblas_daxpy(Row * Col, 1.0, x._elements.data(), 1, this->_elements.data(), 1);
-    return *this;
-}
-
-template <typename K, size_t Row, size_t Col>
-    requires mk_concepts::BLASSupported<K>
-inline Matrix<K, Row, Col>& Matrix<K, Row, Col>::operator-=(const Matrix<K, Row, Col>& x)
-    requires mk_concepts::SingleFloatingPoint<K>
-{
-    cblas_saxpy(Row * Col, -1.0, x._elements.data(), 1, this->_elements.data(), 1);
-    return *this;
-}
-
-template <typename K, size_t Row, size_t Col>
-    requires mk_concepts::BLASSupported<K>
-inline Matrix<K, Row, Col>& Matrix<K, Row, Col>::operator-=(const Matrix<K, Row, Col>& x)
-    requires mk_concepts::DoubleFloatingPoint<K>
-{
-    cblas_daxpy(Row * Col, -1.0, x._elements.data(), 1, this->_elements.data(), 1);
-    return *this;
-}
-
-template <typename K, size_t Row, size_t Col>
-    requires mk_concepts::BLASSupported<K>
-inline Matrix<K, Row, Col>& Matrix<K, Row, Col>::operator-=(const Matrix<K, Row>& x)
-    requires mk_concepts::SingleFloatingPoint<K>
-{
-#if !defined(NDEBUG)
-    if (Col != x.ColumnSize()) {
-        std::string errorString = "Mismatch matrix size for matrix product.\n";
-        errorString += "this size    : " + this->GetSizeString() + "\n";
-        errorString += "opponent size: " + x.GetSizeString() + ".\n";
-
-        throw std::domain_error(errorString);
+    if constexpr (mk_concepts::SingleFloatingPoint<K>) {
+        cblas_saxpy(Row * Col, -1.0, x._elements.data(), 1, this->_elements.data(), 1);
+        return *this;
+    } else if constexpr (mk_concepts::DoubleFloatingPoint<K>) {
+        cblas_daxpy(Row * Col, -1.0, x._elements.data(), 1, this->_elements.data(), 1);
+        return *this;
     }
-#endif
-    cblas_saxpy(Row * Col, -1.0, x._elements.data(), 1, this->_elements.data(), 1);
-    return *this;
 }
 
-template <typename K, size_t Row, size_t Col>
-    requires mk_concepts::BLASSupported<K>
-inline Matrix<K, Row, Col>& Matrix<K, Row, Col>::operator-=(const Matrix<K, Row>& x)
-    requires mk_concepts::DoubleFloatingPoint<K>
-{
-#if !defined(NDEBUG)
-    if (Col != x.ColumnSize()) {
-        std::string errorString = "Mismatch matrix size for matrix product.\n";
-        errorString += "this size    : " + this->GetSizeString() + "\n";
-        errorString += "opponent size: " + x.GetSizeString() + ".\n";
-
-        throw std::domain_error(errorString);
-    }
-#endif
-    cblas_daxpy(Row * Col, -1.0, x._elements.data(), 1, this->_elements.data(), 1);
-    return *this;
-}
-
-template <typename K, size_t Row, size_t Col>
-    requires mk_concepts::BLASSupported<K>
-Matrix<K, Row, Col>& Matrix<K, Row, Col>::operator*=(const Matrix<K, Row, Col>& x) {
+template <typename K, size_t Row, size_t Col, typename Backend>
+    requires mk_concepts::BLASSupported<Backend, K>
+auto Matrix<K, Row, Col, Backend>::operator*=(const Matrix<K, Row, Col, Backend>& x) -> Matrix& {
     // hadamard product is not into BLAS
     std::ranges::transform(this->_elements, x._elements, this->_elements.begin(), std::multiplies<>());
     return *this;
 }
 
-template <typename K, size_t Row, size_t Col>
-    requires mk_concepts::BLASSupported<K>
-Matrix<K, Row, Col>& Matrix<K, Row, Col>::operator*=(const Matrix<K, Row>& x) {
+template <typename K, size_t Row, size_t Col, typename Backend>
+    requires mk_concepts::BLASSupported<Backend, K>
+auto Matrix<K, Row, Col, Backend>::operator*=(const Matrix<K, Row, std::dynamic_extent, Backend>& x) -> Matrix& {
 #if !defined(NDEBUG)
     if (Col != x.ColumnSize()) {
         std::string errorString = "Mismatch matrix size for matrix product.\n";
@@ -311,25 +243,23 @@ Matrix<K, Row, Col>& Matrix<K, Row, Col>::operator*=(const Matrix<K, Row>& x) {
 }
 
 // arithmetics binary operators
-template <typename K, size_t Row, size_t Col>
-    requires mk_concepts::SingleFloatingPoint<K>
-Matrix<K, Row, Col> operator+(Matrix<K, Row, Col> lhs, Matrix<K, Row, Col> rhs) {
+template <typename K, size_t Row, size_t Col, typename Backend>
+    requires mk_concepts::BLASSupported<Backend, K>
+inline Matrix<K, Row, Col, Backend> operator+(Matrix<K, Row, Col, Backend> lhs, Matrix<K, Row, Col, Backend> rhs) {
     auto result = lhs;
-    cblas_saxpy(Row * Col, 1.0, rhs._elements.data(), 1, result._elements.data(), 1);
-    return result;
+    if constexpr (mk_concepts::SingleFloatingPoint<K>) {
+        cblas_saxpy(Row * Col, 1.0, rhs._elements.data(), 1, result._elements.data(), 1);
+        return result;
+    } else if constexpr (mk_concepts::DoubleFloatingPoint<K>) {
+        cblas_daxpy(Row * Col, 1.0, rhs._elements.data(), 1, result._elements.data(), 1);
+        return result;
+    }
 }
 
-template <typename K, size_t Row, size_t Col>
-    requires mk_concepts::DoubleFloatingPoint<K>
-Matrix<K, Row, Col> operator+(Matrix<K, Row, Col> lhs, Matrix<K, Row, Col> rhs) {
-    auto result = lhs;
-    cblas_daxpy(Row * Col, 1.0, rhs._elements.data(), 1, result._elements.data(), 1);
-    return result;
-}
-
-template <typename K, size_t Row, size_t Col>
-    requires mk_concepts::SingleFloatingPoint<K>
-Matrix<K, Row, Col> operator+(Matrix<K, Row, Col> lhs, Matrix<K, Row> rhs) {
+template <typename K, size_t Row, size_t Col, typename Backend>
+    requires mk_concepts::BLASSupported<Backend, K>
+inline Matrix<K, Row, Col, Backend> operator+(
+    Matrix<K, Row, Col, Backend> lhs, Matrix<K, Row, std::dynamic_extent, Backend> rhs) {
 #if !defined(NDEBUG)
     if (Col != rhs.ColumnSize()) {
         std::string errorString = "Mismatch matrix size for matrix product.\n";
@@ -339,47 +269,35 @@ Matrix<K, Row, Col> operator+(Matrix<K, Row, Col> lhs, Matrix<K, Row> rhs) {
         throw std::domain_error(errorString);
     }
 #endif
-    auto result = lhs;
-    cblas_saxpy(Row * Col, 1.0, rhs._elements.data(), 1, result._elements.data(), 1);
-    return result;
-}
-
-template <typename K, size_t Row, size_t Col>
-    requires mk_concepts::DoubleFloatingPoint<K>
-Matrix<K, Row, Col> operator+(Matrix<K, Row, Col> lhs, Matrix<K, Row> rhs) {
-#if !defined(NDEBUG)
-    if (Col != rhs.ColumnSize()) {
-        std::string errorString = "Mismatch matrix size for matrix product.\n";
-        errorString += "this size    : " + lhs.GetSizeString() + "\n";
-        errorString += "opponent size: " + rhs.GetSizeString() + ".\n";
-
-        throw std::domain_error(errorString);
+    auto result = Matrix<K, Row, Col, Backend>();
+    if constexpr (mk_concepts::SingleFloatingPoint<K>) {
+        cblas_saxpy(Row * Col, 1.0, rhs._elements.data(), 1, result._elements.data(), 1);
+        return result;
+    } else if constexpr (mk_concepts::DoubleFloatingPoint<K>) {
+        cblas_daxpy(Row * Col, 1.0, rhs._elements.data(), 1, result._elements.data(), 1);
+        return result;
     }
-#endif
-    auto result = lhs;
-    cblas_daxpy(Row * Col, 1.0, rhs._elements.data(), 1, result._elements.data(), 1);
-    return result;
 }
 
-template <typename K, size_t Row, size_t Col>
+template <typename K, size_t Row, size_t Col, typename Backend>
     requires mk_concepts::SingleFloatingPoint<K>
-Matrix<K, Row, Col> operator-(Matrix<K, Row, Col> lhs, Matrix<K, Row, Col> rhs) {
+inline Matrix<K, Row, Col, Backend> operator-(Matrix<K, Row, Col, Backend> lhs, Matrix<K, Row, Col, Backend> rhs) {
     auto result = lhs;
     cblas_saxpy(Row * Col, -1.0, rhs._elements.data(), 1, result._elements.data(), 1);
     return result;
 }
 
-template <typename K, size_t Row, size_t Col>
+template <typename K, size_t Row, size_t Col, typename Backend>
     requires mk_concepts::DoubleFloatingPoint<K>
-Matrix<K, Row, Col> operator-(Matrix<K, Row, Col> lhs, Matrix<K, Row, Col> rhs) {
+inline Matrix<K, Row, Col, Backend> operator-(Matrix<K, Row, Col, Backend> lhs, Matrix<K, Row, Col, Backend> rhs) {
     auto result = lhs;
     cblas_daxpy(Row * Col, -1.0, rhs._elements.data(), 1, result._elements.data(), 1);
     return result;
 }
 
-template <typename K, size_t Row, size_t Col>
+template <typename K, size_t Row, size_t Col, typename Backend>
     requires mk_concepts::SingleFloatingPoint<K>
-Matrix<K, Row, Col> operator-(Matrix<K, Row, Col> lhs, Matrix<K, Row> rhs) {
+Matrix<K, Row, Col, Backend> operator-(Matrix<K, Row, Col, Backend> lhs, Matrix<K, Row> rhs) {
 #if !defined(NDEBUG)
     if (Col != rhs.ColumnSize()) {
         std::string errorString = "Mismatch matrix size for matrix product.\n";
@@ -394,9 +312,9 @@ Matrix<K, Row, Col> operator-(Matrix<K, Row, Col> lhs, Matrix<K, Row> rhs) {
     return result;
 }
 
-template <typename K, size_t Row, size_t Col>
+template <typename K, size_t Row, size_t Col, typename Backend>
     requires mk_concepts::DoubleFloatingPoint<K>
-Matrix<K, Row, Col> operator-(Matrix<K, Row, Col> lhs, Matrix<K, Row> rhs) {
+Matrix<K, Row, Col, Backend> operator-(Matrix<K, Row, Col, Backend> lhs, Matrix<K, Row> rhs) {
 #if !defined(NDEBUG)
     if (Col != rhs.ColumnSize()) {
         std::string errorString = "Mismatch matrix size for matrix product.\n";
@@ -412,8 +330,8 @@ Matrix<K, Row, Col> operator-(Matrix<K, Row, Col> lhs, Matrix<K, Row> rhs) {
 }
 
 // ostream
-template <typename K, size_t Row, size_t Col>
-std::ostream& operator<<(std::ostream& os, const Matrix<K, Row, Col>& mat) {
+template <typename K, size_t Row, size_t Col, typename Backend>
+std::ostream& operator<<(std::ostream& os, const Matrix<K, Row, Col, Backend>& mat) {
     for (size_t i = 0; i < Row; i++) {
         for (size_t j = 0; j < Col; j++) {
             os << mat._span[i, j] << " ";
@@ -425,46 +343,46 @@ std::ostream& operator<<(std::ostream& os, const Matrix<K, Row, Col>& mat) {
 /* end operator overloads definition */
 
 /* begin matrix unique functions definition */
-template <typename K, size_t Row, size_t Col>
-    requires mk_concepts::BLASSupported<K>
-constexpr size_t Matrix<K, Row, Col>::RowSize() {
+template <typename K, size_t Row, size_t Col, typename Backend>
+    requires mk_concepts::BLASSupported<Backend, K>
+constexpr size_t Matrix<K, Row, Col, Backend>::RowSize() {
     return Row;
 }
 
-template <typename K, size_t Row, size_t Col>
-    requires mk_concepts::BLASSupported<K>
-constexpr size_t Matrix<K, Row, Col>::ColumnSize() {
+template <typename K, size_t Row, size_t Col, typename Backend>
+    requires mk_concepts::BLASSupported<Backend, K>
+constexpr size_t Matrix<K, Row, Col, Backend>::ColumnSize() {
     return Col;
 }
 
-template <typename K, size_t Row, size_t Col>
-    requires mk_concepts::BLASSupported<K>
-std::string Matrix<K, Row, Col>::GetSizeString() const {
+template <typename K, size_t Row, size_t Col, typename Backend>
+    requires mk_concepts::BLASSupported<Backend, K>
+std::string Matrix<K, Row, Col, Backend>::GetSizeString() const {
     return "(" + std::to_string(Row) + ", " + std::to_string(Col) + ")";
 }
 
-template <typename K, size_t Row, size_t Col>
-    requires mk_concepts::BLASSupported<K>
-inline std::array<K, Row * Col>& Matrix<K, Row, Col>::Elements() {
+template <typename K, size_t Row, size_t Col, typename Backend>
+    requires mk_concepts::BLASSupported<Backend, K>
+inline std::array<K, Row * Col>& Matrix<K, Row, Col, Backend>::Elements() {
     return this->_elements;
 }
 
-// template <typename K, size_t Row, size_t Col>
-// inline K* MatrixStatic<K, Row, Col>::_elements.data() {
+// template <typename K, size_t Row, size_t Col, typename Backend>
+// inline K* MatrixStaticOpen<K, Row, Col>::_elements.data() {
 //     return this->_elements.data();
 // }
 
-// template <typename K, size_t Row, size_t Col>
-// inline const K* MatrixStatic<K, Row, Col>::_elements.data() const {
+// template <typename K, size_t Row, size_t Col, typename Backend>
+// inline const K* MatrixStaticOpen<K, Row, Col>::_elements.data() const {
 //     return this->_elements.data();
 // }
 /* end matrix unique functions definition */
 
 /* begin matrix unique arithmetics definition */
-template <typename K, size_t Row, size_t Col>
-    requires mk_concepts::BLASSupported<K>
+template <typename K, size_t Row, size_t Col, typename Backend>
+    requires mk_concepts::BLASSupported<Backend, K>
 template <size_t OppCol>
-inline Matrix<K, Row, OppCol> Matrix<K, Row, Col>::Dot(const Matrix<K, Col, OppCol> mat)
+inline Matrix<K, Row, OppCol, Backend> Matrix<K, Row, Col, Backend>::Dot(const Matrix<K, Col, OppCol, Backend> mat)
     requires mk_concepts::SingleFloatingPoint<K>
 {
     auto res = Matrix<K, Row, OppCol>();
@@ -473,10 +391,10 @@ inline Matrix<K, Row, OppCol> Matrix<K, Row, Col>::Dot(const Matrix<K, Col, OppC
     return res;
 }
 
-template <typename K, size_t Row, size_t Col>
-    requires mk_concepts::BLASSupported<K>
+template <typename K, size_t Row, size_t Col, typename Backend>
+    requires mk_concepts::BLASSupported<Backend, K>
 template <size_t OppCol>
-inline Matrix<K, Row, OppCol> Matrix<K, Row, Col>::Dot(const Matrix<K, Col, OppCol> mat)
+inline Matrix<K, Row, OppCol, Backend> Matrix<K, Row, Col, Backend>::Dot(const Matrix<K, Col, OppCol, Backend> mat)
     requires mk_concepts::DoubleFloatingPoint<K>
 {
     auto res = Matrix<K, Row, OppCol>();
@@ -485,22 +403,22 @@ inline Matrix<K, Row, OppCol> Matrix<K, Row, Col>::Dot(const Matrix<K, Col, OppC
     return res;
 }
 
-template <typename K, size_t Row, size_t Col>
-    requires mk_concepts::BLASSupported<K>
-inline Matrix<K, Row> Matrix<K, Row, Col>::Dot(const Matrix<K, Col>& mat)
+template <typename K, size_t Row, size_t Col, typename Backend>
+    requires mk_concepts::BLASSupported<Backend, K>
+inline Matrix<K, Row, std::dynamic_extent, Backend> Matrix<K, Row, Col, Backend>::Dot(const Matrix<K, std::dynamic_extent, Col, Backend>& mat)
     requires mk_concepts::SingleFloatingPoint<K>
 {
     // const size_t matColumnSize = mat.ColumnSize();
     // assert(matColumnSize <= INT_MAX);
-    auto res = Matrix<K, Row>(mat.ColumnSize());
+    auto res = Matrix<K, Row, std::dynamic_extent, Backend>(mat.ColumnSize());
     cblas_sgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, Row, static_cast<blasint>(mat.ColumnSize()), Col, 1.0,
         this->_elements.data(), Row, mat._elements.data(), Col, 0.0, res._elements.data(), Row);
     return res;
 }
 
-template <typename K, size_t Row, size_t Col>
-    requires mk_concepts::BLASSupported<K>
-inline Matrix<K, Row> Matrix<K, Row, Col>::Dot(const Matrix<K, Col>& mat)
+template <typename K, size_t Row, size_t Col, typename Backend>
+    requires mk_concepts::BLASSupported<Backend, K>
+inline Matrix<K, Row, std::dynamic_extent, Backend> Matrix<K, Row, Col, Backend>::Dot(const Matrix<K, std::dynamic_extent, Col, Backend>& mat)
     requires mk_concepts::DoubleFloatingPoint<K>
 {
     // const size_t matColumnSize = mat.ColumnSize();
@@ -511,10 +429,10 @@ inline Matrix<K, Row> Matrix<K, Row, Col>::Dot(const Matrix<K, Col>& mat)
     return res;
 }
 
-template <typename K, size_t Row, size_t Col>
-    requires mk_concepts::BLASSupported<K>
+template <typename K, size_t Row, size_t Col, typename Backend>
+    requires mk_concepts::BLASSupported<Backend, K>
 template <size_t OppCol>
-inline Matrix<K, Row, OppCol> Matrix<K, Row, Col>::Dot(const MatrixColumnStatic<K, OppCol>& mat)
+inline Matrix<K, Row, OppCol, Backend> Matrix<K, Row, Col, Backend>::Dot(const Matrix<K, std::dynamic_extent, OppCol, Backend>& mat)
     requires mk_concepts::SingleFloatingPoint<K>
 {
 #if !defined(NDEBUG)
@@ -533,10 +451,10 @@ inline Matrix<K, Row, OppCol> Matrix<K, Row, Col>::Dot(const MatrixColumnStatic<
     return res;
 }
 
-template <typename K, size_t Row, size_t Col>
-    requires mk_concepts::BLASSupported<K>
+template <typename K, size_t Row, size_t Col, typename Backend>
+    requires mk_concepts::BLASSupported<Backend, K>
 template <size_t OppCol>
-inline Matrix<K, Row, OppCol> Matrix<K, Row, Col>::Dot(const MatrixColumnStatic<K, OppCol>& mat)
+inline Matrix<K, Row, OppCol, Backend> Matrix<K, Row, Col, Backend>::Dot(const Matrix<K, std::dynamic_extent, OppCol, Backend>& mat)
     requires mk_concepts::DoubleFloatingPoint<K>
 {
 #if !defined(NDEBUG)
@@ -555,9 +473,9 @@ inline Matrix<K, Row, OppCol> Matrix<K, Row, Col>::Dot(const MatrixColumnStatic<
     return res;
 }
 
-template <typename K, size_t Row, size_t Col>
-    requires mk_concepts::BLASSupported<K>
-inline Matrix<K, Row> Matrix<K, Row, Col>::Dot(const MatrixDynamic<K>& mat)
+template <typename K, size_t Row, size_t Col, typename Backend>
+    requires mk_concepts::BLASSupported<Backend, K>
+inline Matrix<K, Row, std::dynamic_extent, Backend> Matrix<K, Row, Col, Backend>::Dot(const Matrix<K, std::dynamic_extent, std::dynamic_extent, Backend>& mat)
     requires mk_concepts::SingleFloatingPoint<K>
 {
 #if !defined(NDEBUG)
@@ -576,9 +494,9 @@ inline Matrix<K, Row> Matrix<K, Row, Col>::Dot(const MatrixDynamic<K>& mat)
     return res;
 }
 
-template <typename K, size_t Row, size_t Col>
-    requires mk_concepts::BLASSupported<K>
-inline Matrix<K, Row> Matrix<K, Row, Col>::Dot(const MatrixDynamic<K>& mat)
+template <typename K, size_t Row, size_t Col, typename Backend>
+    requires mk_concepts::BLASSupported<Backend, K>
+inline Matrix<K, Row, std::dynamic_extent, Backend> Matrix<K, Row, Col, Backend>::Dot(const Matrix<K, std::dynamic_extent, std::dynamic_extent, Backend>& mat)
     requires mk_concepts::DoubleFloatingPoint<K>
 {
 #if !defined(NDEBUG)
@@ -596,7 +514,7 @@ inline Matrix<K, Row> Matrix<K, Row, Col>::Dot(const MatrixDynamic<K>& mat)
         this->_elements.data(), Row, mat._elements.data(), Col, 0.0, res._elements.data(), Row);
     return res;
 }
-/* end matrix unique arithmetics definition */  // namespace mknnlib::matrix
+/* end matrix unique arithmetics definition */
 }  // namespace mknnlib::matrix
 
 #endif

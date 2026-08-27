@@ -8,7 +8,7 @@
 #include "src/matrices/matrix_row_static.hpp"
 
 using mknnlib::matrix::Matrix;
-using mknnlib::matrix::MatrixRowStatic;
+using mknnlib::matrix::MatrixRowStaticOpen;
 
 int main() {
     // a row, c row value
@@ -25,12 +25,12 @@ int main() {
     // std::array<float, k * n> b = {7.0, 9.0, 2.0, 8.0, 1.0, 3.0};
 
     std::vector<float> rowStatic = {2.0, 4.0, 6.0, 8.0, 10.0, 12.0};
-    auto z = MatrixRowStatic<float, k>(n, rowStatic);
+    auto z = MatrixRowStaticOpen<float, k>(n, rowStatic);
 
     std::vector<float> c(m * n, 0.0);
 
     auto x = Matrix<float, m, k>(a);
-    // auto y = MatrixStatic<float, k, n>(b);
+    // auto y = MatrixStaticOpen<float, k, n>(b);
     
     // auto res = x.Dot(y);
     auto resRowStatic = x.Dot(z);

@@ -69,7 +69,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(mul_matrix_static_test, T, CheckMatrixElementType)
     auto arrayF = MakeArrayF<T>();
     auto arrayG = MakeArrayG<T>();
 
-    // auto E = MatrixStatic<T, 3, 2>(arrayE);
+    // auto E = MatrixStaticOpen<T, 3, 2>(arrayE);
     auto F = Matrix<T, 2, 3>(arrayF);
     auto G = Matrix<T, 2, 3>(arrayG);
 

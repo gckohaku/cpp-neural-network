@@ -12,7 +12,7 @@
 #include "tests/test_type_defines.hpp"
 #include "tests/test_utilities.hpp"
 
-using mknnlib::matrix::MatrixRowStatic;
+using mknnlib::matrix::MatrixRowStaticOpen;
 
 namespace matrix_test_mul {
 BOOST_AUTO_TEST_CASE_TEMPLATE(mul_matrix_row_static_test, T, CheckMatrixElementType) {
@@ -24,8 +24,8 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(mul_matrix_row_static_test, T, CheckMatrixElementT
     auto arrayA = MakeVectorA<T>();
     auto arrayB = MakeVectorB<T>();
 
-    auto A = MatrixRowStatic<T, rowAAndB>(columnAAndB, arrayA);
-    auto B = MatrixRowStatic<T, rowAAndB>(columnAAndB, arrayB);
+    auto A = MatrixRowStaticOpen<T, rowAAndB>(columnAAndB, arrayA);
+    auto B = MatrixRowStaticOpen<T, rowAAndB>(columnAAndB, arrayB);
 
     auto expectedATimesB = MakeExpectedVectorAAndB<T>();
 
@@ -37,7 +37,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(mul_matrix_row_static_test, T, CheckMatrixElementT
 
     auto ATimesB = A * B;
 
-    auto typeCheckATimesB = std::is_same<decltype(ATimesB), MatrixRowStatic<T, rowAAndB>>::value;
+    auto typeCheckATimesB = std::is_same<decltype(ATimesB), MatrixRowStaticOpen<T, rowAAndB>>::value;
     BOOST_CHECK(typeCheckATimesB);
     CheckCloseEachVectorElement<T>(ATimesB.Elements(), expectedATimesB, acceptableErrorATimesB);
 
@@ -49,8 +49,8 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(mul_matrix_row_static_test, T, CheckMatrixElementT
     auto arrayC = MakeVectorC<T>();
     auto arrayD = MakeVectorD<T>();
 
-    auto C = MatrixRowStatic<T, rowCAndD>(columnCAndD, arrayC);
-    auto D = MatrixRowStatic<T, rowCAndD>(columnCAndD, arrayD);
+    auto C = MatrixRowStaticOpen<T, rowCAndD>(columnCAndD, arrayC);
+    auto D = MatrixRowStaticOpen<T, rowCAndD>(columnCAndD, arrayD);
 
     auto expectedCTimesD = MakeExpectedVectorCAndD<T>();
 
@@ -61,7 +61,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(mul_matrix_row_static_test, T, CheckMatrixElementT
 
     auto CTimesD = C * D;
 
-    auto typeCheckCTimesD = std::is_same<decltype(CTimesD), MatrixRowStatic<T, rowCAndD>>::value;
+    auto typeCheckCTimesD = std::is_same<decltype(CTimesD), MatrixRowStaticOpen<T, rowCAndD>>::value;
     BOOST_CHECK(typeCheckCTimesD);
     CheckCloseEachVectorElement<T>(CTimesD.Elements(), expectedCTimesD, acceptableErrorCTimesD);
 
@@ -71,10 +71,10 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(mul_matrix_row_static_test, T, CheckMatrixElementT
     auto arrayG = MakeVectorG<T>();
     auto arrayH = MakeVectorH<T>();
 
-    auto E = MatrixRowStatic<T, 3>(2, arrayE);
-    auto F = MatrixRowStatic<T, 2>(3, arrayF);
-    auto G = MatrixRowStatic<T, 2>(3, arrayG);
-    auto H = MatrixRowStatic<T, 2>(2, arrayH);
+    auto E = MatrixRowStaticOpen<T, 3>(2, arrayE);
+    auto F = MatrixRowStaticOpen<T, 2>(3, arrayF);
+    auto G = MatrixRowStaticOpen<T, 2>(3, arrayG);
+    auto H = MatrixRowStaticOpen<T, 2>(2, arrayH);
 
     // BOOST_CHECK_THROW(E * F, std::domain_error);
     // BOOST_CHECK_THROW(F * E, std::domain_error);
