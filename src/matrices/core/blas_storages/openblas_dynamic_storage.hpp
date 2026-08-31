@@ -8,6 +8,25 @@
 namespace mknnlib::matrix::core {
 template <typename T>
 struct Storage<OpenBLASBackend, T, std::dynamic_extent> {
-    std::vector<T> data;
+    std::vector<T> _data;
+
+    constexpr size_t size() const noexcept;
+    constexpr T* data() noexcept;
+    constexpr const T* data() const noexcept;
 };
+
+template <typename T>
+inline constexpr size_t Storage<OpenBLASBackend, T, std::dynamic_extent>::size() const noexcept {
+    return _data.size();
+}
+
+template <typename T>
+inline constexpr T* Storage<OpenBLASBackend, T, std::dynamic_extent>::data() noexcept {
+    return _data.data();
+}
+
+template <typename T>
+inline constexpr const T* Storage<OpenBLASBackend, T, std::dynamic_extent>::data() const noexcept {
+    return _data.data();
+}
 }  // namespace mknnlib::matrix::core

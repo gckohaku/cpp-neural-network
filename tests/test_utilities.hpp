@@ -11,6 +11,8 @@
 #include <source_location>
 #include <sstream>
 
+#include "src/matrices/matrix_static.hpp"
+
 template <typename T, size_t N>
 void CheckCloseEachArrayElement(const std::array<T, N> left, const std::array<T, N> right,
     const std::array<T, N> tolerance, const std::source_location& location = std::source_location::current()) {
@@ -50,12 +52,38 @@ void CheckCloseEachVectorElement(const std::vector<T> left, const std::vector<T>
     }
 }
 
-template<typename T, size_t Size>
+template <typename Backend, typename T, size_t SizeL, size_t SizeR, size_t SizeTol>
+void CheckCloseEachStorageElement(const mknnlib::matrix::core::Storage<Backend, T, SizeL> left,
+    const mknnlib::matrix::core::Storage<Backend, T, SizeR> right,
+    const mknnlib::matrix::core::Storage<Backend, T, SizeTol> tolerance,
+    const std::source_location& location = std::source_location::current()) {
+        if (left.size() != right.size()) {
+        std::ostringstream message;
+        message << "\nFile: " << location.file_name() << ":" << location.line() << ":" << location.column() << ":\n";
+        message << "Vector size is not match.\n";
+        message << "Left: " << left.size() << ", Right: " << right.size() << ".";
+        BOOST_ERROR(message.str());
+        return;
+    }
+    const size_t N = left.size();
+    for (size_t i = 0; i < N; i++) {
+        std::ostringstream message;
+        message << "\nFile: " << location.file_name() << ":" << location.line() << ":" << location.column() << ":\n";
+        message << "Exceeds tolerance in index of " << i << ".\n";
+        message << "Elements: (" << std::fixed << std::setprecision(8) << left[i] << ", " << right[i] << "),\n";
+        message << "Expected error: " << std::defaultfloat << tolerance[i] << ",\n";
+        message << "Actual Error: " << std::abs(left[i] - right[i]) << ".\n";
+        message << "Actual error exceeds expected error.";
+        BOOST_CHECK_MESSAGE(std::abs(left[i] - right[i]) <= tolerance[i], message.str());
+    }
+}
+
+template <typename T, size_t Size>
 std::vector<T> ArrayToVector(std::array<T, Size> arr) {
     return std::vector<T>(arr.begin(), arr.end());
 }
 
-template<typename T, size_t Size>
+template <typename T, size_t Size>
 std::array<T, Size> VectorToArray(std::vector<T> vec) {
     auto arr = std::array<T, Size>();
     std::copy_n(vec.begin(), Size, arr.begin());

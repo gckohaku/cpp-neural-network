@@ -17,6 +17,7 @@
 #include "src/matrices/core/blas_backends.hpp"
 #include "src/matrices/matrix_template_base.hpp"
 #include "src/matrices/forward_declarations/static_operations.hpp"
+#include "src/matrices/core/blas_storages/openblas_static_storage.hpp"
 
 namespace mknnlib::matrix {
 template <typename K, size_t Row, size_t Col, typename Backend = core::OpenBLASBackend>
@@ -46,7 +47,8 @@ class Matrix :
 private:
     size_t _rowSize = Row;
     size_t _columnSize = Col;
-    std::array<K, Row * Col> _elements;
+    // std::array<K, Row * Col> _elements;
+    core::Storage<Backend, K, Row * Col> _elements;
     MdView _span;
 
 public:
@@ -385,8 +387,8 @@ template <size_t OppCol>
 inline Matrix<K, Row, OppCol, Backend> Matrix<K, Row, Col, Backend>::Dot(const Matrix<K, Col, OppCol, Backend> mat)
     requires mk_concepts::SingleFloatingPoint<K>
 {
-    auto res = Matrix<K, Row, OppCol>();
-    cblas_sgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, Row, OppCol, Col, 1.0, this->_elements.data(), Row,
+    auto res = Matrix<K, Row, OppCol, Backend>();
+    cblas_sgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, Row, static_cast<blasint>(OppCol), Col, 1.0, this->_elements.data(), Row,
         mat._elements.data(), Col, 0.0, res._elements.data(), Row);
     return res;
 }
@@ -398,7 +400,7 @@ inline Matrix<K, Row, OppCol, Backend> Matrix<K, Row, Col, Backend>::Dot(const M
     requires mk_concepts::DoubleFloatingPoint<K>
 {
     auto res = Matrix<K, Row, OppCol>();
-    cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, Row, OppCol, Col, 1.0, this->_elements.data(), Row,
+    cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, Row, static_cast<blasint>(OppCol), Col, 1.0, this->_elements.data(), Row,
         mat._elements.data(), Col, 0.0, res._elements.data(), Row);
     return res;
 }

@@ -82,6 +82,7 @@ public:
     size_t RowSize();
     size_t RowSize() const;
     constexpr size_t ColumnSize();
+    constexpr size_t ColumnSize() const;
     std::string GetSizeString() const;
     std::vector<K>& Elements();
     // K* _elements.data();
@@ -90,30 +91,17 @@ public:
 
     /* begin matrix unique arithmetics declaration */
     template <size_t OppCol>
-    Matrix<K, std::dynamic_extent, OppCol> Dot(const Matrix<K, std::dynamic_extent, OppCol> mat)
-        requires mk_concepts::SingleFloatingPoint<K>;
-    template <size_t OppCol>
-    Matrix<K, std::dynamic_extent, OppCol> Dot(const Matrix<K, std::dynamic_extent, OppCol> mat)
-        requires mk_concepts::DoubleFloatingPoint<K>;
+    Matrix<K, std::dynamic_extent, OppCol, Backend> Dot(const Matrix<K, std::dynamic_extent, OppCol, Backend> mat);
 
     template <size_t OppRow, size_t OppCol>
-    Matrix<K, std::dynamic_extent, OppCol> Dot(const Matrix<K, OppRow, OppCol> mat)
-        requires mk_concepts::SingleFloatingPoint<K>;
-    template <size_t OppRow, size_t OppCol>
-    Matrix<K, std::dynamic_extent, OppCol> Dot(const Matrix<K, OppRow, OppCol> mat)
-        requires mk_concepts::DoubleFloatingPoint<K>;
+    Matrix<K, std::dynamic_extent, OppCol, Backend> Dot(const Matrix<K, OppRow, OppCol, Backend> mat);
 
     template <size_t OppRow>
-    MatrixDynamicOpen<K> Dot(const MatrixRowStaticOpen<K, OppRow> mat)
-        requires mk_concepts::SingleFloatingPoint<K>;
-    template <size_t OppRow>
-    MatrixDynamicOpen<K> Dot(const MatrixRowStaticOpen<K, OppRow> mat)
-        requires mk_concepts::DoubleFloatingPoint<K>;
+    Matrix<K, std::dynamic_extent, std::dynamic_extent, Backend> Dot(
+        const Matrix<K, OppRow, std::dynamic_extent, Backend> mat);
 
-    MatrixDynamicOpen<K> Dot(const MatrixDynamicOpen<K> mat)
-        requires mk_concepts::SingleFloatingPoint<K>;
-    MatrixDynamicOpen<K> Dot(const MatrixDynamicOpen<K> mat)
-        requires mk_concepts::DoubleFloatingPoint<K>;
+    Matrix<K, std::dynamic_extent, std::dynamic_extent, Backend> Dot(
+        const Matrix<K, std::dynamic_extent, std::dynamic_extent, Backend> mat);
     /* end matrix unique arithmetics declaration */
 };
 
@@ -284,6 +272,12 @@ constexpr size_t Matrix<K, std::dynamic_extent, Col, Backend>::ColumnSize() {
 
 template <typename K, size_t Col, typename Backend>
     requires mk_concepts::BLASSupported<Backend, K>
+constexpr size_t Matrix<K, std::dynamic_extent, Col, Backend>::ColumnSize() const {
+    return Col;
+}
+
+template <typename K, size_t Col, typename Backend>
+    requires mk_concepts::BLASSupported<Backend, K>
 std::string Matrix<K, std::dynamic_extent, Col, Backend>::GetSizeString() const {
     return "(" + std::to_string(this->RowSize()) + ", " + std::to_string(Col) + ")";
 }
@@ -311,10 +305,8 @@ inline std::vector<K>& Matrix<K, std::dynamic_extent, Col, Backend>::Elements() 
 template <typename K, size_t Col, typename Backend>
     requires mk_concepts::BLASSupported<Backend, K>
 template <size_t OppCol>
-Matrix<K, std::dynamic_extent, OppCol> Matrix<K, std::dynamic_extent, Col, Backend>::Dot(
-    Matrix<K, std::dynamic_extent, OppCol> mat)
-    requires mk_concepts::SingleFloatingPoint<K>
-{
+Matrix<K, std::dynamic_extent, OppCol, Backend> Matrix<K, std::dynamic_extent, Col, Backend>::Dot(
+    Matrix<K, std::dynamic_extent, OppCol, Backend> mat) {
 #if !defined(NDEBUG)
     if (Col != mat.RowSize()) {
         std::string errorString = "Mismatch matrix size for matrix product.\n";
@@ -324,95 +316,64 @@ Matrix<K, std::dynamic_extent, OppCol> Matrix<K, std::dynamic_extent, Col, Backe
         throw std::domain_error(errorString);
     }
 #endif
-
     auto res = Matrix<K, std::dynamic_extent, OppCol>(this->RowSize());
-    cblas_sgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, static_cast<blasint>(this->RowSize()), OppCol, Col, 1.0,
-        this->_elements.data(), static_cast<blasint>(this->RowSize()), mat._elements.data(),
-        static_cast<blasint>(mat.RowSize()), 0.0, res._elements.data(), static_cast<blasint>(this->RowSize()));
-    return res;
-}
-
-template <typename K, size_t Col, typename Backend>
-    requires mk_concepts::BLASSupported<Backend, K>
-template <size_t OppCol>
-Matrix<K, std::dynamic_extent, OppCol> Matrix<K, std::dynamic_extent, Col, Backend>::Dot(
-    Matrix<K, std::dynamic_extent, OppCol> mat)
-    requires mk_concepts::DoubleFloatingPoint<K>
-{
-#if !defined(NDEBUG)
-    if (Col != mat.RowSize()) {
-        std::string errorString = "Mismatch matrix size for matrix product.\n";
-        errorString += "this size    : " + this->GetSizeString() + "\n";
-        errorString += "opponent size: " + mat.GetSizeString() + ".\n";
-
-        throw std::domain_error(errorString);
+    if constexpr (mk_concepts::SingleFloatingPoint<K>) {
+        cblas_sgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, static_cast<blasint>(this->RowSize()), OppCol, Col, 1.0,
+            this->_elements.data(), static_cast<blasint>(this->RowSize()), mat._elements.data(),
+            static_cast<blasint>(mat.RowSize()), 0.0, res._elements.data(), static_cast<blasint>(this->RowSize()));
+    } else if (mk_concepts::DoubleFloatingPoint<K>) {
+        cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, static_cast<blasint>(this->RowSize()), OppCol, Col, 1.0,
+            this->_elements.data(), static_cast<blasint>(this->RowSize()), mat._elements.data(),
+            static_cast<blasint>(mat.RowSize()), 0.0, res._elements.data(), static_cast<blasint>(this->RowSize()));
     }
-#endif
 
-    auto res = Matrix<K, std::dynamic_extent, OppCol>(this->RowSize());
-    cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, static_cast<blasint>(this->RowSize()), OppCol, Col, 1.0,
-        this->_elements.data(), static_cast<blasint>(this->RowSize()), mat._elements.data(),
-        static_cast<blasint>(mat.RowSize()), 0.0, res._elements.data(), static_cast<blasint>(this->RowSize()));
     return res;
 }
 
 template <typename K, size_t Col, typename Backend>
     requires mk_concepts::BLASSupported<Backend, K>
 template <size_t OppRow, size_t OppCol>
-Matrix<K, std::dynamic_extent, OppCol> Matrix<K, std::dynamic_extent, Col, Backend>::Dot(Matrix<K, OppRow, OppCol> mat)
-    requires mk_concepts::SingleFloatingPoint<K>
-{
+Matrix<K, std::dynamic_extent, OppCol, Backend> Matrix<K, std::dynamic_extent, Col, Backend>::Dot(
+    Matrix<K, OppRow, OppCol, Backend> mat) {
     auto res = Matrix<K, std::dynamic_extent, OppCol>(this->RowSize());
-    cblas_sgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, static_cast<blasint>(this->RowSize()), OppCol, Col, 1.0,
-        this->_elements.data(), static_cast<blasint>(this->RowSize()), mat._elements.data(), OppRow, 0.0,
-        res._elements.data(), static_cast<blasint>(this->RowSize()));
-    return res;
-}
+    if constexpr (mk_concepts::SingleFloatingPoint<K>) {
+        cblas_sgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, static_cast<blasint>(this->RowSize()), OppCol, Col, 1.0,
+            this->_elements.data(), static_cast<blasint>(this->RowSize()), mat._elements.data(), OppRow, 0.0,
+            res._elements.data(), static_cast<blasint>(this->RowSize()));
+    } else if (mk_concepts::DoubleFloatingPoint<K>) {
+        cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, static_cast<blasint>(this->RowSize()), OppCol, Col, 1.0,
+            this->_elements.data(), static_cast<blasint>(this->RowSize()), mat._elements.data(), OppRow, 0.0,
+            res._elements.data(), static_cast<blasint>(this->RowSize()));
+    }
 
-template <typename K, size_t Col, typename Backend>
-    requires mk_concepts::BLASSupported<Backend, K>
-template <size_t OppRow, size_t OppCol>
-Matrix<K, std::dynamic_extent, OppCol> Matrix<K, std::dynamic_extent, Col, Backend>::Dot(Matrix<K, OppRow, OppCol> mat)
-    requires mk_concepts::DoubleFloatingPoint<K>
-{
-    auto res = Matrix<K, std::dynamic_extent, OppCol>(this->RowSize());
-    cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, static_cast<blasint>(this->RowSize()), OppCol, Col, 1.0,
-        this->_elements.data(), static_cast<blasint>(this->RowSize()), mat._elements.data(), OppRow, 0.0,
-        res._elements.data(), static_cast<blasint>(this->RowSize()));
     return res;
 }
 
 template <typename K, size_t Col, typename Backend>
     requires mk_concepts::BLASSupported<Backend, K>
 template <size_t OppRow>
-MatrixDynamicOpen<K> Matrix<K, std::dynamic_extent, Col, Backend>::Dot(MatrixRowStaticOpen<K, OppRow> mat)
-    requires mk_concepts::SingleFloatingPoint<K>
-{
+Matrix<K, std::dynamic_extent, std::dynamic_extent, Backend> Matrix<K, std::dynamic_extent, Col, Backend>::Dot(
+    Matrix<K, OppRow, std::dynamic_extent, Backend> mat) {
     auto res = MatrixDynamicOpen<K>(this->RowSize(), mat.ColumnSize());
-    cblas_sgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, static_cast<blasint>(this->RowSize()),
-        static_cast<blasint>(mat.ColumnSize()), Col, 1.0, this->_elements.data(), static_cast<blasint>(this->RowSize()),
-        mat._elements.data(), OppRow, 0.0, res._elements.data(), static_cast<blasint>(this->RowSize()));
+    if constexpr (mk_concepts::SingleFloatingPoint<K>) {
+        cblas_sgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, static_cast<blasint>(this->RowSize()),
+            static_cast<blasint>(mat.ColumnSize()), Col, 1.0, this->_elements.data(),
+            static_cast<blasint>(this->RowSize()), mat._elements.data(), OppRow, 0.0, res._elements.data(),
+            static_cast<blasint>(this->RowSize()));
+    } else if (mk_concepts::DoubleFloatingPoint<K>) {
+        cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, static_cast<blasint>(this->RowSize()),
+            static_cast<blasint>(mat.ColumnSize()), Col, 1.0, this->_elements.data(),
+            static_cast<blasint>(this->RowSize()), mat._elements.data(), OppRow, 0.0, res._elements.data(),
+            static_cast<blasint>(this->RowSize()));
+    }
+
     return res;
 }
 
 template <typename K, size_t Col, typename Backend>
     requires mk_concepts::BLASSupported<Backend, K>
-template <size_t OppRow>
-MatrixDynamicOpen<K> Matrix<K, std::dynamic_extent, Col, Backend>::Dot(MatrixRowStaticOpen<K, OppRow> mat)
-    requires mk_concepts::DoubleFloatingPoint<K>
-{
-    auto res = MatrixDynamicOpen<K>(this->RowSize(), mat.ColumnSize());
-    cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, static_cast<blasint>(this->RowSize()),
-        static_cast<blasint>(mat.ColumnSize()), Col, 1.0, this->_elements.data(), static_cast<blasint>(this->RowSize()),
-        mat._elements.data(), OppRow, 0.0, res._elements.data(), static_cast<blasint>(this->RowSize()));
-    return res;
-}
-
-template <typename K, size_t Col, typename Backend>
-    requires mk_concepts::BLASSupported<Backend, K>
-MatrixDynamicOpen<K> Matrix<K, std::dynamic_extent, Col, Backend>::Dot(MatrixDynamicOpen<K> mat)
-    requires mk_concepts::SingleFloatingPoint<K>
-{
+Matrix<K, std::dynamic_extent, std::dynamic_extent, Backend> Matrix<K, std::dynamic_extent, Col, Backend>::Dot(
+    Matrix<K, std::dynamic_extent, std::dynamic_extent, Backend> mat) {
 #if !defined(NDEBUG)
     if (Col != mat.RowSize()) {
         std::string errorString = "Mismatch matrix size for matrix product.\n";
@@ -422,35 +383,19 @@ MatrixDynamicOpen<K> Matrix<K, std::dynamic_extent, Col, Backend>::Dot(MatrixDyn
         throw std::domain_error(errorString);
     }
 #endif
-
     auto res = MatrixDynamicOpen<K>(this->RowSize(), mat.ColumnSize());
-    cblas_sgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, static_cast<blasint>(this->RowSize()),
-        static_cast<blasint>(mat.ColumnSize()), Col, 1.0, this->_elements.data(), static_cast<blasint>(this->RowSize()),
-        mat._elements.data(), static_cast<blasint>(mat.RowSize()), 0.0, res._elements.data(),
-        static_cast<blasint>(this->RowSize()));
-    return res;
-}
-
-template <typename K, size_t Col, typename Backend>
-    requires mk_concepts::BLASSupported<Backend, K>
-MatrixDynamicOpen<K> Matrix<K, std::dynamic_extent, Col, Backend>::Dot(MatrixDynamicOpen<K> mat)
-    requires mk_concepts::DoubleFloatingPoint<K>
-{
-#if !defined(NDEBUG)
-    if (Col != mat.RowSize()) {
-        std::string errorString = "Mismatch matrix size for matrix product.\n";
-        errorString += "this size    : " + this->GetSizeString() + "\n";
-        errorString += "opponent size: " + mat.GetSizeString() + ".\n";
-
-        throw std::domain_error(errorString);
+    if constexpr (mk_concepts::SingleFloatingPoint<K>) {
+        cblas_sgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, static_cast<blasint>(this->RowSize()),
+            static_cast<blasint>(mat.ColumnSize()), Col, 1.0, this->_elements.data(),
+            static_cast<blasint>(this->RowSize()), mat._elements.data(), static_cast<blasint>(mat.RowSize()), 0.0,
+            res._elements.data(), static_cast<blasint>(this->RowSize()));
+    } else if (mk_concepts::DoubleFloatingPoint<K>) {
+        cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, static_cast<blasint>(this->RowSize()),
+            static_cast<blasint>(mat.ColumnSize()), Col, 1.0, this->_elements.data(),
+            static_cast<blasint>(this->RowSize()), mat._elements.data(), static_cast<blasint>(mat.RowSize()), 0.0,
+            res._elements.data(), static_cast<blasint>(this->RowSize()));
     }
-#endif
 
-    auto res = MatrixDynamicOpen<K>(this->RowSize(), mat.ColumnSize());
-    cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, static_cast<blasint>(this->RowSize()),
-        static_cast<blasint>(mat.ColumnSize()), Col, 1.0, this->_elements.data(), static_cast<blasint>(this->RowSize()),
-        mat._elements.data(), static_cast<blasint>(mat.RowSize()), 0.0, res._elements.data(),
-        static_cast<blasint>(this->RowSize()));
     return res;
 }
 /* end matrix unique arithmetics definition */
