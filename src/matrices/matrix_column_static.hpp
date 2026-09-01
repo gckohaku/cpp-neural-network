@@ -12,7 +12,9 @@
 #include <span>
 
 #include "src/concept_defines/types/type_concepts.hpp"
+#include "src/matrices/matrix_static.hpp"
 #include "src/matrices/matrix_template_base.hpp"
+#include "src/matrices/core/blas_storages/blas_storage.hpp" // IWYU pragma: keep
 
 namespace mknnlib::matrix {
 template <typename K, size_t Col, typename Backend>
@@ -44,7 +46,7 @@ class Matrix<K, std::dynamic_extent, Col, Backend> :
 private:
     size_t _rowSize = 0;
     size_t _columnSize = Col;
-    std::vector<K> _elements;
+    core::Storage<Backend, K, std::dynamic_extent> _elements;
     MdView _span;
 
 public:
@@ -84,7 +86,7 @@ public:
     constexpr size_t ColumnSize();
     constexpr size_t ColumnSize() const;
     std::string GetSizeString() const;
-    std::vector<K>& Elements();
+    core::Storage<Backend, K, std::dynamic_extent>& Elements();
     // K* _elements.data();
     // const K* _elements.data() const;
     /* end matrix unique functions declaration */
@@ -284,7 +286,7 @@ std::string Matrix<K, std::dynamic_extent, Col, Backend>::GetSizeString() const 
 
 template <typename K, size_t Col, typename Backend>
     requires mk_concepts::BLASSupported<Backend, K>
-inline std::vector<K>& Matrix<K, std::dynamic_extent, Col, Backend>::Elements() {
+inline core::Storage<Backend, K, std::dynamic_extent>& Matrix<K, std::dynamic_extent, Col, Backend>::Elements() {
     return this->_elements;
 }
 

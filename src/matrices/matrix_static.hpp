@@ -17,7 +17,7 @@
 #include "src/matrices/core/blas_backends.hpp"
 #include "src/matrices/matrix_template_base.hpp"
 #include "src/matrices/forward_declarations/static_operations.hpp"
-#include "src/matrices/core/blas_storages/openblas_static_storage.hpp"
+#include "src/matrices/core/blas_storages/blas_storage.hpp" // IWYU pragma: keep
 
 namespace mknnlib::matrix {
 template <typename K, size_t Row, size_t Col, typename Backend = core::OpenBLASBackend>
@@ -88,7 +88,7 @@ public:
     constexpr size_t RowSize();
     constexpr size_t ColumnSize();
     std::string GetSizeString() const;
-    std::array<K, Row * Col>& Elements();
+    core::Storage<Backend, K, Row * Col>& Elements();
     // K* _elements.data();
     // const K* _elements.data() const;
 
@@ -365,7 +365,7 @@ std::string Matrix<K, Row, Col, Backend>::GetSizeString() const {
 
 template <typename K, size_t Row, size_t Col, typename Backend>
     requires mk_concepts::BLASSupported<Backend, K>
-inline std::array<K, Row * Col>& Matrix<K, Row, Col, Backend>::Elements() {
+inline core::Storage<Backend, K, Row * Col>& Matrix<K, Row, Col, Backend>::Elements() {
     return this->_elements;
 }
 

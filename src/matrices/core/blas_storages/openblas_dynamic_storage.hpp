@@ -1,3 +1,6 @@
+#ifndef MKNNLIB_MATRICES_CORE_BLAS_STORAGES_OPENBLAS_DYNAMIC_STORAGE
+#define MKNNLIB_MATRICES_CORE_BLAS_STORAGES_OPENBLAS_DYNAMIC_STORAGE
+
 #include <cstddef>
 #include <span>
 #include <vector>
@@ -30,3 +33,5 @@ inline constexpr const T* Storage<OpenBLASBackend, T, std::dynamic_extent>::data
     return _data.data();
 }
 }  // namespace mknnlib::matrix::core
+
+#endif

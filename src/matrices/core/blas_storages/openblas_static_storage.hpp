@@ -1,3 +1,6 @@
+#ifndef MKNNLIB_MATRICES_CORE_BLAS_STORAGES_OPENBLAS_STATIC_STORAGE
+#define MKNNLIB_MATRICES_CORE_BLAS_STORAGES_OPENBLAS_STATIC_STORAGE
+
 #include <array>
 #include <cstddef>
 
@@ -29,3 +32,5 @@ inline constexpr const T* Storage<OpenBLASBackend, T, Size>::data() const noexce
     return _data.data();
 }
 }  // namespace mknnlib::matrix::core
+
+#endif
