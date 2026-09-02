@@ -39,7 +39,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(mul_matrix_row_static_test, T, CheckMatrixElementT
 
     auto typeCheckATimesB = std::is_same<decltype(ATimesB), MatrixRowStaticOpen<T, rowAAndB>>::value;
     BOOST_CHECK(typeCheckATimesB);
-    CheckCloseEachVectorElement<T>(ATimesB.Elements(), expectedATimesB, acceptableErrorATimesB);
+    CheckCloseEachStorageElement<T>(ATimesB.Elements(), expectedATimesB, acceptableErrorATimesB);
 
     // 2x5
     constexpr size_t rowCAndD = 2;
@@ -63,7 +63,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(mul_matrix_row_static_test, T, CheckMatrixElementT
 
     auto typeCheckCTimesD = std::is_same<decltype(CTimesD), MatrixRowStaticOpen<T, rowCAndD>>::value;
     BOOST_CHECK(typeCheckCTimesD);
-    CheckCloseEachVectorElement<T>(CTimesD.Elements(), expectedCTimesD, acceptableErrorCTimesD);
+    CheckCloseEachStorageElement<T>(CTimesD.Elements(), expectedCTimesD, acceptableErrorCTimesD);
 
     // throw exception test
     auto arrayE = MakeVectorE<T>();

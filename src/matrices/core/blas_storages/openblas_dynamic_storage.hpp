@@ -16,6 +16,8 @@ struct Storage<OpenBLASBackend, T, std::dynamic_extent> {
     constexpr size_t size() const noexcept;
     constexpr T* data() noexcept;
     constexpr const T* data() const noexcept;
+
+    std::vector<T> GetVector();
 };
 
 template <typename T>
@@ -31,6 +33,12 @@ inline constexpr T* Storage<OpenBLASBackend, T, std::dynamic_extent>::data() noe
 template <typename T>
 inline constexpr const T* Storage<OpenBLASBackend, T, std::dynamic_extent>::data() const noexcept {
     return _data.data();
+}
+
+template <typename T>
+std::vector<T> Storage<OpenBLASBackend, T, std::dynamic_extent>::GetVector() {
+    std::vector<T> vec(this->_data.begin(), this->_data.end());
+    return vec;
 }
 }  // namespace mknnlib::matrix::core
 

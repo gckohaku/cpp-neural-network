@@ -39,7 +39,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(sub_matrix_static_test, T, CheckMatrixElementType)
 
     auto typeCheckAMinusB = std::is_same<decltype(AMinusB), Matrix<T, rowAAndB, columnAAndB>>::value;
     BOOST_CHECK(typeCheckAMinusB);
-    CheckCloseEachArrayElement<T, elementSizeAAndB>(AMinusB.Elements(), expectedAMinusB, acceptableErrorAMinusB);
+    CheckCloseEachStorageElement<T, elementSizeAAndB>(AMinusB.Elements(), expectedAMinusB, acceptableErrorAMinusB);
 
     // 2x5
     constexpr size_t rowCAndD = 2;
@@ -63,7 +63,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(sub_matrix_static_test, T, CheckMatrixElementType)
 
     auto typeCheckCMinusD = std::is_same<decltype(CMinusD), Matrix<T, rowCAndD, columnCAndD>>::value;
     BOOST_CHECK(typeCheckCMinusD);
-    CheckCloseEachArrayElement<T, elementSizeCAndD>(CMinusD.Elements(), expectedCMinusD, acceptableErrorCMinusD);
+    CheckCloseEachStorageElement<T, elementSizeCAndD>(CMinusD.Elements(), expectedCMinusD, acceptableErrorCMinusD);
 
     // throw exception test
     // auto arrayE = MakeArrayE<T>();

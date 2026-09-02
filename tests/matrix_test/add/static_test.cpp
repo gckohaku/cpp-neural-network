@@ -7,12 +7,15 @@
 #include <limits>
 #include <type_traits>
 
+#include "src/matrices/core/blas_backends.hpp"
 #include "src/matrices/matrix_static.hpp"
 #include "tests/test_matrix_add_array_defines.hpp"
 #include "tests/test_utilities.hpp"
 #include "tests/test_type_defines.hpp"
 
 using mknnlib::matrix::Matrix;
+
+using Backend = mknnlib::matrix::core::OpenBLASBackend;
 
 namespace matrix_test_add {
 BOOST_AUTO_TEST_CASE_TEMPLATE(add_matrix_static_test, T, CheckMatrixElementType) {
@@ -21,15 +24,15 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(add_matrix_static_test, T, CheckMatrixElementType)
     constexpr size_t columnAAndB = 3;
     constexpr size_t elementSizeAAndB = rowAAndB * columnAAndB;
 
-    auto arrayA = MakeArrayA<T>();
-    auto arrayB = MakeArrayB<T>();
+    auto arrayA = MakeVectorA<T>();
+    auto arrayB = MakeVectorB<T>();
 
     auto A = Matrix<T, rowAAndB, columnAAndB>(arrayA);
     auto B = Matrix<T, rowAAndB, columnAAndB>(arrayB);
 
-    auto expectedAPlusB = MakeExpectedArrayAAndB<T>();
+    auto expectedAPlusB = MakeExpectedVectorAAndB<T>();
 
-    auto acceptableErrorAPlusB = MakeAcceptableErrorArrayAAndB<T>();
+    auto acceptableErrorAPlusB = MakeAcceptableErrorVectorAAndB<T>();
 
     for (size_t i = 0; i < elementSizeAAndB; i++) {
         acceptableErrorAPlusB[i] *= std::numeric_limits<T>::epsilon();
@@ -39,22 +42,22 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(add_matrix_static_test, T, CheckMatrixElementType)
 
     auto typeCheckAPlusB = std::is_same<decltype(APlusB), Matrix<T, rowAAndB, columnAAndB>>::value;
     BOOST_CHECK(typeCheckAPlusB);
-    CheckCloseEachArrayElement<T, elementSizeAAndB>(APlusB.Elements(), expectedAPlusB, acceptableErrorAPlusB);
+    CheckCloseEachVectorElement<T>(APlusB.Elements().GetVector(), expectedAPlusB, acceptableErrorAPlusB);
 
     // 2x5
     constexpr size_t rowCAndD = 2;
     constexpr size_t columnCAndD = 5;
     constexpr size_t elementSizeCAndD = rowCAndD * columnCAndD;
 
-    auto arrayC = MakeArrayC<T>();
-    auto arrayD = MakeArrayD<T>();
+    auto arrayC = MakeVectorC<T>();
+    auto arrayD = MakeVectorD<T>();
 
     auto C = Matrix<T, rowCAndD, columnCAndD>(arrayC);
     auto D = Matrix<T, rowCAndD, columnCAndD>(arrayD);
 
-    auto expectedCPlusD = MakeExpectedArrayCAndD<T>();
+    auto expectedCPlusD = MakeExpectedVectorCAndD<T>();
 
-    auto acceptableErrorCPlusD = MakeAcceptableErrorArrayCAndD<T>();
+    auto acceptableErrorCPlusD = MakeAcceptableErrorVectorCAndD<T>();
     for (size_t i = 0; i < elementSizeCAndD; i++) {
         acceptableErrorCPlusD[i] *= std::numeric_limits<T>::epsilon();
     }
@@ -63,7 +66,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(add_matrix_static_test, T, CheckMatrixElementType)
 
     auto typeCheckCPlusD = std::is_same<decltype(CPlusD), Matrix<T, rowCAndD, columnCAndD>>::value;
     BOOST_CHECK(typeCheckCPlusD);
-    CheckCloseEachArrayElement<T, elementSizeCAndD>(CPlusD.Elements(), expectedCPlusD, acceptableErrorCPlusD);
+    CheckCloseEachVectorElement<T>(CPlusD.Elements().GetVector(), expectedCPlusD, acceptableErrorCPlusD);
 
     // throw exception test
     // auto arrayE = MakeArrayE<T>();
