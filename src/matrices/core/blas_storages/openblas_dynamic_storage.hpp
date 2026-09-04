@@ -13,12 +13,40 @@ template <typename T>
 struct Storage<OpenBLASBackend, T, std::dynamic_extent> {
     std::vector<T> _data;
 
+    Storage();
+
+    template <size_t Size>
+    Storage(std::array<T, Size> elements);
+
+    Storage(std::vector<T> elements);
+    Storage(size_t size);
+    Storage(size_t size, std::vector<T> elements);
+
     constexpr size_t size() const noexcept;
     constexpr T* data() noexcept;
     constexpr const T* data() const noexcept;
 
     std::vector<T> GetVector();
 };
+
+template <typename T>
+Storage<OpenBLASBackend, T, std::dynamic_extent>::Storage() : _data(0, T{}) {};
+
+template <typename T>
+template <size_t Size>
+Storage<OpenBLASBackend, T, std::dynamic_extent>::Storage(std::array<T, Size> elements) :
+    _data(elements.begin(), elements.end()) {};
+
+template <typename T>
+Storage<OpenBLASBackend, T, std::dynamic_extent>::Storage(std::vector<T> elements) :
+    _data(elements.begin(), elements.end()) {}
+
+template <typename T>
+Storage<OpenBLASBackend, T, std::dynamic_extent>::Storage(size_t size) : _data(size, T{}) {}
+
+template <typename T>
+Storage<OpenBLASBackend, T, std::dynamic_extent>::Storage(size_t size, std::vector<T> elements) :
+    _data(size, elements) {}
 
 template <typename T>
 inline constexpr size_t Storage<OpenBLASBackend, T, std::dynamic_extent>::size() const noexcept {

@@ -13,12 +13,26 @@ template <typename T, size_t Size>
 struct Storage<OpenBLASBackend, T, Size> {
     std::array<T, Size> _data;
 
+    Storage();
+
+    Storage(std::array<T, Size> elements);
+    Storage(std::vector<T> elements);
+
     constexpr size_t size() const noexcept;
     constexpr T* data() noexcept;
     constexpr const T* data() const noexcept;
 
     std::vector<T> GetVector();
 };
+
+template <typename  T, size_t Size>
+Storage<OpenBLASBackend, T, Size>::Storage() : _data(T{}) {};
+
+template <typename  T, size_t Size>
+Storage<OpenBLASBackend, T, Size>::Storage(std::array<T, Size> elements) : _data(elements) {};
+
+template <typename  T, size_t Size>
+Storage<OpenBLASBackend, T, Size>::Storage(std::vector<T> elements) : _data(Size, elements) {}
 
 template <typename T, size_t Size>
 inline constexpr size_t Storage<OpenBLASBackend, T, Size>::size() const noexcept {
