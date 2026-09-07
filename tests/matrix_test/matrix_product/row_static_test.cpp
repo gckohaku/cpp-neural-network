@@ -7,7 +7,7 @@
 #include <stdexcept>
 #include <type_traits>
 
-#include "src/matrices/matrix_row_static.hpp"
+#include "src/matrices/matrix_template_base.hpp"
 #include "tests/test_matrix_product_vector_defines.hpp"
 #include "tests/test_type_defines.hpp"
 #include "tests/test_utilities.hpp"
@@ -46,8 +46,8 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(matrix_product_matrix_row_static_test, T, CheckMat
     auto typeCheckBA = std::is_same<decltype(BA), MatrixRowStaticOpen<T, row1>>::value;
     BOOST_CHECK(typeCheckAB);
     BOOST_CHECK(typeCheckBA);
-    CheckCloseEachStorageElement(AB.Elements(), expectedAB, acceptableErrorAB);
-    CheckCloseEachStorageElement(BA.Elements(), expectedBA, acceptableErrorBA);
+    CheckCloseEachVectorElement(AB.Elements().GetVector(), expectedAB, acceptableErrorAB);
+    CheckCloseEachVectorElement(BA.Elements().GetVector(), expectedBA, acceptableErrorBA);
 
     // 5x5
     constexpr size_t row2 = 5;
@@ -78,8 +78,8 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(matrix_product_matrix_row_static_test, T, CheckMat
     auto typeCheckDC = std::is_same<decltype(DC), MatrixRowStaticOpen<T, row2>>::value;
     BOOST_CHECK(typeCheckCD);
     BOOST_CHECK(typeCheckDC);
-    CheckCloseEachStorageElement(CD.Elements(), expectedCD, acceptableErrorCD);
-    CheckCloseEachStorageElement(DC.Elements(), expectedDC, acceptableErrorDC);
+    CheckCloseEachVectorElement(CD.Elements().GetVector(), expectedCD, acceptableErrorCD);
+    CheckCloseEachVectorElement(DC.Elements().GetVector(), expectedDC, acceptableErrorDC);
 
     // non-square x non-square -> square
     constexpr size_t rowE = 3;
@@ -115,8 +115,8 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(matrix_product_matrix_row_static_test, T, CheckMat
     auto typeCheckFE = std::is_same<decltype(FE), MatrixRowStaticOpen<T, rowF>>::value;
     BOOST_CHECK(typeCheckEF);
     BOOST_CHECK(typeCheckFE);
-    CheckCloseEachStorageElement(EF.Elements(), expectedEF, acceptableErrorEF);
-    CheckCloseEachStorageElement(FE.Elements(), expectedFE, acceptableErrorFE);
+    CheckCloseEachVectorElement(EF.Elements().GetVector(), expectedEF, acceptableErrorEF);
+    CheckCloseEachVectorElement(FE.Elements().GetVector(), expectedFE, acceptableErrorFE);
 
     // other matrix x matrix
     constexpr size_t rowG = 4;
@@ -142,7 +142,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(matrix_product_matrix_row_static_test, T, CheckMat
 
     auto typeCheckHG = std::is_same<decltype(HG), MatrixRowStaticOpen<T, rowH>>::value;
     BOOST_CHECK(typeCheckHG);
-    CheckCloseEachStorageElement(HG.Elements(), expectedHG, acceptableErrorHG);
+    CheckCloseEachVectorElement(HG.Elements().GetVector(), expectedHG, acceptableErrorHG);
 
     // other matrix x matrix
     constexpr size_t rowI = 3;
@@ -168,7 +168,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(matrix_product_matrix_row_static_test, T, CheckMat
 
     auto typeCheckJI = std::is_same<decltype(JI), MatrixRowStaticOpen<T, rowJ>>::value;
     BOOST_CHECK(typeCheckJI);
-    CheckCloseEachStorageElement(JI.Elements(), expectedJI, acceptableErrorJI);
+    CheckCloseEachVectorElement(JI.Elements().GetVector(), expectedJI, acceptableErrorJI);
 
     constexpr size_t rowK = 2;
     constexpr size_t columnK = 2;
@@ -188,7 +188,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(matrix_product_matrix_row_static_test, T, CheckMat
     auto KK = K.Dot(K);
     auto typeCheckKK = std::is_same<decltype(KK), MatrixRowStaticOpen<T, rowK>>::value;
     BOOST_CHECK(typeCheckKK);
-    CheckCloseEachStorageElement(KK.Elements(), expectedKK, acceptableErrorKK);
+    CheckCloseEachVectorElement(KK.Elements().GetVector(), expectedKK, acceptableErrorKK);
 
     // throw exception test
     auto mArray = MakeVectorM<T>();

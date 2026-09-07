@@ -48,8 +48,8 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(matrix_product_matrix_row_static_and_matrix_column
     auto typeCheckBA = std::is_same<decltype(BA), MatrixDynamicOpen<T>>::value;
     BOOST_CHECK(typeCheckAB);
     BOOST_CHECK(typeCheckBA);
-    CheckCloseEachStorageElement<T>(ArrayToVector<T>(AB.Elements()), expectedAB, acceptableErrorAB);
-    CheckCloseEachStorageElement<T>(BA.Elements(), expectedBA, acceptableErrorBA);
+    CheckCloseEachVectorElement<T>(AB.Elements().GetVector(), expectedAB, acceptableErrorAB);
+    CheckCloseEachVectorElement<T>(BA.Elements().GetVector(), expectedBA, acceptableErrorBA);
 
     // 5x5
     constexpr size_t row2 = 5;
@@ -80,8 +80,8 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(matrix_product_matrix_row_static_and_matrix_column
     auto typeCheckDC = std::is_same<decltype(DC), MatrixDynamicOpen<T>>::value;
     BOOST_CHECK(typeCheckCD);
     BOOST_CHECK(typeCheckDC);
-    CheckCloseEachStorageElement(ArrayToVector<T>(CD.Elements()), expectedCD, acceptableErrorCD);
-    CheckCloseEachStorageElement(DC.Elements(), expectedDC, acceptableErrorDC);
+    CheckCloseEachVectorElement(CD.Elements().GetVector(), expectedCD, acceptableErrorCD);
+    CheckCloseEachVectorElement(DC.Elements().GetVector(), expectedDC, acceptableErrorDC);
 
     // non-square x non-square -> square
     constexpr size_t rowE = 3;
@@ -119,8 +119,8 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(matrix_product_matrix_row_static_and_matrix_column
     auto typeCheckFE = std::is_same<decltype(FE), MatrixDynamicOpen<T>>::value;
     BOOST_CHECK(typeCheckEF);
     BOOST_CHECK(typeCheckFE);
-    CheckCloseEachStorageElement(ArrayToVector<T>(EF.Elements()), expectedEF, acceptableErrorEF);
-    CheckCloseEachStorageElement(FE.Elements(), expectedFE, acceptableErrorFE);
+    CheckCloseEachVectorElement(EF.Elements().GetVector(), expectedEF, acceptableErrorEF);
+    CheckCloseEachVectorElement(FE.Elements().GetVector(), expectedFE, acceptableErrorFE);
 
     // other matrix x matrix
     constexpr size_t rowG = 4;
@@ -148,7 +148,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(matrix_product_matrix_row_static_and_matrix_column
 
     auto typeCheckHG = std::is_same<decltype(HG), MatrixDynamicOpen<T>>::value;
     BOOST_CHECK(typeCheckHG);
-    CheckCloseEachStorageElement(HG.Elements(), expectedHG, acceptableErrorHG);
+    CheckCloseEachVectorElement(HG.Elements().GetVector(), expectedHG, acceptableErrorHG);
 
     constexpr size_t rowI = 3;
     constexpr size_t columnI = 5;
@@ -176,7 +176,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(matrix_product_matrix_row_static_and_matrix_column
 
     auto typeCheckJI = std::is_same<decltype(JI), MatrixDynamicOpen<T>>::value;
     BOOST_CHECK(typeCheckJI);
-    CheckCloseEachStorageElement(JI.Elements(), expectedJI, acceptableErrorJI);
+    CheckCloseEachVectorElement(JI.Elements().GetVector(), expectedJI, acceptableErrorJI);
 
     auto K = MatrixColumnStaticOpen<T, columnI>(rowI, std::vector<T>(arrayI.begin(), arrayI.end()));
     auto arrayL = std::array<T, elementSizeJ>();
@@ -187,7 +187,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(matrix_product_matrix_row_static_and_matrix_column
 
     auto typeCheckKL = std::is_same<decltype(LK), Matrix<T, rowJ, columnI>>::value;
     BOOST_CHECK(typeCheckKL);
-    CheckCloseEachStorageElement(ArrayToVector<T>(LK.Elements()), expectedJI, acceptableErrorJI);
+    CheckCloseEachVectorElement(LK.Elements().GetVector(), expectedJI, acceptableErrorJI);
 
     // throw exception test
     auto mArray = MakeVectorM<T>();

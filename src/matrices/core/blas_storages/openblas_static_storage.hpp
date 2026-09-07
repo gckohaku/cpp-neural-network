@@ -26,7 +26,7 @@ struct Storage<OpenBLASBackend, T, Size> {
 };
 
 template <typename  T, size_t Size>
-Storage<OpenBLASBackend, T, Size>::Storage() : _data(T{}) {};
+Storage<OpenBLASBackend, T, Size>::Storage() : _data({}) {};
 
 template <typename  T, size_t Size>
 Storage<OpenBLASBackend, T, Size>::Storage(std::array<T, Size> elements) : _data(elements) {};

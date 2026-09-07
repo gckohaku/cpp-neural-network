@@ -129,7 +129,7 @@ Matrix<K, Row, std::dynamic_extent, Backend>::Matrix() :
 template <typename K, size_t Row, typename Backend>
     requires mk_concepts::BLASSupported<Backend, K>
 Matrix<K, Row, std::dynamic_extent, Backend>::Matrix(const size_t columnSize) :
-    _rowSize(Row), _columnSize(columnSize), _elements(Row * columnSize, K{}), _span(_elements.data(), MatrixExtent{}) {}
+    _rowSize(Row), _columnSize(columnSize), _elements(Row * columnSize), _span(_elements.data(), MatrixExtent{}) {}
 
 template <typename K, size_t Row, typename Backend>
     requires mk_concepts::BLASSupported<Backend, K>

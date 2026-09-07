@@ -126,7 +126,7 @@ template <typename K, typename Backend>
 Matrix<K, std::dynamic_extent, std::dynamic_extent, Backend>::Matrix(const size_t rowSize, const size_t columnSize) :
     _rowSize(rowSize),
     _columnSize(columnSize),
-    _elements(rowSize * columnSize, K{}),
+    _elements(rowSize * columnSize),
     _span(_elements.data(), MatrixExtent{}) {}
 
 template <typename K, typename Backend>

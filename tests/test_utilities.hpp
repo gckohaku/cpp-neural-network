@@ -12,6 +12,33 @@
 #include <sstream>
 #include "src/matrices/core/blas_storages/storage_primary_template.hpp"
 
+using mknnlib::matrix::core::Storage;
+
+// DO NOT DEFINE UNDER CODE.
+// MUST USE CheckCloseEachArrayElement FUNCTION.
+// template <typename Backend, typename T, size_t SizeL, size_t SizeR, size_t SizeTol>
+// void CheckCloseEachStorageElement(const Storage<Backend, T, SizeL> left, const Storage<Backend, T, SizeR> right, const Storage<Backend, T, SizeTol> tolerance, const std::source_location& location = std::source_location::current()) {
+//     if (left.size() != right.size()) {
+//         std::ostringstream message;
+//         message << "\nFile: " << location.file_name() << ":" << location.line() << ":" << location.column() << ":\n";
+//         message << "Vector size is not match.\n";
+//         message << "Left: " << left.size() << ", Right: " << right.size() << ".";
+//         BOOST_ERROR(message.str());
+//         return;
+//     }
+//     const size_t N = left.size();
+//     for (size_t i = 0; i < N; i++) {
+//         std::ostringstream message;
+//         message << "\nFile: " << location.file_name() << ":" << location.line() << ":" << location.column() << ":\n";
+//         message << "Exceeds tolerance in index of " << i << ".\n";
+//         message << "Elements: (" << std::fixed << std::setprecision(8) << left[i] << ", " << right[i] << "),\n";
+//         message << "Expected error: " << std::defaultfloat << tolerance[i] << ",\n";
+//         message << "Actual Error: " << std::abs(left[i] - right[i]) << ".\n";
+//         message << "Actual error exceeds expected error.";
+//         BOOST_CHECK_MESSAGE(std::abs(left[i] - right[i]) <= tolerance[i], message.str());
+//     }
+// }
+
 template <typename T, size_t N>
 void CheckCloseEachArrayElement(const std::array<T, N> left, const std::array<T, N> right,
     const std::array<T, N> tolerance, const std::source_location& location = std::source_location::current()) {
