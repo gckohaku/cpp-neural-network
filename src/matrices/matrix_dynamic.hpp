@@ -246,7 +246,7 @@ Matrix<K, std::dynamic_extent, std::dynamic_extent, Backend>::operator*=(
     }
 #endif
     // hadamard product is not into BLAS
-    std::ranges::transform(this->_elements, x._elements, this->_elements.begin(), std::multiplies<>());
+    std::ranges::transform(this->_elements.elements(), x._elements.elements(), this->_elements.begin(), std::multiplies<>());
     return *this;
 }
 

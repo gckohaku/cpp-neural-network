@@ -8,7 +8,7 @@
 #include <stdexcept>
 #include <type_traits>
 
-#include "src/matrices/matrix_dynamic.hpp"
+#include "src/matrices/matrix_template_base.hpp"
 #include "tests/test_matrix_sub_vector_defines.hpp"
 #include "tests/test_type_defines.hpp"
 #include "tests/test_utilities.hpp"
@@ -40,7 +40,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(sub_matrix_dynamic_test, T, CheckMatrixElementType
 
     auto typeCheckAPlusB = std::is_same<decltype(APlusB), MatrixDynamicOpen<T>>::value;
     BOOST_CHECK(typeCheckAPlusB);
-    CheckCloseEachStorageElement<T>(APlusB.Elements(), expectedAPlusB, acceptableErrorAPlusB);
+    CheckCloseEachVectorElement<T>(APlusB.Elements(), expectedAPlusB, acceptableErrorAPlusB);
 
     // 2x5
     constexpr size_t rowCAndD = 2;
@@ -64,7 +64,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(sub_matrix_dynamic_test, T, CheckMatrixElementType
 
     auto typeCheckCPlusD = std::is_same<decltype(CPlusD), MatrixDynamicOpen<T>>::value;
     BOOST_CHECK(typeCheckCPlusD);
-    CheckCloseEachStorageElement<T>(CPlusD.Elements(), expectedCPlusD, acceptableErrorCPlusD);
+    CheckCloseEachVectorElement<T>(CPlusD.Elements(), expectedCPlusD, acceptableErrorCPlusD);
 
     // throw exception test
     auto arrayE = MakeVectorE<T>();

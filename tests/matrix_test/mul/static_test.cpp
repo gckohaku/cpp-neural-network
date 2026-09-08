@@ -26,9 +26,9 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(mul_matrix_static_test, T, CheckMatrixElementType)
     auto A = Matrix<T, rowAAndB, columnAAndB>(arrayA);
     auto B = Matrix<T, rowAAndB, columnAAndB>(arrayB);
 
-    auto expectedAPlusB = MakeExpectedArrayAAndB<T>();
+    auto expectedAPlusB = MakeExpectedVectorAAndB<T>();
 
-    auto acceptableErrorAPlusB = MakeAcceptableErrorArrayAAndB<T>();
+    auto acceptableErrorAPlusB = MakeAcceptableErrorVectorAAndB<T>();
 
     for (size_t i = 0; i < elementSizeAAndB; i++) {
         acceptableErrorAPlusB[i] *= std::numeric_limits<T>::epsilon();
@@ -38,7 +38,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(mul_matrix_static_test, T, CheckMatrixElementType)
 
     auto typeCheckAPlusB = std::is_same<decltype(APlusB), Matrix<T, rowAAndB, columnAAndB>>::value;
     BOOST_CHECK(typeCheckAPlusB);
-    CheckCloseEachStorageElement<T, elementSizeAAndB>(APlusB.Elements(), expectedAPlusB, acceptableErrorAPlusB);
+    CheckCloseEachVectorElement<T>(APlusB.Elements().GetVector(), expectedAPlusB, acceptableErrorAPlusB);
 
     // 2x5
     constexpr size_t rowCAndD = 2;
@@ -51,9 +51,9 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(mul_matrix_static_test, T, CheckMatrixElementType)
     auto C = Matrix<T, rowCAndD, columnCAndD>(arrayC);
     auto D = Matrix<T, rowCAndD, columnCAndD>(arrayD);
 
-    auto expectedCPlusD = MakeExpectedArrayCAndD<T>();
+    auto expectedCPlusD = MakeExpectedVectorCAndD<T>();
 
-    auto acceptableErrorCPlusD = MakeAcceptableErrorArrayCAndD<T>();
+    auto acceptableErrorCPlusD = MakeAcceptableErrorVectorCAndD<T>();
     for (size_t i = 0; i < elementSizeCAndD; i++) {
         acceptableErrorCPlusD[i] *= std::numeric_limits<T>::epsilon();
     }
@@ -62,7 +62,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(mul_matrix_static_test, T, CheckMatrixElementType)
 
     auto typeCheckCPlusD = std::is_same<decltype(CPlusD), Matrix<T, rowCAndD, columnCAndD>>::value;
     BOOST_CHECK(typeCheckCPlusD);
-    CheckCloseEachStorageElement<T, elementSizeCAndD>(CPlusD.Elements(), expectedCPlusD, acceptableErrorCPlusD);
+    CheckCloseEachVectorElement<T>(CPlusD.Elements().GetVector(), expectedCPlusD, acceptableErrorCPlusD);
 
     // throw exception test
     // auto arrayE = MakeArrayE<T>();

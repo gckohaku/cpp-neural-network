@@ -7,7 +7,7 @@
 #include <limits>
 #include <type_traits>
 
-#include "src/matrices/matrix_column_static.hpp"
+#include "src/matrices/matrix_template_base.hpp"
 #include "tests/test_matrix_mul_vector_defines.hpp"
 #include "tests/test_type_defines.hpp"
 #include "tests/test_utilities.hpp"
@@ -39,7 +39,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(mul_matrix_column_static_test, T, CheckMatrixEleme
 
     auto typeCheckAPlusB = std::is_same<decltype(APlusB), MatrixColumnStaticOpen<T, columnAAndB>>::value;
     BOOST_CHECK(typeCheckAPlusB);
-    CheckCloseEachStorageElement<T>(APlusB.Elements(), expectedAPlusB, acceptableErrorAPlusB);
+    CheckCloseEachVectorElement<T>(APlusB.Elements().GetVector(), expectedAPlusB, acceptableErrorAPlusB);
 
     // 2x5
     constexpr size_t rowCAndD = 2;
@@ -63,7 +63,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(mul_matrix_column_static_test, T, CheckMatrixEleme
 
     auto typeCheckCPlusD = std::is_same<decltype(CPlusD), MatrixColumnStaticOpen<T, columnCAndD>>::value;
     BOOST_CHECK(typeCheckCPlusD);
-    CheckCloseEachStorageElement<T>(CPlusD.Elements(), expectedCPlusD, acceptableErrorCPlusD);
+    CheckCloseEachVectorElement<T>(CPlusD.Elements().GetVector(), expectedCPlusD, acceptableErrorCPlusD);
 
     // throw exception test
     auto arrayE = MakeVectorE<T>();

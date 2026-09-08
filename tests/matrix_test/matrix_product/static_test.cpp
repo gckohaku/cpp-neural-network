@@ -6,7 +6,7 @@
 #include <limits>
 #include <type_traits>
 
-#include "src/matrices/matrix_static.hpp"
+#include "src/matrices/matrix_template_base.hpp"
 #include "tests/test_type_defines.hpp"
 #include "tests/test_utilities.hpp"
 
@@ -20,17 +20,17 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(matrix_product_matrix_add_static_test, T, CheckMat
     constexpr size_t column1 = 3;
     constexpr size_t elementSize1 = row1 * column1;
 
-    auto arrayA = MakeArrayA<T, elementSize1>();
-    auto arrayB = MakeArrayB<T, elementSize1>();
+    auto arrayA = MakeVectorA<T>();
+    auto arrayB = MakeVectorB<T>();
 
-    auto expectedAB = MakeExpectedArrayAB<T, elementSize1>();
-    auto expectedBA = MakeExpectedArrayBA<T, elementSize1>();
+    auto expectedAB = MakeExpectedVectorAB<T>();
+    auto expectedBA = MakeExpectedVectorBA<T>();
 
     auto A = Matrix<T, row1, column1>(arrayA);
     auto B = Matrix<T, row1, column1>(arrayB);
 
-    auto acceptableErrorAB = MakeAcceptableErrorArrayAB<T, elementSize1>();
-    auto acceptableErrorBA = MakeAcceptableErrorArrayBA<T, elementSize1>();
+    auto acceptableErrorAB = MakeAcceptableErrorVectorAB<T>();
+    auto acceptableErrorBA = MakeAcceptableErrorVectorBA<T>();
 
     for (size_t i = 0; i < elementSize1; i++) {
         acceptableErrorAB[i] *= std::numeric_limits<T>::epsilon();
@@ -44,25 +44,25 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(matrix_product_matrix_add_static_test, T, CheckMat
     auto typeCheckBA = std::is_same<decltype(BA), Matrix<T, row1, column1>>::value;
     BOOST_CHECK(typeCheckAB);
     BOOST_CHECK(typeCheckBA);
-    CheckCloseEachStorageElement<T, elementSize1>(AB.Elements(), expectedAB, acceptableErrorAB);
-    CheckCloseEachStorageElement<T, elementSize1>(BA.Elements(), expectedBA, acceptableErrorBA);
+    CheckCloseEachVectorElement<T>(AB.Elements().GetVector(), expectedAB, acceptableErrorAB);
+    CheckCloseEachVectorElement<T>(BA.Elements().GetVector(), expectedBA, acceptableErrorBA);
 
     // 5x5
     constexpr size_t row2 = 5;
     constexpr size_t column2 = 5;
     constexpr size_t elementSize2 = row2 * column2;
 
-    auto arrayC = MakeArrayC<T, elementSize2>();
-    auto arrayD = MakeArrayD<T, elementSize2>();
+    auto arrayC = MakeVectorC<T>();
+    auto arrayD = MakeVectorD<T>();
 
-    auto expectedCD = MakeExpectedArrayCD<T, elementSize2>();
-    auto expectedDC = MakeExpectedArrayDC<T, elementSize2>();
+    auto expectedCD = MakeExpectedVectorCD<T>();
+    auto expectedDC = MakeExpectedVectorDC<T>();
 
     auto C = Matrix<T, row2, column2>(arrayC);
     auto D = Matrix<T, row2, column2>(arrayD);
 
-    auto acceptableErrorCD = MakeAcceptableErrorArrayCD<T, elementSize2>();
-    auto acceptableErrorDC = MakeAcceptableErrorArrayDC<T, elementSize2>();
+    auto acceptableErrorCD = MakeAcceptableErrorVectorCD<T>();
+    auto acceptableErrorDC = MakeAcceptableErrorVectorDC<T>();
 
     for (size_t i = 0; i < elementSize2; i++) {
         acceptableErrorCD[i] *= std::numeric_limits<T>::epsilon();
@@ -76,30 +76,30 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(matrix_product_matrix_add_static_test, T, CheckMat
     auto typeCheckDC = std::is_same<decltype(DC), Matrix<T, row2, column2>>::value;
     BOOST_CHECK(typeCheckCD);
     BOOST_CHECK(typeCheckDC);
-    CheckCloseEachStorageElement(CD.Elements(), expectedCD, acceptableErrorCD);
-    CheckCloseEachStorageElement(DC.Elements(), expectedDC, acceptableErrorDC);
+    CheckCloseEachVectorElement(CD.Elements().GetVector(), expectedCD, acceptableErrorCD);
+    CheckCloseEachVectorElement(DC.Elements().GetVector(), expectedDC, acceptableErrorDC);
 
     // non-square x non-square -> square
     constexpr size_t rowE = 3;
     constexpr size_t columnE = 4;
-    constexpr size_t elementSizeE = rowE * columnE;
+    // constexpr size_t elementSizeE = rowE * columnE;
     constexpr size_t rowF = 4;
     constexpr size_t columnF = 3;
-    constexpr size_t elementSizeF = rowF * columnF;
+    // constexpr size_t elementSizeF = rowF * columnF;
     constexpr size_t resultSizeEF = rowE * columnF;
     constexpr size_t resultSizeFE = rowF * columnE;
 
-    auto arrayE = MakeArrayE<T, elementSizeE>();
-    auto arrayF = MakeArrayF<T, elementSizeF>();
+    auto arrayE = MakeVectorE<T>();
+    auto arrayF = MakeVectorF<T>();
 
-    auto expectedEF = MakeExpectedArrayEF<T, resultSizeEF>();
-    auto expectedFE = MakeExpectedArrayFE<T, resultSizeFE>();
+    auto expectedEF = MakeExpectedVectorEF<T>();
+    auto expectedFE = MakeExpectedVectorFE<T>();
 
     auto E = Matrix<T, rowE, columnE>(arrayE);
     auto F = Matrix<T, rowF, columnF>(arrayF);
 
-    auto acceptableErrorEF = MakeAcceptableErrorArrayEF<T, resultSizeEF>();
-    auto acceptableErrorFE = MakeAcceptableErrorArrayFE<T, resultSizeFE>();
+    auto acceptableErrorEF = MakeAcceptableErrorVectorEF<T>();
+    auto acceptableErrorFE = MakeAcceptableErrorVectorFE<T>();
 
     for (size_t i = 0; i < resultSizeEF; i++) {
         acceptableErrorEF[i] *= std::numeric_limits<T>::epsilon();
@@ -115,27 +115,27 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(matrix_product_matrix_add_static_test, T, CheckMat
     auto typeCheckFE = std::is_same<decltype(FE), Matrix<T, rowF, columnE>>::value;
     BOOST_CHECK(typeCheckEF);
     BOOST_CHECK(typeCheckFE);
-    CheckCloseEachStorageElement(EF.Elements(), expectedEF, acceptableErrorEF);
-    CheckCloseEachStorageElement(FE.Elements(), expectedFE, acceptableErrorFE);
+    CheckCloseEachVectorElement(EF.Elements().GetVector(), expectedEF, acceptableErrorEF);
+    CheckCloseEachVectorElement(FE.Elements().GetVector(), expectedFE, acceptableErrorFE);
 
     // other matrix x matrix
     constexpr size_t rowG = 4;
     constexpr size_t columnG = 1;
-    constexpr size_t elementSizeG = rowG * columnG;
+    // constexpr size_t elementSizeG = rowG * columnG;
     constexpr size_t rowH = 4;
     constexpr size_t columnH = 4;
-    constexpr size_t elementSizeH = rowH * columnH;
+    // constexpr size_t elementSizeH = rowH * columnH;
     constexpr size_t resultSizeHG = rowH * columnG;
 
-    auto arrayG = MakeArrayG<T, elementSizeG>();
-    auto arrayH = MakeArrayH<T, elementSizeH>();
+    auto arrayG = MakeVectorG<T>();
+    auto arrayH = MakeVectorH<T>();
 
-    auto expectedHG = MakeExpectedArrayHG<T, resultSizeHG>();
+    auto expectedHG = MakeExpectedVectorHG<T>();
 
     auto G = Matrix<T, rowG, columnG>(arrayG);
     auto H = Matrix<T, rowH, columnH>(arrayH);
 
-    auto acceptableErrorHG = MakeAcceptableErrorArrayHG<T, resultSizeHG>();
+    auto acceptableErrorHG = MakeAcceptableErrorVectorHG<T>();
     for (size_t i = 0; i < resultSizeHG; i++) {
         acceptableErrorHG[i] *= std::numeric_limits<T>::epsilon();
     }
@@ -144,26 +144,26 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(matrix_product_matrix_add_static_test, T, CheckMat
 
     auto typeCheckHG = std::is_same<decltype(HG), Matrix<T, rowH, columnG>>::value;
     BOOST_CHECK(typeCheckHG);
-    CheckCloseEachStorageElement(HG.Elements(), expectedHG, acceptableErrorHG);
+    CheckCloseEachVectorElement(HG.Elements().GetVector(), expectedHG, acceptableErrorHG);
 
     // other matrix x matrix
     constexpr size_t rowI = 3;
     constexpr size_t columnI = 5;
-    constexpr size_t elementSizeI = rowI * columnI;
+    // constexpr size_t elementSizeI = rowI * columnI;
     constexpr size_t rowJ = 2;
     constexpr size_t columnJ = 3;
-    constexpr size_t elementSizeJ = rowJ * columnJ;
+    // constexpr size_t elementSizeJ = rowJ * columnJ;
     constexpr size_t resultSizeJI = rowJ * columnI;
 
-    auto arrayI = MakeArrayI<T, elementSizeI>();
-    auto arrayJ = MakeArrayJ<T, elementSizeJ>();
+    auto arrayI = MakeVectorI<T>();
+    auto arrayJ = MakeVectorJ<T>();
 
-    auto expectedJI = MakeExpectedArrayJI<T, resultSizeJI>();
+    auto expectedJI = MakeExpectedVectorJI<T>();
 
     auto I = Matrix<T, rowI, columnI>(arrayI);
     auto J = Matrix<T, rowJ, columnJ>(arrayJ);
 
-    auto acceptableErrorJI = MakeAcceptableErrorArrayJI<T, resultSizeJI>();
+    auto acceptableErrorJI = MakeAcceptableErrorVectorJI<T>();
     for (size_t i = 0; i < resultSizeJI; i++) {
         acceptableErrorJI[i] *= std::numeric_limits<T>::epsilon();
     }
@@ -172,19 +172,19 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(matrix_product_matrix_add_static_test, T, CheckMat
 
     auto typeCheckJI = std::is_same<decltype(JI), Matrix<T, rowJ, columnI>>::value;
     BOOST_CHECK(typeCheckJI);
-    CheckCloseEachStorageElement(JI.Elements(), expectedJI, acceptableErrorJI);
+    CheckCloseEachVectorElement(JI.Elements().GetVector(), expectedJI, acceptableErrorJI);
 
     constexpr size_t rowK = 2;
     constexpr size_t columnK = 2;
     constexpr size_t elementSizeK = rowK * columnK;
 
-    auto arrayK = MakeArrayK<T, elementSizeK>();
+    auto arrayK = MakeVectorK<T>();
 
-    auto expectedKK = MakeExpectedArrayKK<T, elementSizeK>();
+    auto expectedKK = MakeExpectedVectorKK<T>();
 
     auto K = Matrix<T, rowK, columnK>(arrayK);
 
-    auto acceptableErrorKK = MakeAcceptableErrorArrayKK<T, elementSizeK>();
+    auto acceptableErrorKK = MakeAcceptableErrorVectorKK<T>();
     for (size_t i = 0; i < elementSizeK; i++) {
         acceptableErrorKK[i] *= std::numeric_limits<T>::epsilon();
     }
@@ -192,6 +192,6 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(matrix_product_matrix_add_static_test, T, CheckMat
     auto KK = K.Dot(K);
     auto typeCheckKK = std::is_same<decltype(KK), Matrix<T, rowK, columnK>>::value;
     BOOST_CHECK(typeCheckKK);
-    CheckCloseEachStorageElement(KK.Elements(), expectedKK, acceptableErrorKK);
+    CheckCloseEachVectorElement(KK.Elements().GetVector(), expectedKK, acceptableErrorKK);
 }
 }  // namespace matrix_test_matrix_product

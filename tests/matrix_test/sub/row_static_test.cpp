@@ -7,7 +7,7 @@
 #include <limits>
 #include <type_traits>
 
-#include "src/matrices/matrix_row_static.hpp"
+#include "src/matrices/matrix_template_base.hpp"
 #include "tests/test_matrix_sub_vector_defines.hpp"
 #include "tests/test_type_defines.hpp"
 #include "tests/test_utilities.hpp"
@@ -39,7 +39,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(sub_matrix_row_static_test, T, CheckMatrixElementT
 
     auto typeCheckAMinusB = std::is_same<decltype(AMinusB), MatrixRowStaticOpen<T, rowAAndB>>::value;
     BOOST_CHECK(typeCheckAMinusB);
-    CheckCloseEachStorageElement<T>(AMinusB.Elements(), expectedAMinusB, acceptableErrorAMinusB);
+    CheckCloseEachVectorElement<T>(AMinusB.Elements(), expectedAMinusB, acceptableErrorAMinusB);
 
     // 2x5
     constexpr size_t rowCAndD = 2;
@@ -63,7 +63,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(sub_matrix_row_static_test, T, CheckMatrixElementT
 
     auto typeCheckCMinusD = std::is_same<decltype(CMinusD), MatrixRowStaticOpen<T, rowCAndD>>::value;
     BOOST_CHECK(typeCheckCMinusD);
-    CheckCloseEachStorageElement<T>(CMinusD.Elements(), expectedCMinusD, acceptableErrorCMinusD);
+    CheckCloseEachVectorElement<T>(CMinusD.Elements(), expectedCMinusD, acceptableErrorCMinusD);
 
     // throw exception test
     auto arrayE = MakeVectorE<T>();

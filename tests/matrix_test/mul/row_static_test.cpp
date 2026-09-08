@@ -7,7 +7,7 @@
 #include <limits>
 #include <type_traits>
 
-#include "src/matrices/matrix_row_static.hpp"
+#include "src/matrices/matrix_template_base.hpp"
 #include "tests/test_matrix_mul_vector_defines.hpp"
 #include "tests/test_type_defines.hpp"
 #include "tests/test_utilities.hpp"
@@ -39,7 +39,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(mul_matrix_row_static_test, T, CheckMatrixElementT
 
     auto typeCheckATimesB = std::is_same<decltype(ATimesB), MatrixRowStaticOpen<T, rowAAndB>>::value;
     BOOST_CHECK(typeCheckATimesB);
-    CheckCloseEachStorageElement<T>(ATimesB.Elements(), expectedATimesB, acceptableErrorATimesB);
+    CheckCloseEachVectorElement<T>(ATimesB.Elements().GetVector(), expectedATimesB, acceptableErrorATimesB);
 
     // 2x5
     constexpr size_t rowCAndD = 2;
@@ -63,7 +63,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(mul_matrix_row_static_test, T, CheckMatrixElementT
 
     auto typeCheckCTimesD = std::is_same<decltype(CTimesD), MatrixRowStaticOpen<T, rowCAndD>>::value;
     BOOST_CHECK(typeCheckCTimesD);
-    CheckCloseEachStorageElement<T>(CTimesD.Elements(), expectedCTimesD, acceptableErrorCTimesD);
+    CheckCloseEachVectorElement<T>(CTimesD.Elements().GetVector(), expectedCTimesD, acceptableErrorCTimesD);
 
     // throw exception test
     auto arrayE = MakeVectorE<T>();
