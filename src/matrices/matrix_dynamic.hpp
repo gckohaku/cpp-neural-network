@@ -97,6 +97,8 @@ public:
     size_t ColumnSize() const;
     std::string GetSizeString() const;
     core::Storage<Backend, K, std::dynamic_extent>& Elements();
+    constexpr std::vector<K>& ElementsRange() noexcept;
+    constexpr const std::vector<K>& ElementsRange() const noexcept;
     // K* _elements.data();
     // const K* _elements.data() const;
     /* end matrix unique functions declaration */
@@ -302,17 +304,17 @@ Matrix<K, std::dynamic_extent, std::dynamic_extent, Backend>::Elements() {
     return this->_elements;
 }
 
-// template <typename K, typename Backend>
-// requires mk_concepts::BLASSupported<Backend, K>
-// inline K* Matrix<K, std::dynamic_extent, std::dynamic_extent, Backend>::_elements.data() {
-//     return this->_elements.data();
-// }
+template <typename K, typename Backend>
+    requires mk_concepts::BLASSupported<Backend, K>
+inline constexpr std::vector<K>& Matrix<K, std::dynamic_extent, std::dynamic_extent, Backend>::ElementsRange() noexcept {
+    return this->_elements.elements();
+}
 
-// template <typename K, typename Backend>
-// requires mk_concepts::BLASSupported<Backend, K>
-// inline const K* Matrix<K, std::dynamic_extent, std::dynamic_extent, Backend>::_elements.data() const {
-//     return this->_elements.data();
-// }
+template <typename K, typename Backend>
+    requires mk_concepts::BLASSupported<Backend, K>
+inline constexpr const std::vector<K>& Matrix<K, std::dynamic_extent, std::dynamic_extent, Backend>::ElementsRange() const noexcept {
+    return this->_elements.elements();
+}
 /* end matrix unique functions definition */
 
 /* begin matrix unique arithmetics definition */

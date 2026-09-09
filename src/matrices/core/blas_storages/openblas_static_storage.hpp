@@ -24,7 +24,7 @@ public:
     Storage(std::vector<T> elements);
 
     constexpr std::array<T, Size>& elements() noexcept;
-    constexpr std::array<T, Size>& elements() const noexcept;
+    constexpr const std::array<T, Size>& elements() const noexcept;
 
     constexpr size_type size() const noexcept;
     constexpr T* data() noexcept;
@@ -52,7 +52,7 @@ inline constexpr std::array<T, Size>& Storage<OpenBLASBackend, T, Size>::element
 }
 
 template <typename T, size_t Size>
-inline constexpr std::array<T, Size>& Storage<OpenBLASBackend, T, Size>::elements() const noexcept {
+inline constexpr const std::array<T, Size>& Storage<OpenBLASBackend, T, Size>::elements() const noexcept {
     return this->_elements;
 }
 

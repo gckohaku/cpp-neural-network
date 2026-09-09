@@ -90,8 +90,8 @@ public:
     constexpr size_t ColumnSize();
     std::string GetSizeString() const;
     core::Storage<Backend, K, Row * Col>& Elements();
-    // K* _elements.data();
-    // const K* _elements.data() const;
+    constexpr std::array<K, Row * Col>& ElementsRange() noexcept;
+    constexpr const std::array<K, Row * Col>& ElementsRange() const noexcept;
 
     /* end matrix unique functions declaration */
 
@@ -139,9 +139,9 @@ template <typename K, size_t Row, size_t Col, typename Backend>
     requires mk_concepts::BLASSupported<Backend, K>
 Matrix<K, Row, Col, Backend>::Matrix(const std::vector<K> elements) :
     _rowSize(Row), _columnSize(Col), _span(_elements.data(), MatrixExtent{}) {
-        std::array<K, Row * Col> arr;
-        std::copy(elements.begin(), elements.end(), arr.begin());
-    }
+    std::array<K, Row * Col> arr;
+    std::copy(elements.begin(), elements.end(), arr.begin());
+}
 
 // copy constructor
 template <typename K, size_t Row, size_t Col, typename Backend>
@@ -234,7 +234,7 @@ template <typename K, size_t Row, size_t Col, typename Backend>
     requires mk_concepts::BLASSupported<Backend, K>
 auto Matrix<K, Row, Col, Backend>::operator*=(const Matrix<K, Row, Col, Backend>& x) -> Matrix& {
     // hadamard product is not into BLAS
-    std::ranges::transform(this->_elements, x._elements, this->_elements.begin(), std::multiplies<>());
+    std::ranges::transform(this->ElementsRange(), x.ElementsRange(), this->_elements.begin(), std::multiplies<>());
     return *this;
 }
 
@@ -380,15 +380,17 @@ inline core::Storage<Backend, K, Row * Col>& Matrix<K, Row, Col, Backend>::Eleme
     return this->_elements;
 }
 
-// template <typename K, size_t Row, size_t Col, typename Backend>
-// inline K* MatrixStaticOpen<K, Row, Col>::_elements.data() {
-//     return this->_elements.data();
-// }
+template <typename K, size_t Row, size_t Col, typename Backend>
+    requires mk_concepts::BLASSupported<Backend, K>
+inline constexpr std::array<K, Row * Col>& Matrix<K, Row, Col, Backend>::ElementsRange() noexcept {
+    return this->_elements.elements();
+}
 
-// template <typename K, size_t Row, size_t Col, typename Backend>
-// inline const K* MatrixStaticOpen<K, Row, Col>::_elements.data() const {
-//     return this->_elements.data();
-// }
+template <typename K, size_t Row, size_t Col, typename Backend>
+    requires mk_concepts::BLASSupported<Backend, K>
+inline constexpr const std::array<K, Row * Col>& Matrix<K, Row, Col, Backend>::ElementsRange() const noexcept {
+    return this->_elements.elements();
+}
 /* end matrix unique functions definition */
 
 /* begin matrix unique arithmetics definition */

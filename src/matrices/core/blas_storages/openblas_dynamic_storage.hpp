@@ -27,7 +27,7 @@ public:
     Storage(size_t size, std::vector<T> elements);
 
     constexpr std::vector<T>& elements() noexcept;
-    constexpr std::vector<T>& elements() const noexcept;
+    constexpr const std::vector<T>& elements() const noexcept;
 
     constexpr size_type size() const noexcept;
     constexpr T* data() noexcept;
@@ -65,7 +65,7 @@ inline constexpr std::vector<T>& Storage<OpenBLASBackend, T, std::dynamic_extent
 }
 
 template <typename T>
-inline constexpr std::vector<T>& Storage<OpenBLASBackend, T, std::dynamic_extent>::elements() const noexcept {
+inline constexpr const std::vector<T>& Storage<OpenBLASBackend, T, std::dynamic_extent>::elements() const noexcept {
     return this->_elements;
 }
 
