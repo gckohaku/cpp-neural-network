@@ -5,10 +5,12 @@
 #include <vector>
 
 #include "matrices/matrix_static.hpp"
+#include "src/matrices/core/blas_backends.hpp"
 #include "src/matrices/matrix_row_static.hpp"
 
 using mknnlib::matrix::Matrix;
 using mknnlib::matrix::MatrixRowStaticOpen;
+using mknnlib::matrix::core::OpenBLASBackend;
 
 int main() {
     // a row, c row value
@@ -29,7 +31,7 @@ int main() {
 
     std::vector<float> c(m * n, 0.0);
 
-    auto x = Matrix<float, m, k>(a);
+    auto x = Matrix<float, m, k, OpenBLASBackend>(a);
     // auto y = MatrixStaticOpen<float, k, n>(b);
     
     // auto res = x.Dot(y);

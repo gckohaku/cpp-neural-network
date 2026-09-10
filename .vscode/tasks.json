@@ -16,9 +16,7 @@
 			"options": {
 				"cwd": "${workspaceFolder}"
 			},
-			"problemMatcher": [
-				"$gcc"
-			],
+			"problemMatcher": [],
 			"group": "build",
 			"detail": "コンパイラ: /usr/bin/clang++"
 		},
@@ -28,14 +26,12 @@
 			"command": "cmake",
 			"args": [
 				"--build",
-				"${workspaceFolder}/build/debug",
+				"${workspaceFolder}/build/debug"
 			],
 			"options": {
 				"cwd": "${workspaceFolder}"
 			},
-			"problemMatcher": [
-				"$gcc"
-			],
+			"problemMatcher": ["$gcc"],
 			"group": "build",
 			"detail": "コンパイラ: /usr/bin/clang++"
 		},
@@ -47,9 +43,7 @@
 			"options": {
 				"cwd": "${workspaceFolder}"
 			},
-			"problemMatcher": [
-				"$gcc"
-			],
+			"problemMatcher": [],
 			"group": "build",
 			"detail": "コンパイラ: /usr/bin/clang++"
 		},
@@ -66,9 +60,7 @@
 			"options": {
 				"cwd": "${workspaceFolder}"
 			},
-			"problemMatcher": [
-				"$gcc"
-			],
+			"problemMatcher": [],
 			"group": "build",
 			"detail": "コンパイラ: /usr/bin/clang++"
 		},
@@ -87,9 +79,7 @@
 			"options": {
 				"cwd": "${workspaceFolder}"
 			},
-			"problemMatcher": [
-				"$gcc"
-			],
+			"problemMatcher": [],
 			"group": "build",
 			"detail": "コンパイラ: /usr/bin/clang++"
 		},
@@ -99,14 +89,12 @@
 			"command": "cmake",
 			"args": [
 				"--build",
-				"${workspaceFolder}/build/release",
+				"${workspaceFolder}/build/release"
 			],
 			"options": {
 				"cwd": "${workspaceFolder}"
 			},
-			"problemMatcher": [
-				"$gcc"
-			],
+			"problemMatcher": [],
 			"group": "build",
 			"detail": "コンパイラ: /usr/bin/clang++"
 		},
@@ -118,9 +106,7 @@
 			"options": {
 				"cwd": "${workspaceFolder}"
 			},
-			"problemMatcher": [
-				"$gcc"
-			],
+			"problemMatcher": [],
 			"group": "build",
 			"detail": "コンパイラ: /usr/bin/clang++"
 		},
@@ -137,9 +123,7 @@
 			"options": {
 				"cwd": "${workspaceFolder}"
 			},
-			"problemMatcher": [
-				"$gcc"
-			],
+			"problemMatcher": [],
 			"group": "build",
 			"detail": "コンパイラ: /usr/bin/clang++"
 		},
@@ -152,6 +136,17 @@
 			},
 			"group": "build",
 			"detail": "Boost.Test for Matrices"
+		},
+		{
+			"type": "cmake",
+			"label": "CMake: ビルド",
+			"command": "build",
+			"targets": [
+				"all"
+			],
+			"group": "build",
+			"problemMatcher": [],
+			"detail": "CMake テンプレート ビルド タスク"
 		}
 	]
 }

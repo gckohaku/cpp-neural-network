@@ -12,10 +12,13 @@
 #include "tests/test_type_defines.hpp"
 #include "tests/test_utilities.hpp"
 
-using mknnlib::matrix::MatrixRowStaticOpen;
+using mknnlib::matrix::MatrixRowStatic;
 
 namespace matrix_test_sub {
-BOOST_AUTO_TEST_CASE_TEMPLATE(sub_matrix_row_static_test, T, CheckMatrixElementType) {
+BOOST_AUTO_TEST_CASE_TEMPLATE(sub_matrix_row_static_test, Cases, CheckTypeCases) {
+    using T = typename Cases::first;
+    using Backend = typename Cases::second;
+
     // 3x3
     constexpr size_t rowAAndB = 3;
     constexpr size_t columnAAndB = 3;
@@ -24,8 +27,8 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(sub_matrix_row_static_test, T, CheckMatrixElementT
     auto arrayA = MakeVectorA<T>();
     auto arrayB = MakeVectorB<T>();
 
-    auto A = MatrixRowStaticOpen<T, rowAAndB>(columnAAndB, arrayA);
-    auto B = MatrixRowStaticOpen<T, rowAAndB>(columnAAndB, arrayB);
+    auto A = MatrixRowStatic<T, rowAAndB, Backend>(columnAAndB, arrayA);
+    auto B = MatrixRowStatic<T, rowAAndB, Backend>(columnAAndB, arrayB);
 
     auto expectedAMinusB = MakeExpectedVectorAAndB<T>();
 
@@ -37,9 +40,9 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(sub_matrix_row_static_test, T, CheckMatrixElementT
 
     auto AMinusB = A - B;
 
-    auto typeCheckAMinusB = std::is_same<decltype(AMinusB), MatrixRowStaticOpen<T, rowAAndB>>::value;
+    auto typeCheckAMinusB = std::is_same<decltype(AMinusB), MatrixRowStatic<T, rowAAndB, Backend>>::value;
     BOOST_CHECK(typeCheckAMinusB);
-    CheckCloseEachVectorElement<T>(AMinusB.Elements(), expectedAMinusB, acceptableErrorAMinusB);
+    CheckCloseEachVectorElement<T>(AMinusB.Elements().GetVector(), expectedAMinusB, acceptableErrorAMinusB);
 
     // 2x5
     constexpr size_t rowCAndD = 2;
@@ -49,8 +52,8 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(sub_matrix_row_static_test, T, CheckMatrixElementT
     auto arrayC = MakeVectorC<T>();
     auto arrayD = MakeVectorD<T>();
 
-    auto C = MatrixRowStaticOpen<T, rowCAndD>(columnCAndD, arrayC);
-    auto D = MatrixRowStaticOpen<T, rowCAndD>(columnCAndD, arrayD);
+    auto C = MatrixRowStatic<T, rowCAndD, Backend>(columnCAndD, arrayC);
+    auto D = MatrixRowStatic<T, rowCAndD, Backend>(columnCAndD, arrayD);
 
     auto expectedCMinusD = MakeExpectedVectorCAndD<T>();
 
@@ -61,9 +64,9 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(sub_matrix_row_static_test, T, CheckMatrixElementT
 
     auto CMinusD = C - D;
 
-    auto typeCheckCMinusD = std::is_same<decltype(CMinusD), MatrixRowStaticOpen<T, rowCAndD>>::value;
+    auto typeCheckCMinusD = std::is_same<decltype(CMinusD), MatrixRowStatic<T, rowCAndD, Backend>>::value;
     BOOST_CHECK(typeCheckCMinusD);
-    CheckCloseEachVectorElement<T>(CMinusD.Elements(), expectedCMinusD, acceptableErrorCMinusD);
+    CheckCloseEachVectorElement<T>(CMinusD.Elements().GetVector(), expectedCMinusD, acceptableErrorCMinusD);
 
     // throw exception test
     auto arrayE = MakeVectorE<T>();
@@ -71,10 +74,10 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(sub_matrix_row_static_test, T, CheckMatrixElementT
     auto arrayG = MakeVectorG<T>();
     auto arrayH = MakeVectorH<T>();
 
-    auto E = MatrixRowStaticOpen<T, 3>(2, arrayE);
-    auto F = MatrixRowStaticOpen<T, 2>(3, arrayF);
-    auto G = MatrixRowStaticOpen<T, 2>(3, arrayG);
-    auto H = MatrixRowStaticOpen<T, 2>(2, arrayH);
+    auto E = MatrixRowStatic<T, 3, Backend>(2, arrayE);
+    auto F = MatrixRowStatic<T, 2, Backend>(3, arrayF);
+    auto G = MatrixRowStatic<T, 2, Backend>(3, arrayG);
+    auto H = MatrixRowStatic<T, 2, Backend>(2, arrayH);
 
     // BOOST_CHECK_THROW(E - F, std::domain_error);
     // BOOST_CHECK_THROW(F - E, std::domain_error);

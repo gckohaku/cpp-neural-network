@@ -359,7 +359,7 @@ Matrix<K, Row, OppCol, Backend> Matrix<K, Row, std::dynamic_extent, Backend>::Do
         throw std::domain_error(errorString);
     }
 #endif
-    auto res = Matrix<K, Row, OppCol>();
+    auto res = Matrix<K, Row, OppCol, Backend>();
     if constexpr (mk_concepts::SingleFloatingPoint<K>) {
         cblas_sgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, Row, OppCol, static_cast<blasint>(this->ColumnSize()),
             1.0, this->_elements.data(), Row, mat._elements.data(), static_cast<blasint>(this->ColumnSize()), 0.0,
@@ -387,7 +387,7 @@ Matrix<K, Row, OppCol, Backend> Matrix<K, Row, std::dynamic_extent, Backend>::Do
         throw std::domain_error(errorString);
     }
 #endif
-    auto res = Matrix<K, Row, OppCol>();
+    auto res = Matrix<K, Row, OppCol, Backend>();
     if constexpr (mk_concepts::SingleFloatingPoint<K>) {
         cblas_sgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, Row, OppCol, static_cast<blasint>(this->ColumnSize()),
             1.0, this->_elements.data(), Row, mat._elements.data(), static_cast<blasint>(this->ColumnSize()), 0.0,

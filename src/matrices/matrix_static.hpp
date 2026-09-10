@@ -32,7 +32,7 @@ template <typename K, size_t Row, size_t Col, typename Backend>
     requires mk_concepts::BLASSupported<Backend, K>
 class Matrix :
     private boost::multipliable<Matrix<K, Row, Col, Backend>>,
-    private boost::multipliable<Matrix<K, Row, Col, Backend>, Matrix<K, Row>> {
+    private boost::multipliable<Matrix<K, Row, Col, Backend>, Matrix<K, Row, std::dynamic_extent, Backend>> {
     static_assert(Row != std::dynamic_extent);
     static_assert(Col != std::dynamic_extent);
 
@@ -292,6 +292,7 @@ inline Matrix<K, Row, Col, Backend> operator+(
     }
 }
 
+// TODO: ここをひとまとめにする
 template <typename K, size_t Row, size_t Col, typename Backend>
     requires mk_concepts::SingleFloatingPoint<K>
 inline Matrix<K, Row, Col, Backend> operator-(Matrix<K, Row, Col, Backend> lhs, Matrix<K, Row, Col, Backend> rhs) {
@@ -310,7 +311,8 @@ inline Matrix<K, Row, Col, Backend> operator-(Matrix<K, Row, Col, Backend> lhs, 
 
 template <typename K, size_t Row, size_t Col, typename Backend>
     requires mk_concepts::SingleFloatingPoint<K>
-Matrix<K, Row, Col, Backend> operator-(Matrix<K, Row, Col, Backend> lhs, Matrix<K, Row> rhs) {
+Matrix<K, Row, Col, Backend> operator-(
+    Matrix<K, Row, Col, Backend> lhs, Matrix<K, Row, std::dynamic_extent, Backend> rhs) {
 #if !defined(NDEBUG)
     if (Col != rhs.ColumnSize()) {
         std::string errorString = "Mismatch matrix size for matrix product.\n";
@@ -327,7 +329,8 @@ Matrix<K, Row, Col, Backend> operator-(Matrix<K, Row, Col, Backend> lhs, Matrix<
 
 template <typename K, size_t Row, size_t Col, typename Backend>
     requires mk_concepts::DoubleFloatingPoint<K>
-Matrix<K, Row, Col, Backend> operator-(Matrix<K, Row, Col, Backend> lhs, Matrix<K, Row> rhs) {
+Matrix<K, Row, Col, Backend> operator-(
+    Matrix<K, Row, Col, Backend> lhs, Matrix<K, Row, std::dynamic_extent, Backend> rhs) {
 #if !defined(NDEBUG)
     if (Col != rhs.ColumnSize()) {
         std::string errorString = "Mismatch matrix size for matrix product.\n";
@@ -412,7 +415,7 @@ template <size_t OppCol>
 inline Matrix<K, Row, OppCol, Backend> Matrix<K, Row, Col, Backend>::Dot(const Matrix<K, Col, OppCol, Backend> mat)
     requires mk_concepts::DoubleFloatingPoint<K>
 {
-    auto res = Matrix<K, Row, OppCol>();
+    auto res = Matrix<K, Row, OppCol, Backend>();
     cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, Row, static_cast<blasint>(OppCol), Col, 1.0,
         this->_elements.data(), Row, mat._elements.data(), Col, 0.0, res._elements.data(), Row);
     return res;
@@ -440,7 +443,7 @@ inline Matrix<K, Row, std::dynamic_extent, Backend> Matrix<K, Row, Col, Backend>
 {
     // const size_t matColumnSize = mat.ColumnSize();
     // assert(matColumnSize <= INT_MAX);
-    auto res = Matrix<K, Row>(mat.ColumnSize());
+    auto res = Matrix<K, Row, std::dynamic_extent, Backend>(mat.ColumnSize());
     cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, Row, static_cast<blasint>(mat.ColumnSize()), Col, 1.0,
         this->_elements.data(), Row, mat._elements.data(), Col, 0.0, res._elements.data(), Row);
     return res;
@@ -463,7 +466,7 @@ inline Matrix<K, Row, OppCol, Backend> Matrix<K, Row, Col, Backend>::Dot(
     }
 #endif
 
-    auto res = Matrix<K, Row, OppCol>();
+    auto res = Matrix<K, Row, OppCol, Backend>();
     cblas_sgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, Row, OppCol, Col, 1.0, this->_elements.data(), Row,
         mat._elements.data(), Col, 0.0, res._elements.data(), Row);
     return res;
@@ -486,7 +489,7 @@ inline Matrix<K, Row, OppCol, Backend> Matrix<K, Row, Col, Backend>::Dot(
     }
 #endif
 
-    auto res = Matrix<K, Row, OppCol>();
+    auto res = Matrix<K, Row, OppCol, Backend>();
     cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, Row, OppCol, Col, 1.0, this->_elements.data(), Row,
         mat._elements.data(), Col, 0.0, res._elements.data(), Row);
     return res;
@@ -508,7 +511,7 @@ inline Matrix<K, Row, std::dynamic_extent, Backend> Matrix<K, Row, Col, Backend>
     }
 #endif
 
-    auto res = Matrix<K, Row>(mat.ColumnSize());
+    auto res = Matrix<K, Row, std::dynamic_extent, Backend>(mat.ColumnSize());
     cblas_sgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, Row, static_cast<blasint>(mat.ColumnSize()), Col, 1.0,
         this->_elements.data(), Row, mat._elements.data(), Col, 0.0, res._elements.data(), Row);
     return res;
@@ -530,7 +533,7 @@ inline Matrix<K, Row, std::dynamic_extent, Backend> Matrix<K, Row, Col, Backend>
     }
 #endif
 
-    auto res = Matrix<K, Row>(mat.ColumnSize());
+    auto res = Matrix<K, Row, std::dynamic_extent, Backend>(mat.ColumnSize());
     cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, Row, static_cast<blasint>(mat.ColumnSize()), Col, 1.0,
         this->_elements.data(), Row, mat._elements.data(), Col, 0.0, res._elements.data(), Row);
     return res;

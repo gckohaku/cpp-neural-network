@@ -42,4 +42,5 @@
     "clangd.inactiveRegions.opacity": 0.55,
     "window.density.editorTabHeight": "compact",
     "workbench.editor.wrapTabs": true,
+    "cmake.parseBuildDiagnostics": false,
 }
