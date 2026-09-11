@@ -168,11 +168,10 @@ template <typename K, size_t Row, size_t Col, typename Backend>
 inline auto Matrix<K, Row, Col, Backend>::operator+=(const Matrix& x) -> Matrix& {
     if constexpr (mk_concepts::SingleFloatingPoint<K>) {
         cblas_saxpy(Row * Col, 1.0, x._elements.data(), 1, this->_elements.data(), 1);
-        return *this;
     } else if constexpr (mk_concepts::DoubleFloatingPoint<K>) {
         cblas_daxpy(Row * Col, 1.0, x._elements.data(), 1, this->_elements.data(), 1);
-        return *this;
     }
+    return *this;
 }
 
 template <typename K, size_t Row, size_t Col, typename Backend>
@@ -190,11 +189,10 @@ inline auto Matrix<K, Row, Col, Backend>::operator+=(const Matrix<K, Row, std::d
 
     if constexpr (mk_concepts::SingleFloatingPoint<K>) {
         cblas_saxpy(Row * Col, 1.0, x._elements.data(), 1, this->_elements.data(), 1);
-        return *this;
     } else if constexpr (mk_concepts::DoubleFloatingPoint<K>) {
         cblas_daxpy(Row * Col, 1.0, x._elements.data(), 1, this->_elements.data(), 1);
-        return *this;
     }
+    return *this;
 }
 
 template <typename K, size_t Row, size_t Col, typename Backend>
@@ -202,11 +200,10 @@ template <typename K, size_t Row, size_t Col, typename Backend>
 inline auto Matrix<K, Row, Col, Backend>::operator-=(const Matrix& x) -> Matrix& {
     if constexpr (mk_concepts::SingleFloatingPoint<K>) {
         cblas_saxpy(Row * Col, -1.0, x._elements.data(), 1, this->_elements.data(), 1);
-        return *this;
     } else if constexpr (mk_concepts::DoubleFloatingPoint<K>) {
         cblas_daxpy(Row * Col, -1.0, x._elements.data(), 1, this->_elements.data(), 1);
-        return *this;
     }
+    return *this;
 }
 
 template <typename K, size_t Row, size_t Col, typename Backend>
@@ -223,11 +220,10 @@ inline auto Matrix<K, Row, Col, Backend>::operator-=(const Matrix<K, Row, std::d
 #endif
     if constexpr (mk_concepts::SingleFloatingPoint<K>) {
         cblas_saxpy(Row * Col, -1.0, x._elements.data(), 1, this->_elements.data(), 1);
-        return *this;
     } else if constexpr (mk_concepts::DoubleFloatingPoint<K>) {
         cblas_daxpy(Row * Col, -1.0, x._elements.data(), 1, this->_elements.data(), 1);
-        return *this;
     }
+    return *this;
 }
 
 template <typename K, size_t Row, size_t Col, typename Backend>
@@ -262,11 +258,10 @@ inline Matrix<K, Row, Col, Backend> operator+(Matrix<K, Row, Col, Backend> lhs, 
     auto result = lhs;
     if constexpr (mk_concepts::SingleFloatingPoint<K>) {
         cblas_saxpy(Row * Col, 1.0, rhs._elements.data(), 1, result._elements.data(), 1);
-        return result;
     } else if constexpr (mk_concepts::DoubleFloatingPoint<K>) {
         cblas_daxpy(Row * Col, 1.0, rhs._elements.data(), 1, result._elements.data(), 1);
-        return result;
     }
+    return result;
 }
 
 template <typename K, size_t Row, size_t Col, typename Backend>
@@ -285,32 +280,28 @@ inline Matrix<K, Row, Col, Backend> operator+(
     auto result = Matrix<K, Row, Col, Backend>();
     if constexpr (mk_concepts::SingleFloatingPoint<K>) {
         cblas_saxpy(Row * Col, 1.0, rhs._elements.data(), 1, result._elements.data(), 1);
-        return result;
     } else if constexpr (mk_concepts::DoubleFloatingPoint<K>) {
         cblas_daxpy(Row * Col, 1.0, rhs._elements.data(), 1, result._elements.data(), 1);
-        return result;
     }
+    return result;
 }
 
 // TODO: ここをひとまとめにする
 template <typename K, size_t Row, size_t Col, typename Backend>
-    requires mk_concepts::SingleFloatingPoint<K>
+    requires mk_concepts::BLASSupported<Backend, K>
 inline Matrix<K, Row, Col, Backend> operator-(Matrix<K, Row, Col, Backend> lhs, Matrix<K, Row, Col, Backend> rhs) {
     auto result = lhs;
-    cblas_saxpy(Row * Col, -1.0, rhs._elements.data(), 1, result._elements.data(), 1);
+    if constexpr (mk_concepts::SingleFloatingPoint<K>) {
+        cblas_saxpy(Row * Col, -1.0, rhs._elements.data(), 1, result._elements.data(), 1);
+    } else if constexpr (mk_concepts::DoubleFloatingPoint<K>) {
+        cblas_daxpy(Row * Col, -1.0, rhs._elements.data(), 1, result._elements.data(), 1);
+    }
+
     return result;
 }
 
 template <typename K, size_t Row, size_t Col, typename Backend>
-    requires mk_concepts::DoubleFloatingPoint<K>
-inline Matrix<K, Row, Col, Backend> operator-(Matrix<K, Row, Col, Backend> lhs, Matrix<K, Row, Col, Backend> rhs) {
-    auto result = lhs;
-    cblas_daxpy(Row * Col, -1.0, rhs._elements.data(), 1, result._elements.data(), 1);
-    return result;
-}
-
-template <typename K, size_t Row, size_t Col, typename Backend>
-    requires mk_concepts::SingleFloatingPoint<K>
+    requires mk_concepts::BLASSupported<Backend, K>
 Matrix<K, Row, Col, Backend> operator-(
     Matrix<K, Row, Col, Backend> lhs, Matrix<K, Row, std::dynamic_extent, Backend> rhs) {
 #if !defined(NDEBUG)
@@ -323,25 +314,12 @@ Matrix<K, Row, Col, Backend> operator-(
     }
 #endif
     auto result = lhs;
-    cblas_saxpy(Row * Col, -1.0, rhs._elements.data(), 1, result._elements.data(), 1);
-    return result;
-}
-
-template <typename K, size_t Row, size_t Col, typename Backend>
-    requires mk_concepts::DoubleFloatingPoint<K>
-Matrix<K, Row, Col, Backend> operator-(
-    Matrix<K, Row, Col, Backend> lhs, Matrix<K, Row, std::dynamic_extent, Backend> rhs) {
-#if !defined(NDEBUG)
-    if (Col != rhs.ColumnSize()) {
-        std::string errorString = "Mismatch matrix size for matrix product.\n";
-        errorString += "this size    : " + lhs.GetSizeString() + "\n";
-        errorString += "opponent size: " + rhs.GetSizeString() + ".\n";
-
-        throw std::domain_error(errorString);
+    if constexpr (mk_concepts::SingleFloatingPoint<K>) {
+        cblas_saxpy(Row * Col, -1.0, rhs._elements.data(), 1, result._elements.data(), 1);
+    } else if constexpr (mk_concepts::DoubleFloatingPoint<K>) {
+        cblas_daxpy(Row * Col, -1.0, rhs._elements.data(), 1, result._elements.data(), 1);
     }
-#endif
-    auto result = lhs;
-    cblas_daxpy(Row * Col, -1.0, rhs._elements.data(), 1, result._elements.data(), 1);
+
     return result;
 }
 

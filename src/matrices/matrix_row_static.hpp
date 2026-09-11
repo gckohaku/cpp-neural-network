@@ -18,6 +18,7 @@
 #include "src/matrices/core/blas_storages/blas_storage.hpp"  // IWYU pragma: keep
 #include "src/matrices/matrix_static.hpp"
 #include "src/matrices/matrix_template_base.hpp"
+#include "src/matrices/forward_declarations/row_static_operations.hpp"
 
 namespace mknnlib::matrix {
 template <typename K, size_t Row, typename Backend>
@@ -74,18 +75,12 @@ public:
     Matrix& operator*=(const Matrix& x);
 
     // arithmetics binary operators
-    template <typename K_, size_t Row_, typename Backend_>
-    friend Matrix<K_, Row_, std::dynamic_extent, Backend_> operator+(
-        Matrix<K_, Row_, std::dynamic_extent, Backend_> lhs, Matrix<K_, Row_, std::dynamic_extent, Backend_> rhs);
-    template <typename K_, size_t Row_, size_t Col_, typename Backend_>
-    friend Matrix<K_, Row_, Col_, Backend_> operator+(
-        Matrix<K_, Row_, std::dynamic_extent, Backend_> lhs, Matrix<K_, Row_, Col_, Backend_> rhs);
-    template <typename K_, size_t Row_, typename Backend_>
-    friend Matrix<K_, Row_, std::dynamic_extent, Backend_> operator-(
-        Matrix<K_, Row_, std::dynamic_extent, Backend_> lhs, Matrix<K_, Row_, std::dynamic_extent, Backend_> rhs);
-    template <typename K_, size_t Row_, size_t Col_, typename Backend_>
-    friend Matrix<K_, Row_, Col_, Backend_> operator-(
-        Matrix<K_, Row_, std::dynamic_extent, Backend_> lhs, Matrix<K_, Row_, Col_, Backend_> rhs);
+    friend Matrix operator+ <K, Row, Backend>(Matrix lhs, Matrix rhs);
+    template <size_t Col>
+    friend Matrix<K, Row, Col, Backend> operator+ <K, Row, Col, Backend>(Matrix lhs, Matrix<K, Row, Col, Backend> rhs);
+    friend Matrix operator- <K, Row, Backend>(Matrix lhs, Matrix rhs);
+    template <size_t Col>
+    friend Matrix<K, Row, Col, Backend> operator- <K, Row, Col, Backend>(Matrix lhs, Matrix<K, Row, Col, Backend> rhs);
 
     // 2 dimensions index
     K& operator[](const size_t a, const size_t b);
@@ -251,6 +246,50 @@ Matrix<K, Row, std::dynamic_extent, Backend>& Matrix<K, Row, std::dynamic_extent
     // hadamard product is not into BLAS
     std::ranges::transform(this->ElementsRange(), x.ElementsRange(), this->_elements.begin(), std::multiplies<>());
     return *this;
+}
+
+// arithmetics binary operators
+template <typename K, size_t Row, typename Backend>
+    requires mk_concepts::BLASSupported<Backend, K>
+inline Matrix<K, Row, std::dynamic_extent, Backend> operator+(
+    Matrix<K, Row, std::dynamic_extent, Backend> lhs, Matrix<K, Row, std::dynamic_extent, Backend> rhs) {
+#if !defined(NDEBUG)
+    if (rhs.ColumnSize() != lhs.ColumnSize()) {
+        std::string errorString = "Mismatch matrix size for matrix product.\n";
+        errorString += "this size    : " + lhs.GetSizeString() + "\n";
+        errorString += "opponent size: " + rhs.GetSizeString() + ".\n";
+        throw std::domain_error(errorString);
+    }
+#endif
+    auto result = Matrix<K, Row, std::dynamic_extent, Backend>();
+    if constexpr (mk_concepts::SingleFloatingPoint<K>) {
+        cblas_saxpy(Row * lhs.ColumnSize(), 1.0, rhs._elements.data(), 1, result._elements.data(), 1);
+    } else if constexpr (mk_concepts::DoubleFloatingPoint<K>) {
+        cblas_daxpy(Row * lhs.ColumnSize(), 1.0, rhs._elements.data(), 1, result._elements.data(), 1);
+    }
+    return result;
+}
+
+template <typename K, size_t Row, typename Backend>
+    requires mk_concepts::BLASSupported<Backend, K>
+template <size_t Col>
+inline Matrix<K, Row, Col, Backend> operator+(
+    Matrix<K, Row, std::dynamic_extent, Backend> lhs, Matrix<K, Row, Col, Backend> rhs) {
+#if !defined(NDEBUG)
+    if (Col != lhs.ColumnSize()) {
+        std::string errorString = "Mismatch matrix size for matrix product.\n";
+        errorString += "this size    : " + lhs.GetSizeString() + "\n";
+        errorString += "opponent size: " + rhs.GetSizeString() + ".\n";
+        throw std::domain_error(errorString);
+    }
+#endif
+    auto result = Matrix<K, Row, Col, Backend>();
+    if constexpr (mk_concepts::SingleFloatingPoint<K>) {
+        cblas_saxpy(Row * Col, 1.0, rhs._elements.data(), 1, result._elements.data(), 1);
+    } else if constexpr (mk_concepts::DoubleFloatingPoint<K>) {
+        cblas_daxpy(Row * Col, 1.0, rhs._elements.data(), 1, result._elements.data(), 1);
+    }
+    return result;
 }
 
 // ostream
