@@ -286,7 +286,6 @@ inline Matrix<K, Row, Col, Backend> operator+(
     return result;
 }
 
-// TODO: ここをひとまとめにする
 template <typename K, size_t Row, size_t Col, typename Backend>
     requires mk_concepts::BLASSupported<Backend, K>
 inline Matrix<K, Row, Col, Backend> operator-(Matrix<K, Row, Col, Backend> lhs, Matrix<K, Row, Col, Backend> rhs) {

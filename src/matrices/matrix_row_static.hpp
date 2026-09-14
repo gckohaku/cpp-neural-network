@@ -76,11 +76,11 @@ public:
 
     // arithmetics binary operators
     friend Matrix operator+ <K, Row, Backend>(Matrix lhs, Matrix rhs);
-    template <size_t Col>
-    friend Matrix<K, Row, Col, Backend> operator+ <K, Row, Col, Backend>(Matrix lhs, Matrix<K, Row, Col, Backend> rhs);
+    template <typename K_, size_t Row_, size_t Col_, typename Backend_>
+    friend Matrix<K_, Row_, Col_, Backend_> operator+(Matrix<K_, Row_, std::dynamic_extent, Backend_> lhs, Matrix<K_, Row_, Col_, Backend_> rhs);
     friend Matrix operator- <K, Row, Backend>(Matrix lhs, Matrix rhs);
-    template <size_t Col>
-    friend Matrix<K, Row, Col, Backend> operator- <K, Row, Col, Backend>(Matrix lhs, Matrix<K, Row, Col, Backend> rhs);
+    template <typename K_, size_t Row_, size_t Col_, typename Backend_>
+    friend Matrix<K_, Row_, Col_, Backend_> operator-(Matrix<K_, Row_, std::dynamic_extent, Backend_> lhs, Matrix<K_, Row_, Col_, Backend_> rhs);
 
     // 2 dimensions index
     K& operator[](const size_t a, const size_t b);
@@ -270,9 +270,8 @@ inline Matrix<K, Row, std::dynamic_extent, Backend> operator+(
     return result;
 }
 
-template <typename K, size_t Row, typename Backend>
+template <typename K, size_t Row, size_t Col, typename Backend>
     requires mk_concepts::BLASSupported<Backend, K>
-template <size_t Col>
 inline Matrix<K, Row, Col, Backend> operator+(
     Matrix<K, Row, std::dynamic_extent, Backend> lhs, Matrix<K, Row, Col, Backend> rhs) {
 #if !defined(NDEBUG)
@@ -283,12 +282,13 @@ inline Matrix<K, Row, Col, Backend> operator+(
         throw std::domain_error(errorString);
     }
 #endif
-    auto result = Matrix<K, Row, Col, Backend>();
-    if constexpr (mk_concepts::SingleFloatingPoint<K>) {
-        cblas_saxpy(Row * Col, 1.0, rhs._elements.data(), 1, result._elements.data(), 1);
-    } else if constexpr (mk_concepts::DoubleFloatingPoint<K>) {
-        cblas_daxpy(Row * Col, 1.0, rhs._elements.data(), 1, result._elements.data(), 1);
-    }
+    auto result = Matrix<K, Row, Col, Backend>(lhs.Elements().GetVector());
+    // if constexpr (mk_concepts::SingleFloatingPoint<K>) {
+    //     cblas_saxpy(Row * Col, 1.0, rhs._elements.data(), 1, result._elements.data(), 1);
+    // } else if constexpr (mk_concepts::DoubleFloatingPoint<K>) {
+    //     cblas_daxpy(Row * Col, 1.0, rhs._elements.data(), 1, result._elements.data(), 1);
+    // }
+    result += rhs;
     return result;
 }
 
