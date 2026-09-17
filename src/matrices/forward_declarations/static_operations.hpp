@@ -10,7 +10,23 @@ namespace mknnlib::matrix {
 // Static + Static
 template <typename K_, size_t Row_, size_t Col_, typename Backend_>
     requires mk_concepts::BLASSupported<Backend_, K_>
-Matrix<K_, Row_, Col_, Backend_> operator+(Matrix<K_, Row_, Col_, Backend_> lhs, Matrix<K_, Row_, Col_, Backend_> rhs);
+Matrix<K_, Row_, Col_, Backend_> operator+(
+    const Matrix<K_, Row_, Col_, Backend_>& lhs, const Matrix<K_, Row_, Col_, Backend_>& rhs);
+
+template <typename K_, size_t Row_, size_t Col_, typename Backend_>
+    requires mk_concepts::BLASSupported<Backend_, K_>
+Matrix<K_, Row_, Col_, Backend_> operator+(
+    Matrix<K_, Row_, Col_, Backend_>&& lhs, const Matrix<K_, Row_, Col_, Backend_>& rhs);
+
+template <typename K_, size_t Row_, size_t Col_, typename Backend_>
+    requires mk_concepts::BLASSupported<Backend_, K_>
+Matrix<K_, Row_, Col_, Backend_> operator+(
+    const Matrix<K_, Row_, Col_, Backend_>& lhs, Matrix<K_, Row_, Col_, Backend_>&& rhs);
+
+template <typename K_, size_t Row_, size_t Col_, typename Backend_>
+    requires mk_concepts::BLASSupported<Backend_, K_>
+Matrix<K_, Row_, Col_, Backend_> operator+(
+    Matrix<K_, Row_, Col_, Backend_>&& lhs, Matrix<K_, Row_, Col_, Backend_>&& rhs);
 
 // Static + RowStatic
 template <typename K_, size_t Row_, size_t Col_, typename Backend_>
@@ -18,7 +34,7 @@ template <typename K_, size_t Row_, size_t Col_, typename Backend_>
 Matrix<K_, Row_, Col_, Backend_> operator+(
     Matrix<K_, Row_, Col_, Backend_> lhs, Matrix<K_, Row_, std::dynamic_extent, Backend_> rhs);
 
-    // Static - Static
+// Static - Static
 template <typename K_, size_t Row_, size_t Col_, typename Backend_>
     requires mk_concepts::BLASSupported<Backend_, K_>
 Matrix<K_, Row_, Col_, Backend_> operator-(Matrix<K_, Row_, Col_, Backend_> lhs, Matrix<K_, Row_, Col_, Backend_> rhs);

@@ -11,17 +11,22 @@
 namespace mknnlib::matrix::core {
 template <typename T, size_t Size>
 struct Storage<OpenBLASBackend, T, Size> {
+    private:
+    std::array<T, Size> _elements;
 public:
     using iterator = std::array<T, Size>::iterator;
     using const_iterator = std::array<T, Size>::const_iterator;
     using size_type = std::array<T, Size>::size_type;
-
-    std::array<T, Size> _elements;
-
+    
     Storage();
 
     Storage(std::array<T, Size> elements);
     Storage(std::vector<T> elements);
+    Storage(const Storage&) = default;
+    Storage(Storage&&) = default;
+
+    Storage& operator=(Storage&) = default;
+    Storage& operator=(Storage&&) = default;
 
     constexpr std::array<T, Size>& elements() noexcept;
     constexpr const std::array<T, Size>& elements() const noexcept;

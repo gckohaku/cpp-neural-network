@@ -25,6 +25,11 @@ public:
     Storage(std::vector<T> elements);
     Storage(size_t size);
     Storage(size_t size, std::vector<T> elements);
+    Storage(const Storage&) = default;
+    Storage(Storage&&) = default;
+
+    Storage& operator=(Storage&) = default;
+    Storage& operator=(Storage&&) = default;
 
     constexpr std::vector<T>& elements() noexcept;
     constexpr const std::vector<T>& elements() const noexcept;

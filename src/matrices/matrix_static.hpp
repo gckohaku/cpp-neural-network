@@ -15,6 +15,7 @@
 
 #include "src/concept_defines/types/type_concepts.hpp"
 #include "src/matrices/core/blas_backends.hpp"
+#include "src/matrices/core/blas_dispatchers/blas_dispatchers.hpp" // IWYU pragma: keep
 #include "src/matrices/core/blas_storages/blas_storage.hpp"  // IWYU pragma: keep
 #include "src/matrices/forward_declarations/static_operations.hpp"
 #include "src/matrices/matrix_template_base.hpp"
@@ -73,7 +74,11 @@ public:
     Matrix& operator*=(const Matrix<K, Row, std::dynamic_extent, Backend>& x);
 
     // arithmetics binary operators
-    friend Matrix operator+ <K, Row, Col, Backend>(Matrix lhs, Matrix rhs);
+    friend Matrix operator+ <K, Row, Col, Backend>(const Matrix& lhs, const Matrix& rhs);
+    friend Matrix operator+ <K, Row, Col, Backend>(Matrix&& lhs, const Matrix& rhs);
+    friend Matrix operator+ <K, Row, Col, Backend>(const Matrix& lhs, Matrix&& rhs);
+    friend Matrix operator+ <K, Row, Col, Backend>(Matrix&& lhs, Matrix&& rhs);
+
     friend Matrix operator+ <K, Row, Col, Backend>(Matrix lhs, Matrix<K, Row, std::dynamic_extent, Backend> rhs);
     friend Matrix operator- <K, Row, Col, Backend>(Matrix lhs, Matrix rhs);
     friend Matrix operator- <K, Row, Col, Backend>(Matrix lhs, Matrix<K, Row, std::dynamic_extent, Backend> rhs);
@@ -166,11 +171,7 @@ Matrix<K, Row, Col, Backend>& Matrix<K, Row, Col, Backend>::operator=(const Matr
 template <typename K, size_t Row, size_t Col, typename Backend>
     requires mk_concepts::BLASSupported<Backend, K>
 inline auto Matrix<K, Row, Col, Backend>::operator+=(const Matrix& x) -> Matrix& {
-    if constexpr (mk_concepts::SingleFloatingPoint<K>) {
-        cblas_saxpy(Row * Col, 1.0, x._elements.data(), 1, this->_elements.data(), 1);
-    } else if constexpr (mk_concepts::DoubleFloatingPoint<K>) {
-        cblas_daxpy(Row * Col, 1.0, x._elements.data(), 1, this->_elements.data(), 1);
-    }
+    core::BLAS<Backend, K>::axpy(Row * Col, 1.0, x._elements.data(), 1, this->_elements.data(), 1);
     return *this;
 }
 

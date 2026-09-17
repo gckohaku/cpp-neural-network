@@ -16,9 +16,9 @@
 
 #include "src/concept_defines/types/type_concepts.hpp"
 #include "src/matrices/core/blas_storages/blas_storage.hpp"  // IWYU pragma: keep
+#include "src/matrices/forward_declarations/row_static_operations.hpp"
 #include "src/matrices/matrix_static.hpp"
 #include "src/matrices/matrix_template_base.hpp"
-#include "src/matrices/forward_declarations/row_static_operations.hpp"
 
 namespace mknnlib::matrix {
 template <typename K, size_t Row, typename Backend>
@@ -64,23 +64,23 @@ public:
     // copy assignment operator
     Matrix& operator=(const Matrix& x);
     // arithmetics compound operators
-    Matrix& operator+=(const Matrix& x)
-        requires mk_concepts::SingleFloatingPoint<K>;
-    Matrix& operator+=(const Matrix& x)
-        requires mk_concepts::DoubleFloatingPoint<K>;
-    Matrix& operator-=(const Matrix& x)
-        requires mk_concepts::SingleFloatingPoint<K>;
-    Matrix& operator-=(const Matrix& x)
-        requires mk_concepts::DoubleFloatingPoint<K>;
+    Matrix& operator+=(const Matrix& x);
+    Matrix& operator-=(const Matrix& x);
     Matrix& operator*=(const Matrix& x);
 
     // arithmetics binary operators
-    friend Matrix operator+ <K, Row, Backend>(Matrix lhs, Matrix rhs);
+    friend Matrix operator+ <K, Row, Backend>(const Matrix& lhs, const Matrix& rhs);
+    friend Matrix operator+ <K, Row, Backend>(Matrix&& lhs, const Matrix& rhs);
+    friend Matrix operator+ <K, Row, Backend>(const Matrix& lhs, Matrix&& rhs);
+    friend Matrix operator+ <K, Row, Backend>(Matrix&& lhs, Matrix&& rhs);
+
     template <typename K_, size_t Row_, size_t Col_, typename Backend_>
-    friend Matrix<K_, Row_, Col_, Backend_> operator+(Matrix<K_, Row_, std::dynamic_extent, Backend_> lhs, Matrix<K_, Row_, Col_, Backend_> rhs);
+    friend Matrix<K_, Row_, Col_, Backend_> operator+(
+        Matrix<K_, Row_, std::dynamic_extent, Backend_> lhs, Matrix<K_, Row_, Col_, Backend_> rhs);
     friend Matrix operator- <K, Row, Backend>(Matrix lhs, Matrix rhs);
     template <typename K_, size_t Row_, size_t Col_, typename Backend_>
-    friend Matrix<K_, Row_, Col_, Backend_> operator-(Matrix<K_, Row_, std::dynamic_extent, Backend_> lhs, Matrix<K_, Row_, Col_, Backend_> rhs);
+    friend Matrix<K_, Row_, Col_, Backend_> operator-(
+        Matrix<K_, Row_, std::dynamic_extent, Backend_> lhs, Matrix<K_, Row_, Col_, Backend_> rhs);
 
     // 2 dimensions index
     K& operator[](const size_t a, const size_t b);
@@ -157,83 +157,52 @@ Matrix<K, Row, std::dynamic_extent, Backend>& Matrix<K, Row, std::dynamic_extent
 template <typename K, size_t Row, typename Backend>
     requires mk_concepts::BLASSupported<Backend, K>
 inline Matrix<K, Row, std::dynamic_extent, Backend>& Matrix<K, Row, std::dynamic_extent, Backend>::operator+=(
-    const Matrix<K, Row, std::dynamic_extent, Backend>& x)
-    requires mk_concepts::SingleFloatingPoint<K>
-{
-#if !defined(NDEBUG)
-    if (this->ColumnSize() != x.ColumnSize()) {
-        std::string errorString = "Mismatch matrix size for matrix product.\n";
-        errorString += "this size    : " + this->GetSizeString() + "\n";
-        errorString += "opponent size: " + x.GetSizeString() + ".\n";
-
-        throw std::domain_error(errorString);
-    }
-#endif
-    cblas_saxpy(static_cast<blasint>(Row * this->_columnSize), 1.0, x._elements.data(), 1, this->_elements.data(), 1);
-    return *this;
-}
-
-template <typename K, size_t Row, typename Backend>
-    requires mk_concepts::BLASSupported<Backend, K>
-inline Matrix<K, Row, std::dynamic_extent, Backend>& Matrix<K, Row, std::dynamic_extent, Backend>::operator+=(
-    const Matrix<K, Row, std::dynamic_extent, Backend>& x)
-    requires mk_concepts::DoubleFloatingPoint<K>
-{
-#if !defined(NDEBUG)
-    if (this->ColumnSize() != x.ColumnSize()) {
-        std::string errorString = "Mismatch matrix size for matrix product.\n";
-        errorString += "this size    : " + this->GetSizeString() + "\n";
-        errorString += "opponent size: " + x.GetSizeString() + ".\n";
-
-        throw std::domain_error(errorString);
-    }
-#endif
-    cblas_daxpy(static_cast<blasint>(Row * this->_columnSize), 1.0, x._elements.data(), 1, this->_elements.data(), 1);
-    return *this;
-}
-
-template <typename K, size_t Row, typename Backend>
-    requires mk_concepts::BLASSupported<Backend, K>
-inline Matrix<K, Row, std::dynamic_extent, Backend>& Matrix<K, Row, std::dynamic_extent, Backend>::operator-=(
-    const Matrix<K, Row, std::dynamic_extent, Backend>& x)
-    requires mk_concepts::SingleFloatingPoint<K>
-{
-#if !defined(NDEBUG)
-    if (this->ColumnSize() != x.ColumnSize()) {
-        std::string errorString = "Mismatch matrix size for matrix product.\n";
-        errorString += "this size    : " + this->GetSizeString() + "\n";
-        errorString += "opponent size: " + x.GetSizeString() + ".\n";
-
-        throw std::domain_error(errorString);
-    }
-#endif
-    cblas_saxpy(static_cast<blasint>(Row * this->_columnSize), -1.0, x._elements.data(), 1, this->_elements.data(), 1);
-    return *this;
-}
-
-template <typename K, size_t Row, typename Backend>
-    requires mk_concepts::BLASSupported<Backend, K>
-inline Matrix<K, Row, std::dynamic_extent, Backend>& Matrix<K, Row, std::dynamic_extent, Backend>::operator-=(
-    const Matrix<K, Row, std::dynamic_extent, Backend>& x)
-    requires mk_concepts::DoubleFloatingPoint<K>
-{
-#if !defined(NDEBUG)
-    if (this->ColumnSize() != x.ColumnSize()) {
-        std::string errorString = "Mismatch matrix size for matrix product.\n";
-        errorString += "this size    : " + this->GetSizeString() + "\n";
-        errorString += "opponent size: " + x.GetSizeString() + ".\n";
-
-        throw std::domain_error(errorString);
-    }
-#endif
-    cblas_daxpy(static_cast<blasint>(Row * this->_columnSize), -1.0, x._elements.data(), 1, this->_elements.data(), 1);
-    return *this;
-}
-
-template <typename K, size_t Row, typename Backend>
-    requires mk_concepts::BLASSupported<Backend, K>
-Matrix<K, Row, std::dynamic_extent, Backend>& Matrix<K, Row, std::dynamic_extent, Backend>::operator*=(
     const Matrix<K, Row, std::dynamic_extent, Backend>& x) {
+#if !defined(NDEBUG)
+    if (this->ColumnSize() != x.ColumnSize()) {
+        std::string errorString = "Mismatch matrix size for matrix product.\n";
+        errorString += "this size    : " + this->GetSizeString() + "\n";
+        errorString += "opponent size: " + x.GetSizeString() + ".\n";
+
+        throw std::domain_error(errorString);
+    }
+#endif
+    if constexpr (mk_concepts::SingleFloatingPoint<K>) {
+        cblas_saxpy(
+            static_cast<blasint>(Row * this->_columnSize), 1.0, x._elements.data(), 1, this->_elements.data(), 1);
+    } else if constexpr (mk_concepts::DoubleFloatingPoint<K>) {
+        cblas_daxpy(
+            static_cast<blasint>(Row * this->_columnSize), 1.0, x._elements.data(), 1, this->_elements.data(), 1);
+    }
+    return *this;
+}
+
+template <typename K, size_t Row, typename Backend>
+    requires mk_concepts::BLASSupported<Backend, K>
+inline Matrix<K, Row, std::dynamic_extent, Backend>& Matrix<K, Row, std::dynamic_extent, Backend>::operator-=(
+    const Matrix<K, Row, std::dynamic_extent, Backend>& x) {
+#if !defined(NDEBUG)
+    if (this->ColumnSize() != x.ColumnSize()) {
+        std::string errorString = "Mismatch matrix size for matrix product.\n";
+        errorString += "this size    : " + this->GetSizeString() + "\n";
+        errorString += "opponent size: " + x.GetSizeString() + ".\n";
+
+        throw std::domain_error(errorString);
+    }
+#endif
+    if constexpr (mk_concepts::SingleFloatingPoint<K>) {
+        cblas_saxpy(
+            static_cast<blasint>(Row * this->_columnSize), -1.0, x._elements.data(), 1, this->_elements.data(), 1);
+    } else if constexpr (mk_concepts::DoubleFloatingPoint<K>) {
+        cblas_daxpy(
+            static_cast<blasint>(Row * this->_columnSize), -1.0, x._elements.data(), 1, this->_elements.data(), 1);
+    }
+    return *this;
+}
+
+template <typename K, size_t Row, typename Backend>
+    requires mk_concepts::BLASSupported<Backend, K>
+auto Matrix<K, Row, std::dynamic_extent, Backend>::operator*=(const Matrix& x) -> Matrix& {
 #if !defined(NDEBUG)
     if (this->ColumnSize() != x.ColumnSize()) {
         std::string errorString = "Mismatch matrix size for matrix product.\n";
