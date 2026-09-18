@@ -57,11 +57,15 @@ public:
     Matrix<K, std::dynamic_extent, Col, Backend>(const size_t rowSize, const std::vector<K> elements);
     // copy constructor
     Matrix<K, std::dynamic_extent, Col, Backend>(const Matrix<K, std::dynamic_extent, Col, Backend>& mat);
+    // move constructor
+    Matrix(Matrix&&) = default;
     /* end constructors declaration */
 
     /* begin operator overloads declaration */
     // copy assignment operator
     Matrix<K, std::dynamic_extent, Col, Backend>& operator=(const Matrix<K, std::dynamic_extent, Col, Backend>& x);
+    // move assignment operator
+    Matrix& operator=(Matrix&&) = default;
     // arithmetics
     Matrix<K, std::dynamic_extent, Col, Backend>& operator+=(const Matrix<K, std::dynamic_extent, Col, Backend>& x)
         requires mk_concepts::SingleFloatingPoint<K>;
