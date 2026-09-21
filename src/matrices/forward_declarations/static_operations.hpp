@@ -8,57 +8,57 @@
 
 namespace mknnlib::matrix {
 // Static + Static
-template <typename K_, size_t Row_, size_t Col_, typename Backend_>
-    requires mk_concepts::BLASSupported<Backend_, K_>
-Matrix<K_, Row_, Col_, Backend_> operator+(
-    const Matrix<K_, Row_, Col_, Backend_>& lhs, const Matrix<K_, Row_, Col_, Backend_>& rhs);
+template <typename K_, size_t Row_, size_t Col_, typename Backend_, typename Layout_>
+    requires (mk_concepts::BLASSupported<Backend_, K_> && Row_ != std::dynamic_extent && Col_ != std::dynamic_extent)
+Matrix<K_, Row_, Col_, Backend_, Layout_> operator+(
+    const Matrix<K_, Row_, Col_, Backend_, Layout_>& lhs, const Matrix<K_, Row_, Col_, Backend_, Layout_>& rhs);
 
-template <typename K_, size_t Row_, size_t Col_, typename Backend_>
-    requires mk_concepts::BLASSupported<Backend_, K_>
-Matrix<K_, Row_, Col_, Backend_> operator+(
-    Matrix<K_, Row_, Col_, Backend_>&& lhs, const Matrix<K_, Row_, Col_, Backend_>& rhs);
+template <typename K_, size_t Row_, size_t Col_, typename Backend_, typename Layout_>
+    requires (mk_concepts::BLASSupported<Backend_, K_> && Row_ != std::dynamic_extent && Col_ != std::dynamic_extent)
+Matrix<K_, Row_, Col_, Backend_, Layout_> operator+(
+    Matrix<K_, Row_, Col_, Backend_, Layout_>&& lhs, const Matrix<K_, Row_, Col_, Backend_, Layout_>& rhs);
 
-template <typename K_, size_t Row_, size_t Col_, typename Backend_>
-    requires mk_concepts::BLASSupported<Backend_, K_>
-Matrix<K_, Row_, Col_, Backend_> operator+(
-    const Matrix<K_, Row_, Col_, Backend_>& lhs, Matrix<K_, Row_, Col_, Backend_>&& rhs);
+template <typename K_, size_t Row_, size_t Col_, typename Backend_, typename Layout_>
+    requires (mk_concepts::BLASSupported<Backend_, K_> && Row_ != std::dynamic_extent && Col_ != std::dynamic_extent)
+Matrix<K_, Row_, Col_, Backend_, Layout_> operator+(
+    const Matrix<K_, Row_, Col_, Backend_, Layout_>& lhs, Matrix<K_, Row_, Col_, Backend_, Layout_>&& rhs);
 
-template <typename K_, size_t Row_, size_t Col_, typename Backend_>
-    requires mk_concepts::BLASSupported<Backend_, K_>
-Matrix<K_, Row_, Col_, Backend_> operator+(
-    Matrix<K_, Row_, Col_, Backend_>&& lhs, Matrix<K_, Row_, Col_, Backend_>&& rhs);
+template <typename K_, size_t Row_, size_t Col_, typename Backend_, typename Layout_>
+    requires (mk_concepts::BLASSupported<Backend_, K_> && Row_ != std::dynamic_extent && Col_ != std::dynamic_extent)
+Matrix<K_, Row_, Col_, Backend_, Layout_> operator+(
+    Matrix<K_, Row_, Col_, Backend_, Layout_>&& lhs, Matrix<K_, Row_, Col_, Backend_, Layout_>&& rhs);
 
 // Static + RowStatic
-template <typename K_, size_t Row_, size_t Col_, typename Backend_>
-    requires mk_concepts::BLASSupported<Backend_, K_>
-Matrix<K_, Row_, Col_, Backend_> operator+(
-    const Matrix<K_, Row_, Col_, Backend_>& lhs, const Matrix<K_, Row_, std::dynamic_extent, Backend_>& rhs);
+template <typename K_, size_t Row_, size_t Col_, typename Backend_, typename Layout_>
+    requires (mk_concepts::BLASSupported<Backend_, K_> && Row_ != std::dynamic_extent && Col_ != std::dynamic_extent)
+Matrix<K_, Row_, Col_, Backend_, Layout_> operator+(
+    const Matrix<K_, Row_, Col_, Backend_, Layout_>& lhs, const Matrix<K_, Row_, std::dynamic_extent, Backend_, Layout_>& rhs);
 
-template <typename K_, size_t Row_, size_t Col_, typename Backend_>
-    requires mk_concepts::BLASSupported<Backend_, K_>
-Matrix<K_, Row_, Col_, Backend_> operator+(
-    Matrix<K_, Row_, Col_, Backend_>&& lhs, const Matrix<K_, Row_, std::dynamic_extent, Backend_>& rhs);
+template <typename K_, size_t Row_, size_t Col_, typename Backend_, typename Layout_>
+    requires (mk_concepts::BLASSupported<Backend_, K_> && Row_ != std::dynamic_extent && Col_ != std::dynamic_extent)
+Matrix<K_, Row_, Col_, Backend_, Layout_> operator+(
+    Matrix<K_, Row_, Col_, Backend_, Layout_>&& lhs, const Matrix<K_, Row_, std::dynamic_extent, Backend_, Layout_>& rhs);
 
-template <typename K_, size_t Row_, size_t Col_, typename Backend_>
-    requires mk_concepts::BLASSupported<Backend_, K_>
-Matrix<K_, Row_, Col_, Backend_> operator+(
-    const Matrix<K_, Row_, Col_, Backend_>& lhs, Matrix<K_, Row_, std::dynamic_extent, Backend_>&& rhs);
+template <typename K_, size_t Row_, size_t Col_, typename Backend_, typename Layout_>
+    requires (mk_concepts::BLASSupported<Backend_, K_> && Row_ != std::dynamic_extent && Col_ != std::dynamic_extent)
+Matrix<K_, Row_, Col_, Backend_, Layout_> operator+(
+    const Matrix<K_, Row_, Col_, Backend_, Layout_>& lhs, Matrix<K_, Row_, std::dynamic_extent, Backend_, Layout_>&& rhs);
 
-template <typename K_, size_t Row_, size_t Col_, typename Backend_>
-    requires mk_concepts::BLASSupported<Backend_, K_>
-Matrix<K_, Row_, Col_, Backend_> operator+(
-    Matrix<K_, Row_, Col_, Backend_>&& lhs, Matrix<K_, Row_, std::dynamic_extent, Backend_>&& rhs);
+template <typename K_, size_t Row_, size_t Col_, typename Backend_, typename Layout_>
+    requires (mk_concepts::BLASSupported<Backend_, K_> && Row_ != std::dynamic_extent && Col_ != std::dynamic_extent)
+Matrix<K_, Row_, Col_, Backend_, Layout_> operator+(
+    Matrix<K_, Row_, Col_, Backend_, Layout_>&& lhs, Matrix<K_, Row_, std::dynamic_extent, Backend_, Layout_>&& rhs);
 
 // Static - Static
-template <typename K_, size_t Row_, size_t Col_, typename Backend_>
-    requires mk_concepts::BLASSupported<Backend_, K_>
-Matrix<K_, Row_, Col_, Backend_> operator-(Matrix<K_, Row_, Col_, Backend_> lhs, Matrix<K_, Row_, Col_, Backend_> rhs);
+template <typename K_, size_t Row_, size_t Col_, typename Backend_, typename Layout_>
+    requires (mk_concepts::BLASSupported<Backend_, K_> && Row_ != std::dynamic_extent && Col_ != std::dynamic_extent)
+Matrix<K_, Row_, Col_, Backend_, Layout_> operator-(Matrix<K_, Row_, Col_, Backend_, Layout_> lhs, Matrix<K_, Row_, Col_, Backend_, Layout_> rhs);
 
 // Static - RowStatic
-template <typename K_, size_t Row_, size_t Col_, typename Backend_>
-    requires mk_concepts::BLASSupported<Backend_, K_>
-Matrix<K_, Row_, Col_, Backend_> operator-(
-    Matrix<K_, Row_, Col_, Backend_> lhs, Matrix<K_, Row_, std::dynamic_extent, Backend_> rhs);
+template <typename K_, size_t Row_, size_t Col_, typename Backend_, typename Layout_>
+    requires (mk_concepts::BLASSupported<Backend_, K_> && Row_ != std::dynamic_extent && Col_ != std::dynamic_extent)
+Matrix<K_, Row_, Col_, Backend_, Layout_> operator-(
+    Matrix<K_, Row_, Col_, Backend_, Layout_> lhs, Matrix<K_, Row_, std::dynamic_extent, Backend_, Layout_> rhs);
 }  // namespace mknnlib::matrix
 
 #endif

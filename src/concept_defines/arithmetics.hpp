@@ -3,7 +3,7 @@
 
 #include <concepts>
 
-namespace mknnlib::concepts {
+namespace mknnlib::mk_concepts {
 template <typename T, typename U, typename V>
 concept Addable = requires(T t, U u) {
     { t + u } -> std::same_as<V>;

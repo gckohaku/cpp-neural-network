@@ -6,7 +6,7 @@
 #include "src/concept_defines/arithmetics.hpp"
 #include "src/concept_defines/types/type_concepts.hpp"
 
-namespace mknnlib::concepts {
+namespace mknnlib::mk_concepts {
 
 #if defined(__STDCPP_FLOAT16_T__)
 #include <stdfloat>
