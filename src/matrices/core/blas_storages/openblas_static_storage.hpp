@@ -3,6 +3,7 @@
 
 #include <array>
 #include <cstddef>
+#include <stdexcept>
 #include <vector>
 
 #include "src/matrices/core/blas_backends.hpp"
@@ -25,7 +26,7 @@ public:
     Storage(const Storage&) = default;
     Storage(Storage&&) = default;
 
-    Storage& operator=(Storage&) = default;
+    Storage& operator=(const Storage&) = default;
     Storage& operator=(Storage&&) = default;
 
     constexpr std::array<T, Size>& elements() noexcept;
@@ -49,7 +50,13 @@ template <typename T, size_t Size>
 Storage<OpenBLASBackend, T, Size>::Storage(std::array<T, Size> elements) : _elements(elements) {};
 
 template <typename T, size_t Size>
-Storage<OpenBLASBackend, T, Size>::Storage(std::vector<T> elements) : _elements(Size, elements) {}
+Storage<OpenBLASBackend, T, Size>::Storage(std::vector<T> elements) : _elements{} {
+    if (elements.size() != Size) {
+        throw std::invalid_argument("At Storage constructor: invalid number of elements");
+    }
+
+    std::copy(elements.begin(), elements.end(), _elements.begin());
+}
 
 template <typename T, size_t Size>
 inline constexpr std::array<T, Size>& Storage<OpenBLASBackend, T, Size>::elements() noexcept {

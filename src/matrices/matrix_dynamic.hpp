@@ -76,7 +76,7 @@ public:
     Matrix& operator*=(const Matrix& x);
 
     // arithmetics binary operators
-    friend Matrix operator+(const Matrix& lhs, const Matrix& rhs);
+    // friend Matrix operator+(const Matrix& lhs, const Matrix& rhs);
 
     // 2 dimensions index
     K& operator[](const size_t a, const size_t b);

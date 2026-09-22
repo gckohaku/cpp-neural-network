@@ -28,7 +28,7 @@ public:
     Storage(const Storage&) = default;
     Storage(Storage&&) = default;
 
-    Storage& operator=(Storage&) = default;
+    Storage& operator=(const Storage&) = default;
     Storage& operator=(Storage&&) = default;
 
     constexpr std::vector<T>& elements() noexcept;

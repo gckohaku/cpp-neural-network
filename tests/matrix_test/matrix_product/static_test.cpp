@@ -6,6 +6,7 @@
 #include <limits>
 #include <type_traits>
 
+#include "src/matrices/core/blas_backends.hpp"
 #include "src/matrices/matrix_template_base.hpp"
 #include "tests/test_type_defines.hpp"
 #include "tests/test_utilities.hpp"
