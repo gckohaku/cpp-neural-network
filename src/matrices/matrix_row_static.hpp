@@ -99,10 +99,10 @@ public:
     size_t ColumnSize();
     size_t ColumnSize() const;
     std::string GetSizeString() const;
-    core::Storage<Backend, K, std::dynamic_extent>& Elements();
-    const core::Storage<Backend, K, std::dynamic_extent>& Elements() const;
-    constexpr std::vector<K>& ElementsRange() noexcept;
-    constexpr const std::vector<K>& ElementsRange() const noexcept;
+    core::Storage<Backend, K, std::dynamic_extent>& Elements() noexcept;
+    const core::Storage<Backend, K, std::dynamic_extent>& Elements() const noexcept;
+    // constexpr std::vector<K>& ElementsRange() noexcept;
+    // constexpr const std::vector<K>& ElementsRange() const noexcept;
     // K* _elements.data();
     // const K* _elements.data() const;
 
@@ -211,7 +211,7 @@ auto Matrix<K, Row, std::dynamic_extent, Backend, Layout>::operator*=(const Matr
     }
 #endif
     // hadamard product is not into BLAS
-    std::ranges::transform(this->ElementsRange(), x.ElementsRange(), this->_elements.begin(), std::multiplies<>());
+    std::ranges::transform(this->_elements, x.Elements(), this->_elements.begin(), std::multiplies<>());
     return *this;
 }
 
@@ -395,29 +395,29 @@ std::string Matrix<K, Row, std::dynamic_extent, Backend, Layout>::GetSizeString(
 template <typename K, size_t Row, typename Backend, typename Layout>
     requires mk_concepts::BLASSupported<Backend, K>
 inline core::Storage<Backend, K, std::dynamic_extent>&
-Matrix<K, Row, std::dynamic_extent, Backend, Layout>::Elements() {
+Matrix<K, Row, std::dynamic_extent, Backend, Layout>::Elements() noexcept {
     return this->_elements;
 }
 
 template <typename K, size_t Row, typename Backend, typename Layout>
     requires mk_concepts::BLASSupported<Backend, K>
 inline const core::Storage<Backend, K, std::dynamic_extent>&
-Matrix<K, Row, std::dynamic_extent, Backend, Layout>::Elements() const {
+Matrix<K, Row, std::dynamic_extent, Backend, Layout>::Elements() const noexcept {
     return this->_elements;
 }
 
-template <typename K, size_t Row, typename Backend, typename Layout>
-    requires mk_concepts::BLASSupported<Backend, K>
-inline constexpr std::vector<K>& Matrix<K, Row, std::dynamic_extent, Backend, Layout>::ElementsRange() noexcept {
-    return this->_elements.elements();
-}
+// template <typename K, size_t Row, typename Backend, typename Layout>
+//     requires mk_concepts::BLASSupported<Backend, K>
+// inline constexpr std::vector<K>& Matrix<K, Row, std::dynamic_extent, Backend, Layout>::ElementsRange() noexcept {
+//     return this->_elements.elements();
+// }
 
-template <typename K, size_t Row, typename Backend, typename Layout>
-    requires mk_concepts::BLASSupported<Backend, K>
-inline constexpr const std::vector<K>& Matrix<K, Row, std::dynamic_extent, Backend, Layout>::ElementsRange()
-    const noexcept {
-    return this->_elements.elements();
-}
+// template <typename K, size_t Row, typename Backend, typename Layout>
+//     requires mk_concepts::BLASSupported<Backend, K>
+// inline constexpr const std::vector<K>& Matrix<K, Row, std::dynamic_extent, Backend, Layout>::ElementsRange()
+//     const noexcept {
+//     return this->_elements.elements();
+// }
 /* end matrix unique functions definition */
 
 /* begin matrix unique arithmetics definition */

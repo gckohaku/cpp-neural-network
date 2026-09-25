@@ -5,6 +5,7 @@
 #include <cstddef>
 #include <limits>
 
+#include "src/matrices/core/layout.hpp"
 #include "src/matrices/matrix_template_base.hpp"
 #include "tests/test_matrix_product_vector_defines.hpp"
 #include "tests/test_type_defines.hpp"
@@ -45,7 +46,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(matrix_product_matrix_static_and_matrix_column_sta
     auto BA = B.Dot(A);
 
     auto typeCheckAB = std::is_same<decltype(AB), Matrix<T, row1, column1, Backend>>::value;
-    auto typeCheckBA = std::is_same<decltype(BA), MatrixColumnStatic<T, column1, Backend>>::value;
+    auto typeCheckBA = std::is_same<decltype(BA), MatrixColumnStatic<T, column1, Backend, mknnlib::matrix::core::MatrixColumnMajor>>::value;
     BOOST_CHECK(typeCheckAB);
     BOOST_CHECK(typeCheckBA);
     CheckCloseEachVectorElement<T>(AB.Elements().GetVector(), expectedAB, acceptableErrorAB);

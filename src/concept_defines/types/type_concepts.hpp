@@ -12,6 +12,7 @@
 #endif
 
 #include "src/matrices/core/blas_dispatchers/blas_primary_template.hpp"
+#include "src/concept_defines/arithmetics.hpp"
 
 namespace mknnlib::mk_concepts {
 
@@ -38,6 +39,15 @@ concept SingleFloatingComplex = std::same_as<T, std::complex<float>>;
 template <typename T>
 concept DoubleFloatingComplex = std::same_as<T, std::complex<double>>;
 
+template <typename T>
+concept RealNumber = ClosedAddable<T> && ClosedSubtractable<T> && ClosedMultipliable<T> && ClosedDivisible<T>;
+
+template <typename T>
+concept ComplexNumber = requires {
+    RealNumber<decltype(T::real)> && RealNumber<decltype(T::imag)>;
+};
+
+// for matrix
 template <typename Backend, typename T>
 concept BLASSupported = requires { typename matrix::core::BLAS<Backend, T>; };
 

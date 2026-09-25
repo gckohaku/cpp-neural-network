@@ -98,9 +98,10 @@ public:
     constexpr size_t RowSize();
     constexpr size_t ColumnSize();
     std::string GetSizeString() const;
-    core::Storage<Backend, K, Row * Col>& Elements();
-    constexpr std::array<K, Row * Col>& ElementsRange() noexcept;
-    constexpr const std::array<K, Row * Col>& ElementsRange() const noexcept;
+    constexpr core::Storage<Backend, K, Row * Col>& Elements() noexcept;
+    constexpr const core::Storage<Backend, K, Row * Col>& Elements() const noexcept;
+    // constexpr std::array<K, Row * Col>& ElementsRange() noexcept;
+    // constexpr const std::array<K, Row * Col>& ElementsRange() const noexcept;
 
     /* end matrix unique functions declaration */
 
@@ -145,7 +146,7 @@ Matrix<K, Row, Col, Backend, Layout>::Matrix(const Matrix<K, Row, Col, Backend, 
 
 // move constructor
 template <typename K, size_t Row, size_t Col, typename Backend, typename Layout>
-requires mk_concepts::BLASSupported<Backend, K>
+    requires mk_concepts::BLASSupported<Backend, K>
 Matrix<K, Row, Col, Backend, Layout>::Matrix(Matrix<K, Row, Col, Backend, Layout>&& mat) :
     _rowSize(Row), _columnSize(Col), _elements(std::move(mat._elements)), _span(_elements.data(), MatrixExtent{}) {}
 
@@ -229,7 +230,7 @@ template <typename K, size_t Row, size_t Col, typename Backend, typename Layout>
     requires mk_concepts::BLASSupported<Backend, K>
 auto Matrix<K, Row, Col, Backend, Layout>::operator*=(const Matrix<K, Row, Col, Backend, Layout>& x) -> Matrix& {
     // hadamard product is not into BLAS
-    std::ranges::transform(this->ElementsRange(), x.ElementsRange(), this->_elements.begin(), std::multiplies<>());
+    std::ranges::transform(this->_elements, x.Elements(), this->_elements.begin(), std::multiplies<>());
     return *this;
 }
 
@@ -417,21 +418,27 @@ std::string Matrix<K, Row, Col, Backend, Layout>::GetSizeString() const {
 
 template <typename K, size_t Row, size_t Col, typename Backend, typename Layout>
     requires mk_concepts::BLASSupported<Backend, K>
-inline core::Storage<Backend, K, Row * Col>& Matrix<K, Row, Col, Backend, Layout>::Elements() {
+inline constexpr core::Storage<Backend, K, Row * Col>& Matrix<K, Row, Col, Backend, Layout>::Elements() noexcept {
     return this->_elements;
 }
 
 template <typename K, size_t Row, size_t Col, typename Backend, typename Layout>
     requires mk_concepts::BLASSupported<Backend, K>
-inline constexpr std::array<K, Row * Col>& Matrix<K, Row, Col, Backend, Layout>::ElementsRange() noexcept {
-    return this->_elements.elements();
+inline constexpr const core::Storage<Backend, K, Row * Col>& Matrix<K, Row, Col, Backend, Layout>::Elements() const noexcept {
+    return this->_elements;
 }
 
-template <typename K, size_t Row, size_t Col, typename Backend, typename Layout>
-    requires mk_concepts::BLASSupported<Backend, K>
-inline constexpr const std::array<K, Row * Col>& Matrix<K, Row, Col, Backend, Layout>::ElementsRange() const noexcept {
-    return this->_elements.elements();
-}
+// template <typename K, size_t Row, size_t Col, typename Backend, typename Layout>
+//     requires mk_concepts::BLASSupported<Backend, K>
+// inline constexpr std::array<K, Row * Col>& Matrix<K, Row, Col, Backend, Layout>::ElementsRange() noexcept {
+//     return this->_elements.elements();
+// }
+
+// template <typename K, size_t Row, size_t Col, typename Backend, typename Layout>
+//     requires mk_concepts::BLASSupported<Backend, K>
+// inline constexpr const std::array<K, Row * Col>& Matrix<K, Row, Col, Backend, Layout>::ElementsRange() const noexcept {
+//     return this->_elements.elements();
+// }
 /* end matrix unique functions definition */
 
 /* begin matrix unique arithmetics definition */
@@ -439,8 +446,7 @@ template <typename K, size_t Row, size_t Col, typename Backend, typename Layout>
     requires mk_concepts::BLASSupported<Backend, K>
 template <size_t OppCol>
 inline Matrix<K, Row, OppCol, Backend, Layout> Matrix<K, Row, Col, Backend, Layout>::Dot(
-    const Matrix<K, Col, OppCol, Backend, Layout>& mat)
-{
+    const Matrix<K, Col, OppCol, Backend, Layout>& mat) {
     Matrix<K, Row, OppCol, Backend, Layout> res = Matrix<K, Row, OppCol, Backend, Layout>();
     core::BLAS<Backend, K>::gemm(CblasColMajor, CblasNoTrans, CblasNoTrans, Row, static_cast<blasint>(OppCol), Col, 1.0,
         this->_elements.data(), Row, mat._elements.data(), Col, 0.0, res._elements.data(), Row);
@@ -450,13 +456,12 @@ inline Matrix<K, Row, OppCol, Backend, Layout> Matrix<K, Row, Col, Backend, Layo
 template <typename K, size_t Row, size_t Col, typename Backend, typename Layout>
     requires mk_concepts::BLASSupported<Backend, K>
 inline Matrix<K, Row, std::dynamic_extent, Backend, Layout> Matrix<K, Row, Col, Backend, Layout>::Dot(
-    const Matrix<K, std::dynamic_extent, Col, Backend, Layout>& mat)
-{
+    const Matrix<K, std::dynamic_extent, Col, Backend, Layout>& mat) {
     // const size_t matColumnSize = mat.ColumnSize();
     // assert(matColumnSize <= INT_MAX);
     auto res = Matrix<K, Row, std::dynamic_extent, Backend, Layout>(mat.ColumnSize());
-    core::BLAS<Backend, K>::gemm(CblasColMajor, CblasNoTrans, CblasNoTrans, Row, static_cast<blasint>(mat.ColumnSize()), Col, 1.0,
-        this->_elements.data(), Row, mat._elements.data(), Col, 0.0, res._elements.data(), Row);
+    core::BLAS<Backend, K>::gemm(CblasColMajor, CblasNoTrans, CblasNoTrans, Row, static_cast<blasint>(mat.ColumnSize()),
+        Col, 1.0, this->_elements.data(), Row, mat._elements.data(), Col, 0.0, res._elements.data(), Row);
     return res;
 }
 
@@ -464,8 +469,7 @@ template <typename K, size_t Row, size_t Col, typename Backend, typename Layout>
     requires mk_concepts::BLASSupported<Backend, K>
 template <size_t OppCol>
 inline Matrix<K, Row, OppCol, Backend, Layout> Matrix<K, Row, Col, Backend, Layout>::Dot(
-    const Matrix<K, std::dynamic_extent, OppCol, Backend, Layout>& mat)
-{
+    const Matrix<K, std::dynamic_extent, OppCol, Backend, Layout>& mat) {
 #if !defined(NDEBUG)
     if (Col != mat.RowSize()) {
         std::string errorString = "Mismatch matrix size for matrix product.\n";
@@ -476,16 +480,15 @@ inline Matrix<K, Row, OppCol, Backend, Layout> Matrix<K, Row, Col, Backend, Layo
     }
 #endif
     auto res = Matrix<K, Row, OppCol, Backend, Layout>();
-    core::BLAS<Backend, K>::gemm(CblasColMajor, CblasNoTrans, CblasNoTrans, Row, OppCol, Col, 1.0, this->_elements.data(), Row,
-        mat._elements.data(), Col, 0.0, res._elements.data(), Row);
+    core::BLAS<Backend, K>::gemm(CblasColMajor, CblasNoTrans, CblasNoTrans, Row, OppCol, Col, 1.0,
+        this->_elements.data(), Row, mat._elements.data(), Col, 0.0, res._elements.data(), Row);
     return res;
 }
 
 template <typename K, size_t Row, size_t Col, typename Backend, typename Layout>
     requires mk_concepts::BLASSupported<Backend, K>
 inline Matrix<K, Row, std::dynamic_extent, Backend, Layout> Matrix<K, Row, Col, Backend, Layout>::Dot(
-    const Matrix<K, std::dynamic_extent, std::dynamic_extent, Backend, Layout>& mat)
-{
+    const Matrix<K, std::dynamic_extent, std::dynamic_extent, Backend, Layout>& mat) {
 #if !defined(NDEBUG)
     if (Col != mat.RowSize()) {
         std::string errorString = "Mismatch matrix size for matrix product.\n";
@@ -496,8 +499,8 @@ inline Matrix<K, Row, std::dynamic_extent, Backend, Layout> Matrix<K, Row, Col, 
     }
 #endif
     auto res = Matrix<K, Row, std::dynamic_extent, Backend, Layout>(mat.ColumnSize());
-    core::BLAS<Backend, K>::gemm(CblasColMajor, CblasNoTrans, CblasNoTrans, Row, static_cast<blasint>(mat.ColumnSize()), Col, 1.0,
-        this->_elements.data(), Row, mat._elements.data(), Col, 0.0, res._elements.data(), Row);
+    core::BLAS<Backend, K>::gemm(CblasColMajor, CblasNoTrans, CblasNoTrans, Row, static_cast<blasint>(mat.ColumnSize()),
+        Col, 1.0, this->_elements.data(), Row, mat._elements.data(), Col, 0.0, res._elements.data(), Row);
     return res;
 }
 

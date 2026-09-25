@@ -39,6 +39,9 @@ public:
     constexpr iterator begin() noexcept;
     constexpr const_iterator begin() const noexcept;
 
+    constexpr iterator end() noexcept;
+    constexpr const_iterator end() const noexcept;
+
     std::vector<T> GetVector();
     std::vector<T> GetVector() const;
 };
@@ -91,6 +94,16 @@ inline constexpr auto Storage<OpenBLASBackend, T, Size>::begin() noexcept -> ite
 template <typename T, size_t Size>
 inline constexpr auto Storage<OpenBLASBackend, T, Size>::begin() const noexcept -> const_iterator {
     return _elements.begin();
+}
+
+template <typename T, size_t Size>
+inline constexpr auto Storage<OpenBLASBackend, T, Size>::end() noexcept -> iterator {
+    return _elements.end();
+}
+
+template <typename T, size_t Size>
+inline constexpr auto Storage<OpenBLASBackend, T, Size>::end() const noexcept -> const_iterator {
+    return _elements.end();
 }
 
 template <typename T, size_t Size>
