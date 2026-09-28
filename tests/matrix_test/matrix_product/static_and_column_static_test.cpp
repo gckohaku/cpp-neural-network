@@ -45,7 +45,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(matrix_product_matrix_static_and_matrix_column_sta
     auto AB = A.Dot(B);
     auto BA = B.Dot(A);
 
-    auto typeCheckAB = std::is_same<decltype(AB), Matrix<T, row1, column1, Backend>>::value;
+    auto typeCheckAB = std::is_same<decltype(AB), Matrix<T, row1, column1, Backend, mknnlib::matrix::core::MatrixColumnMajor>>::value;
     auto typeCheckBA = std::is_same<decltype(BA), MatrixColumnStatic<T, column1, Backend, mknnlib::matrix::core::MatrixColumnMajor>>::value;
     BOOST_CHECK(typeCheckAB);
     BOOST_CHECK(typeCheckBA);

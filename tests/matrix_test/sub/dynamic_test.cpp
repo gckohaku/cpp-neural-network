@@ -39,11 +39,11 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(sub_matrix_dynamic_test, Cases, CheckTypeCases) {
         acceptableErrorAPlusB[i] *= std::numeric_limits<T>::epsilon();
     }
 
-    auto APlusB = A - B;
+    auto AMinusB = A - B;
 
-    auto typeCheckAPlusB = std::is_same<decltype(APlusB), MatrixDynamic<T, Backend>>::value;
+    auto typeCheckAPlusB = std::is_same<decltype(AMinusB), MatrixDynamic<T, Backend>>::value;
     BOOST_CHECK(typeCheckAPlusB);
-    CheckCloseEachVectorElement<T>(APlusB.Elements().GetVector(), expectedAPlusB, acceptableErrorAPlusB);
+    CheckCloseEachVectorElement<T>(AMinusB.Elements().GetVector(), expectedAPlusB, acceptableErrorAPlusB);
 
     // 2x5
     constexpr size_t rowCAndD = 2;
@@ -63,11 +63,11 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(sub_matrix_dynamic_test, Cases, CheckTypeCases) {
         acceptableErrorCPlusD[i] *= std::numeric_limits<T>::epsilon();
     }
 
-    auto CPlusD = C - D;
+    auto CMinusD = C - D;
 
-    auto typeCheckCPlusD = std::is_same<decltype(CPlusD), MatrixDynamic<T, Backend>>::value;
+    auto typeCheckCPlusD = std::is_same<decltype(CMinusD), MatrixDynamic<T, Backend>>::value;
     BOOST_CHECK(typeCheckCPlusD);
-    CheckCloseEachVectorElement<T>(CPlusD.Elements().GetVector(), expectedCPlusD, acceptableErrorCPlusD);
+    CheckCloseEachVectorElement<T>(CMinusD.Elements().GetVector(), expectedCPlusD, acceptableErrorCPlusD);
 
     // throw exception test
     auto arrayE = MakeVectorE<T>();

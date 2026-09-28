@@ -26,7 +26,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(sub_matrix_static_and_row_static_test, Cases, Chec
     constexpr size_t columnAAndB = 3;
     constexpr size_t elementSizeAAndB = rowAAndB * columnAAndB;
 
-    auto arrayA = MakeArrayA<T>();
+    auto arrayA = MakeVectorA<T>();
     auto arrayB = MakeVectorB<T>();
 
     auto A = Matrix<T, rowAAndB, columnAAndB, Backend>(arrayA);
@@ -40,15 +40,15 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(sub_matrix_static_and_row_static_test, Cases, Chec
         acceptableErrorAPlusB[i] *= std::numeric_limits<T>::epsilon();
     }
 
-    auto APlusB = A - B;
-    auto BPlusA = B - A;
+    auto AMinusB = A - B;
+    auto BMinusA = B - A;
 
-    auto typeCheckAPlusB = std::is_same<decltype(APlusB), Matrix<T, rowAAndB, columnAAndB, Backend>>::value;
-    auto typeCheckBPlusA = std::is_same<decltype(BPlusA), Matrix<T, rowAAndB, columnAAndB, Backend>>::value;
+    auto typeCheckAPlusB = std::is_same<decltype(AMinusB), Matrix<T, rowAAndB, columnAAndB, Backend>>::value;
+    auto typeCheckBPlusA = std::is_same<decltype(BMinusA), Matrix<T, rowAAndB, columnAAndB, Backend>>::value;
     BOOST_CHECK(typeCheckAPlusB);
     BOOST_CHECK(typeCheckBPlusA);
-    CheckCloseEachVectorElement<T>(ArrayToVector(APlusB.Elements()), expectedAPlusB, acceptableErrorAPlusB);
-    CheckCloseEachVectorElement<T>(ArrayToVector(BPlusA.Elements()), expectedAPlusB, acceptableErrorAPlusB);
+    CheckCloseEachVectorElement<T>(AMinusB.Elements().GetVector(), expectedAPlusB, acceptableErrorAPlusB);
+    CheckCloseEachVectorElement<T>(BMinusA.Elements().GetVector(), expectedAPlusB, acceptableErrorAPlusB);
 
     // 2x5
     constexpr size_t rowCAndD = 2;
@@ -68,15 +68,15 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(sub_matrix_static_and_row_static_test, Cases, Chec
         acceptableErrorCPlusD[i] *= std::numeric_limits<T>::epsilon();
     }
 
-    auto CPlusD = C - D;
-    auto DPlusC = D - C;
+    auto CMinusD = C - D;
+    auto DMinusC = D - C;
 
-    auto typeCheckCPlusD = std::is_same<decltype(CPlusD), Matrix<T, rowCAndD, columnCAndD, Backend>>::value;
-    auto typeCheckDPlusC = std::is_same<decltype(DPlusC), Matrix<T, rowCAndD, columnCAndD, Backend>>::value;
+    auto typeCheckCPlusD = std::is_same<decltype(CMinusD), Matrix<T, rowCAndD, columnCAndD, Backend>>::value;
+    auto typeCheckDPlusC = std::is_same<decltype(DMinusC), Matrix<T, rowCAndD, columnCAndD, Backend>>::value;
     BOOST_CHECK(typeCheckCPlusD);
     BOOST_CHECK(typeCheckDPlusC);
-    CheckCloseEachVectorElement<T>(ArrayToVector(CPlusD.Elements()), expectedCPlusD, acceptableErrorCPlusD);
-    CheckCloseEachVectorElement<T>(ArrayToVector(DPlusC.Elements()), expectedCPlusD, acceptableErrorCPlusD);
+    CheckCloseEachVectorElement<T>(CMinusD.Elements().GetVector(), expectedCPlusD, acceptableErrorCPlusD);
+    CheckCloseEachVectorElement<T>(DMinusC.Elements().GetVector(), expectedCPlusD, acceptableErrorCPlusD);
 
     // throw exception test
     // auto arrayE = MakeArrayE<T>();

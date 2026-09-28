@@ -3,7 +3,7 @@
 
 #include <cblas.h>
 #include <openblas_config.h>
-#include <iostream>
+#include <cstddef>
 
 #include "src/concept_defines/types/type_concepts.hpp"
 #include "src/matrices/core/blas_backends.hpp"
@@ -28,6 +28,23 @@ struct BLAS<OpenBLASBackend, Type> {
             cblas_sgemm(Order, TransA, TransB, M, N, K, alpha, A, lda, B, ldb, beta, C, ldc);
         } else if constexpr (mk_concepts::DoubleFloatingPoint<Type>) {
             cblas_dgemm(Order, TransA, TransB, M, N, K, alpha, A, lda, B, ldb, beta, C, ldc);
+        }
+    }
+
+
+    static void add_into(std::size_t elementSize, Type* destination, const Type* source, std::ptrdiff_t destinationStride = 1, std::ptrdiff_t sourceStride = 1) {
+        if constexpr (mk_concepts::SingleFloatingPoint<Type>) {
+            cblas_saxpy(elementSize, Type{1}, source, sourceStride, destination, destinationStride);
+        } else if constexpr (mk_concepts::DoubleFloatingPoint<Type>) {
+            cblas_daxpy(elementSize, Type{1}, source, sourceStride, destination, destinationStride);
+        }
+    }
+
+    static void add_scaled_into(std::size_t elementSize, Type* destination, const Type scaleSize, const Type* source, std::ptrdiff_t destinationStride = 1, std::ptrdiff_t sourceStride = 1) {
+        if constexpr (mk_concepts::SingleFloatingPoint<Type>) {
+            cblas_saxpy(elementSize, scaleSize, source, sourceStride, destination, destinationStride);
+        } else if constexpr (mk_concepts::DoubleFloatingPoint<Type>) {
+            cblas_daxpy(elementSize, scaleSize, source, sourceStride, destination, destinationStride);
         }
     }
 };

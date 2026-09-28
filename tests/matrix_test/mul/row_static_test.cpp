@@ -38,11 +38,11 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(mul_matrix_row_static_test, Cases, CheckTypeCases)
         acceptableErrorATimesB[i] *= std::numeric_limits<T>::epsilon();
     }
 
-    auto ATimesB = A * B;
+    auto AHadamardB = A * B;
 
-    auto typeCheckATimesB = std::is_same<decltype(ATimesB), MatrixRowStatic<T, rowAAndB, Backend>>::value;
+    auto typeCheckATimesB = std::is_same<decltype(AHadamardB), MatrixRowStatic<T, rowAAndB, Backend>>::value;
     BOOST_CHECK(typeCheckATimesB);
-    CheckCloseEachVectorElement<T>(ATimesB.Elements().GetVector(), expectedATimesB, acceptableErrorATimesB);
+    CheckCloseEachVectorElement<T>(AHadamardB.Elements().GetVector(), expectedATimesB, acceptableErrorATimesB);
 
     // 2x5
     constexpr size_t rowCAndD = 2;
@@ -62,11 +62,11 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(mul_matrix_row_static_test, Cases, CheckTypeCases)
         acceptableErrorCTimesD[i] *= std::numeric_limits<T>::epsilon();
     }
 
-    auto CTimesD = C * D;
+    auto CHadamardD = C * D;
 
-    auto typeCheckCTimesD = std::is_same<decltype(CTimesD), MatrixRowStatic<T, rowCAndD, Backend>>::value;
+    auto typeCheckCTimesD = std::is_same<decltype(CHadamardD), MatrixRowStatic<T, rowCAndD, Backend>>::value;
     BOOST_CHECK(typeCheckCTimesD);
-    CheckCloseEachVectorElement<T>(CTimesD.Elements().GetVector(), expectedCTimesD, acceptableErrorCTimesD);
+    CheckCloseEachVectorElement<T>(CHadamardD.Elements().GetVector(), expectedCTimesD, acceptableErrorCTimesD);
 
     // throw exception test
     auto arrayE = MakeVectorE<T>();

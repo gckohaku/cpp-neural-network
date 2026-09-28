@@ -37,11 +37,11 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(mul_matrix_static_test, Cases, CheckTypeCases) {
         acceptableErrorAPlusB[i] *= std::numeric_limits<T>::epsilon();
     }
 
-    auto APlusB = A * B;
+    auto AHadamardB = A * B;
 
-    auto typeCheckAPlusB = std::is_same<decltype(APlusB), Matrix<T, rowAAndB, columnAAndB, Backend>>::value;
+    auto typeCheckAPlusB = std::is_same<decltype(AHadamardB), Matrix<T, rowAAndB, columnAAndB, Backend>>::value;
     BOOST_CHECK(typeCheckAPlusB);
-    CheckCloseEachVectorElement<T>(APlusB.Elements().GetVector(), expectedAPlusB, acceptableErrorAPlusB);
+    CheckCloseEachVectorElement<T>(AHadamardB.Elements().GetVector(), expectedAPlusB, acceptableErrorAPlusB);
 
     // 2x5
     constexpr size_t rowCAndD = 2;
@@ -61,11 +61,11 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(mul_matrix_static_test, Cases, CheckTypeCases) {
         acceptableErrorCPlusD[i] *= std::numeric_limits<T>::epsilon();
     }
 
-    auto CPlusD = C * D;
+    auto CHadamardD = C * D;
 
-    auto typeCheckCPlusD = std::is_same<decltype(CPlusD), Matrix<T, rowCAndD, columnCAndD, Backend>>::value;
+    auto typeCheckCPlusD = std::is_same<decltype(CHadamardD), Matrix<T, rowCAndD, columnCAndD, Backend>>::value;
     BOOST_CHECK(typeCheckCPlusD);
-    CheckCloseEachVectorElement<T>(CPlusD.Elements().GetVector(), expectedCPlusD, acceptableErrorCPlusD);
+    CheckCloseEachVectorElement<T>(CHadamardD.Elements().GetVector(), expectedCPlusD, acceptableErrorCPlusD);
 
     // throw exception test
     // auto arrayE = MakeArrayE<T>();

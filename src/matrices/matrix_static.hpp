@@ -79,13 +79,8 @@ public:
     Matrix& operator*=(const Matrix<K, Row, std::dynamic_extent, Backend, Layout>& x);
 
     // arithmetics binary operators
-
     friend Matrix operator+
         <K, Row, Col, Backend, Layout>(const Matrix& lhs, Matrix<K, Row, std::dynamic_extent, Backend, Layout>&& rhs);
-
-    friend Matrix operator- <K, Row, Col, Backend, Layout>(Matrix lhs, Matrix rhs);
-    friend Matrix operator-
-        <K, Row, Col, Backend, Layout>(Matrix lhs, Matrix<K, Row, std::dynamic_extent, Backend, Layout> rhs);
 
     // 2 dimensions index
     K& operator[](const size_t a, const size_t b);
@@ -110,7 +105,7 @@ public:
     Matrix<K, Row, OppCol, Backend, Layout> Dot(const Matrix<K, Col, OppCol, Backend, Layout>& mat);
 
     Matrix<K, Row, std::dynamic_extent, Backend, Layout> Dot(
-        const Matrix<K, std::dynamic_extent, Col, Backend, Layout>& mat);
+        const Matrix<K, Col, std::dynamic_extent, Backend, Layout>& mat);
 
     template <size_t OppCol>
     Matrix<K, Row, OppCol, Backend, Layout> Dot(const Matrix<K, std::dynamic_extent, OppCol, Backend, Layout>& mat);
@@ -357,13 +352,21 @@ inline Matrix<K, Row, Col, Backend, Layout> operator+(
     return std::move(lhs);
 }
 
-template <typename K, size_t Row, size_t Col, typename Backend, typename Layout>
-    requires(mk_concepts::BLASSupported<Backend, K> && Row != std::dynamic_extent && Col != std::dynamic_extent)
-inline Matrix<K, Row, Col, Backend, Layout> operator-(
-    Matrix<K, Row, Col, Backend, Layout> lhs, Matrix<K, Row, Col, Backend, Layout> rhs) {
+template <typename K_, size_t Row_, size_t Col_, typename Backend_, typename Layout_>
+    requires(mk_concepts::BLASSupported<Backend_, K_> && Row_ != std::dynamic_extent && Col_ != std::dynamic_extent)
+Matrix<K_, Row_, Col_, Backend_, Layout_> operator-(
+    const Matrix<K_, Row_, Col_, Backend_, Layout_>& lhs, const Matrix<K_, Row_, Col_, Backend_, Layout_>& rhs) {
     auto result = lhs;
-    core::BLAS<Backend, K>::axpy(Row * Col, -1.0, rhs._elements.data(), 1, result._elements.data(), 1);
+    result -= rhs;
     return result;
+}
+
+template <typename K_, size_t Row_, size_t Col_, typename Backend_, typename Layout_>
+    requires(mk_concepts::BLASSupported<Backend_, K_> && Row_ != std::dynamic_extent && Col_ != std::dynamic_extent)
+Matrix<K_, Row_, Col_, Backend_, Layout_> operator-(
+    Matrix<K_, Row_, Col_, Backend_, Layout_>&& lhs, const Matrix<K_, Row_, Col_, Backend_, Layout_>& rhs) {
+    lhs -= rhs;
+    return std::move(lhs);
 }
 
 template <typename K, size_t Row, size_t Col, typename Backend, typename Layout>
@@ -424,7 +427,8 @@ inline constexpr core::Storage<Backend, K, Row * Col>& Matrix<K, Row, Col, Backe
 
 template <typename K, size_t Row, size_t Col, typename Backend, typename Layout>
     requires mk_concepts::BLASSupported<Backend, K>
-inline constexpr const core::Storage<Backend, K, Row * Col>& Matrix<K, Row, Col, Backend, Layout>::Elements() const noexcept {
+inline constexpr const core::Storage<Backend, K, Row * Col>& Matrix<K, Row, Col, Backend, Layout>::Elements()
+    const noexcept {
     return this->_elements;
 }
 
@@ -436,7 +440,8 @@ inline constexpr const core::Storage<Backend, K, Row * Col>& Matrix<K, Row, Col,
 
 // template <typename K, size_t Row, size_t Col, typename Backend, typename Layout>
 //     requires mk_concepts::BLASSupported<Backend, K>
-// inline constexpr const std::array<K, Row * Col>& Matrix<K, Row, Col, Backend, Layout>::ElementsRange() const noexcept {
+// inline constexpr const std::array<K, Row * Col>& Matrix<K, Row, Col, Backend, Layout>::ElementsRange() const noexcept
+// {
 //     return this->_elements.elements();
 // }
 /* end matrix unique functions definition */
@@ -456,7 +461,7 @@ inline Matrix<K, Row, OppCol, Backend, Layout> Matrix<K, Row, Col, Backend, Layo
 template <typename K, size_t Row, size_t Col, typename Backend, typename Layout>
     requires mk_concepts::BLASSupported<Backend, K>
 inline Matrix<K, Row, std::dynamic_extent, Backend, Layout> Matrix<K, Row, Col, Backend, Layout>::Dot(
-    const Matrix<K, std::dynamic_extent, Col, Backend, Layout>& mat) {
+    const Matrix<K, Col, std::dynamic_extent, Backend, Layout>& mat) {
     // const size_t matColumnSize = mat.ColumnSize();
     // assert(matColumnSize <= INT_MAX);
     auto res = Matrix<K, Row, std::dynamic_extent, Backend, Layout>(mat.ColumnSize());
