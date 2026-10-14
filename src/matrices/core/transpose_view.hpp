@@ -10,13 +10,12 @@ namespace mknnlib::matrix::core {
 
     template <TransposedState State>
     using ApplyCTransposeToState = std::integral_constant<TransposedState, State ^ TransposedState::ConjugateTranspose>;
+
     template <TransposedState State>
     using ApplyHermitianTransposeToState = std::integral_constant<TransposedState, State ^ TransposedState::ConjugateTranspose>;
 
     template <TransposedState State>
     using ApplyConjugateToState = std::integral_constant<TransposedState, State ^ TransposedState::ConjugateNone>;
-
-    TransposedState a = ApplyTransposeToState<TransposedState::ConjugateNone>::value;
 }
 
 #endif
