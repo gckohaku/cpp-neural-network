@@ -43,9 +43,7 @@ template <typename T>
 concept RealNumber = ClosedAddable<T> && ClosedSubtractable<T> && ClosedMultipliable<T> && ClosedDivisible<T>;
 
 template <typename T>
-concept ComplexNumber = requires {
-    RealNumber<decltype(T::real)> && RealNumber<decltype(T::imag)>;
-};
+concept ComplexNumber = requires { RealNumber<decltype(T::real)> && RealNumber<decltype(T::imag)>; };
 
 // for matrix
 template <typename Backend, typename T>

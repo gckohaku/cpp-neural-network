@@ -4,9 +4,10 @@
 #include <ostream>
 #include <vector>
 
-#include "matrices/matrix_static.hpp"
+#include "matrices/matrix.hpp"
 #include "src/matrices/core/blas_backends.hpp"
-#include "src/matrices/matrix_row_static.hpp"
+#include "src/matrices/matrix.hpp"
+#include "src/matrices/matrix_template_base.hpp"
 
 using mknnlib::matrix::Matrix;
 using mknnlib::matrix::MatrixRowStaticOpen;

@@ -22,3 +22,5 @@ ConstructorInitializerIndentWidth: 4
 PointerAlignment: Left
 
 NamespaceIndentation: None
+
+SortIncludes: false

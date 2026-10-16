@@ -15,9 +15,9 @@ template <typename K, size_t Row, size_t Col, typename Backend, typename Layout 
 class Matrix;
 
 // both static
-template <typename K, size_t Row, size_t Col, typename Backend, typename Layout = core::MatrixColumnMajor>
-    requires mk_concepts::BLASSupported<Backend, K>
-using MatrixStatic = Matrix<K, Row, Col, Backend, Layout>;
+// template <typename K, size_t Row, size_t Col, typename Backend, typename Layout = core::MatrixColumnMajor>
+//     requires mk_concepts::BLASSupported<Backend, K>
+// using MatrixStatic = Matrix<K, Row, Col, Backend, Layout>;
 
 template <typename K, size_t Row, size_t Col, typename Layout = core::MatrixColumnMajor>
     requires mk_concepts::BLASSupported<core::OpenBLASBackend, K>
@@ -28,9 +28,9 @@ template <typename K, size_t Row, size_t Col, typename Layout = core::MatrixColu
 using MatrixStaticCu = Matrix<K, Row, Col, core::CuBLASBackend, Layout>;
 
 // row static
-template <typename K, size_t Row, typename Backend, typename Layout>
-    requires mk_concepts::BLASSupported<Backend, K>
-class Matrix<K, Row, std::dynamic_extent, Backend, Layout>;
+// template <typename K, size_t Row, typename Backend, typename Layout>
+//     requires mk_concepts::BLASSupported<Backend, K>
+// class Matrix<K, Row, std::dynamic_extent, Backend, Layout>;
 
 template <typename K, size_t Row, typename Backend, typename Layout = core::MatrixColumnMajor>
     requires mk_concepts::BLASSupported<Backend, K>
@@ -45,9 +45,9 @@ template <typename K, size_t Row, typename Layout = core::MatrixColumnMajor>
 using MatrixRowStaticCu = Matrix<K, Row, std::dynamic_extent, core::CuBLASBackend, Layout>;
 
 // column static
-template <typename K, size_t Col, typename Backend, typename Layout>
-    requires mk_concepts::BLASSupported<Backend, K>
-class Matrix<K, std::dynamic_extent, Col, Backend, Layout>;
+// template <typename K, size_t Col, typename Backend, typename Layout>
+//     requires mk_concepts::BLASSupported<Backend, K>
+// class Matrix<K, std::dynamic_extent, Col, Backend, Layout>;
 
 template <typename K, size_t Col, typename Backend, typename Layout = core::MatrixColumnMajor>
     requires mk_concepts::BLASSupported<Backend, K>
@@ -62,9 +62,9 @@ template <typename K, size_t Col, typename Layout = core::MatrixColumnMajor>
 using MatrixColumnStaticCu = Matrix<K, std::dynamic_extent, Col, core::CuBLASBackend, Layout>;
 
 // both dynamic
-template <typename K, typename Backend, typename Layout>
-    requires mk_concepts::BLASSupported<Backend, K>
-class Matrix<K, std::dynamic_extent, std::dynamic_extent, Backend, Layout>;
+// template <typename K, typename Backend, typename Layout>
+//     requires mk_concepts::BLASSupported<Backend, K>
+// class Matrix<K, std::dynamic_extent, std::dynamic_extent, Backend, Layout>;
 
 template <typename K, typename Backend, typename Layout = core::MatrixColumnMajor>
     requires mk_concepts::BLASSupported<Backend, K>

@@ -46,6 +46,10 @@ public:
 
     std::vector<T> GetVector();
     std::vector<T> GetVector() const;
+    template <std::size_t Size>
+    std::array<T, Size> GetArray();
+    template <std::size_t Size>
+    std::array<T, Size> GetArray() const;
 };
 
 template <typename T>
@@ -114,14 +118,16 @@ inline constexpr auto Storage<OpenBLASBackend, T, std::dynamic_extent>::end() co
 
 template <typename T>
 std::vector<T> Storage<OpenBLASBackend, T, std::dynamic_extent>::GetVector() {
-    std::vector<T> vec(this->_elements.begin(), this->_elements.end());
-    return vec;
+    // std::vector<T> vec(this->_elements.begin(), this->_elements.end());
+    // return vec;
+    return this->_elements;
 }
 
 template <typename T>
 std::vector<T> Storage<OpenBLASBackend, T, std::dynamic_extent>::GetVector() const {
-    std::vector<T> vec(this->_elements.begin(), this->_elements.end());
-    return vec;
+    // std::vector<T> vec(this->_elements.begin(), this->_elements.end());
+    // return vec;
+    return this->_elements;
 }
 }  // namespace mknnlib::matrix::core
 

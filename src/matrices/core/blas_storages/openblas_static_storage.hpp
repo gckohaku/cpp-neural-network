@@ -44,6 +44,8 @@ public:
 
     std::vector<T> GetVector();
     std::vector<T> GetVector() const;
+    std::array<T, Size> GetArray();
+    std::array<T, Size> GetArray() const;
 };
 
 template <typename T, size_t Size>
@@ -116,6 +118,16 @@ template <typename T, size_t Size>
 std::vector<T> Storage<OpenBLASBackend, T, Size>::GetVector() const {
     std::vector<T> vec(this->_elements.begin(), this->_elements.end());
     return vec;
+}
+
+template <typename T, size_t Size>
+std::array<T, Size> Storage<OpenBLASBackend, T, Size>::GetArray() {
+    return this->_elements;
+}
+
+template <typename T, size_t Size>
+std::array<T, Size> Storage<OpenBLASBackend, T, Size>::GetArray() const {
+    return this->_elements;
 }
 }  // namespace mknnlib::matrix::core
 
