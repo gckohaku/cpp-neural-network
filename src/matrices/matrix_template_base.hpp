@@ -6,24 +6,24 @@
 
 #include "src/concept_defines/types/type_concepts.hpp"
 #include "src/matrices/core/blas_backends.hpp"
-#include "src/matrices/core/layout.hpp"
+#include "src/matrices/core/transposed_state.hpp"
 
 namespace mknnlib::matrix {
 // primary
-template <typename K, size_t Row, size_t Col, typename Backend, typename Layout = core::MatrixColumnMajor>
+template <typename K, size_t Row, size_t Col, typename Backend, core::TransposedState Layout>
     requires mk_concepts::BLASSupported<Backend, K>
 class Matrix;
 
 // both static
-// template <typename K, size_t Row, size_t Col, typename Backend, typename Layout = core::MatrixColumnMajor>
+// template <typename K, size_t Row, size_t Col, typename Backend, core::TransposedState Layout = core::TransposedState::None>
 //     requires mk_concepts::BLASSupported<Backend, K>
 // using MatrixStatic = Matrix<K, Row, Col, Backend, Layout>;
 
-template <typename K, size_t Row, size_t Col, typename Layout = core::MatrixColumnMajor>
+template <typename K, size_t Row, size_t Col, core::TransposedState Layout = core::TransposedState::None>
     requires mk_concepts::BLASSupported<core::OpenBLASBackend, K>
 using MatrixStaticOpen = Matrix<K, Row, Col, core::OpenBLASBackend, Layout>;
 
-template <typename K, size_t Row, size_t Col, typename Layout = core::MatrixColumnMajor>
+template <typename K, size_t Row, size_t Col, core::TransposedState Layout = core::TransposedState::None>
     requires mk_concepts::BLASSupported<core::CuBLASBackend, K>
 using MatrixStaticCu = Matrix<K, Row, Col, core::CuBLASBackend, Layout>;
 
@@ -32,15 +32,15 @@ using MatrixStaticCu = Matrix<K, Row, Col, core::CuBLASBackend, Layout>;
 //     requires mk_concepts::BLASSupported<Backend, K>
 // class Matrix<K, Row, std::dynamic_extent, Backend, Layout>;
 
-template <typename K, size_t Row, typename Backend, typename Layout = core::MatrixColumnMajor>
+template <typename K, size_t Row, typename Backend, core::TransposedState Layout = core::TransposedState::None>
     requires mk_concepts::BLASSupported<Backend, K>
 using MatrixRowStatic = Matrix<K, Row, std::dynamic_extent, Backend, Layout>;
 
-template <typename K, size_t Row, typename Layout = core::MatrixColumnMajor>
+template <typename K, size_t Row, core::TransposedState Layout = core::TransposedState::None>
     requires mk_concepts::BLASSupported<core::OpenBLASBackend, K>
 using MatrixRowStaticOpen = Matrix<K, Row, std::dynamic_extent, core::OpenBLASBackend, Layout>;
 
-template <typename K, size_t Row, typename Layout = core::MatrixColumnMajor>
+template <typename K, size_t Row, core::TransposedState Layout = core::TransposedState::None>
     requires mk_concepts::BLASSupported<core::CuBLASBackend, K>
 using MatrixRowStaticCu = Matrix<K, Row, std::dynamic_extent, core::CuBLASBackend, Layout>;
 
@@ -49,15 +49,15 @@ using MatrixRowStaticCu = Matrix<K, Row, std::dynamic_extent, core::CuBLASBacken
 //     requires mk_concepts::BLASSupported<Backend, K>
 // class Matrix<K, std::dynamic_extent, Col, Backend, Layout>;
 
-template <typename K, size_t Col, typename Backend, typename Layout = core::MatrixColumnMajor>
+template <typename K, size_t Col, typename Backend, core::TransposedState Layout = core::TransposedState::None>
     requires mk_concepts::BLASSupported<Backend, K>
 using MatrixColumnStatic = Matrix<K, std::dynamic_extent, Col, Backend, Layout>;
 
-template <typename K, size_t Col, typename Layout = core::MatrixColumnMajor>
+template <typename K, size_t Col, core::TransposedState Layout = core::TransposedState::None>
     requires mk_concepts::BLASSupported<core::OpenBLASBackend, K>
 using MatrixColumnStaticOpen = Matrix<K, std::dynamic_extent, Col, core::OpenBLASBackend, Layout>;
 
-template <typename K, size_t Col, typename Layout = core::MatrixColumnMajor>
+template <typename K, size_t Col, core::TransposedState Layout = core::TransposedState::None>
     requires mk_concepts::BLASSupported<core::CuBLASBackend, K>
 using MatrixColumnStaticCu = Matrix<K, std::dynamic_extent, Col, core::CuBLASBackend, Layout>;
 
@@ -66,25 +66,25 @@ using MatrixColumnStaticCu = Matrix<K, std::dynamic_extent, Col, core::CuBLASBac
 //     requires mk_concepts::BLASSupported<Backend, K>
 // class Matrix<K, std::dynamic_extent, std::dynamic_extent, Backend, Layout>;
 
-template <typename K, typename Backend, typename Layout = core::MatrixColumnMajor>
+template <typename K, typename Backend, core::TransposedState Layout = core::TransposedState::None>
     requires mk_concepts::BLASSupported<Backend, K>
 using MatrixDynamic = Matrix<K, std::dynamic_extent, std::dynamic_extent, Backend, Layout>;
 
-template <typename K, typename Layout = core::MatrixColumnMajor>
+template <typename K, core::TransposedState Layout = core::TransposedState::None>
     requires mk_concepts::BLASSupported<core::OpenBLASBackend, K>
 using MatrixDynamicOpen = Matrix<K, std::dynamic_extent, std::dynamic_extent, core::OpenBLASBackend, Layout>;
 
-template <typename K, typename Layout>
+template <typename K, core::TransposedState Layout = core::TransposedState::None>
     requires mk_concepts::BLASSupported<core::CuBLASBackend, K>
 using MatrixDynamicCu = Matrix<K, std::dynamic_extent, std::dynamic_extent, core::CuBLASBackend, Layout>;
 
-template <typename K, size_t Row, size_t Col, typename Backend, typename Layout>
-struct MatrixTranspose_base {
-    using type = Matrix<K, Col, Row, Backend, core::MatrixTransposeOrderLayout_t<Layout>>;
-};
+// template <typename K, size_t Row, size_t Col, typename Backend, core::TransposedState Layout>
+// struct MatrixTranspose_base {
+//     using type = Matrix<K, Col, Row, Backend, core::MatrixTransposeOrderLayout_t<Layout>>;
+// };
 
-template <typename K, size_t Row, size_t Col, typename Backend, typename Layout>
-using MatrixTranspose = typename MatrixTranspose_base<K, Row, Col, Backend, Layout>::type;
+// template <typename K, size_t Row, size_t Col, typename Backend, typename Layout>
+// using MatrixTranspose = typename MatrixTranspose_base<K, Row, Col, Backend, Layout>::type;
 }  // namespace mknnlib::matrix
 
 #endif
