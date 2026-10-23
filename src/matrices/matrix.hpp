@@ -4,6 +4,7 @@
 #include <openblas_config.h>
 
 #include <algorithm>
+#include <array>
 #include <boost/operators.hpp>
 #include <cstddef>
 #include <functional>
@@ -13,14 +14,21 @@
 #include <span>
 #include <stdexcept>
 #include <type_traits>
+#include <vector>
 
 #include "src/concept_defines/types/type_concepts.hpp"
 #include "src/matrices/core/blas_storages/blas_storage.hpp"  // IWYU pragma: keep
-// #include "src/matrices/core/layout.hpp"
-#include "src/matrices/core/blas_storages/storage_primary_template.hpp"
 #include "src/matrices/core/transposed_state.hpp"
+#include "src/matrices/core/type_utilities.hpp"
 
 namespace mknnlib::matrix {
+template <typename K, std::size_t Row, std::size_t Col, typename Backend, core::TransposedState State>
+    requires mk_concepts::BLASSupported<Backend, K>
+class Matrix;
+template <typename K, std::size_t Row, std::size_t Col, typename Backend, core::TransposedState State>
+    requires mk_concepts::BLASSupported<Backend, K>
+std::ostream& operator<<(std::ostream& os, const Matrix<K, Row, Col, Backend, State>& mat);
+
 template <typename K, std::size_t Row, std::size_t Col, typename Backend,
     core::TransposedState State = core::TransposedState::None>
     requires mk_concepts::BLASSupported<Backend, K>
@@ -37,29 +45,100 @@ public:
 
 private:
     MatrixExtent _extents;
-    core::Storage<Backend, K, Row * Col> _elements;
+    core::Storage<Backend, K, core::MatrixElementSize<MatrixExtent>> _elements;
     MdView _span;
 
 public:
     // TODO: ドキュメントをちゃんと書く
     /* begin constructors declaration */
+    // both static
     Matrix()
-        requires(Matrix<K, Row, Col, Backend, State>::MatrixExtent::rank_dynamic() == 0);
+        requires(Matrix::MatrixExtent::rank_dynamic() == 0);
+    template <std::size_t ArrSize>
+    Matrix(std::array<K, ArrSize> elements)
+        requires(Matrix::MatrixExtent::rank_dynamic() == 0 && ArrSize == Row * Col);
+    Matrix(std::vector<K> elements)
+        requires(Matrix::MatrixExtent::rank_dynamic() == 0);
+
+    // dynamic included
+    template <mk_concepts::SizeCompatible... Sizes>
+    explicit Matrix(Sizes... sizes)
+        requires(Matrix::MatrixExtent::rank_dynamic() > 0 && sizeof...(Sizes) == Matrix::MatrixExtent::rank_dynamic());
+
+    template <mk_concepts::SizeCompatible... Sizes, std::size_t ArrSize>
+    explicit Matrix(std::array<K, ArrSize> elements, Sizes... sizes)
+        requires(Matrix::MatrixExtent::rank_dynamic() > 0 && sizeof...(Sizes) == Matrix::MatrixExtent::rank_dynamic());
+
+    template <mk_concepts::SizeCompatible... Sizes>
+    explicit Matrix(std::vector<K> elements, Sizes... sizes)
+        requires(Matrix::MatrixExtent::rank_dynamic() > 0 && sizeof...(Sizes) == Matrix::MatrixExtent::rank_dynamic());
+
     /* end constructors declaration */
+
+    /* begin operator overloads declaration */
+    // ostream
+    friend std::ostream& operator<< <>(std::ostream& os, const Matrix& mat);
+    /* end operator overloads declaration */
 };
 
 /* begin constructors definition */
+// both static
 template <typename K, size_t Row, size_t Col, typename Backend, core::TransposedState State>
     requires mk_concepts::BLASSupported<Backend, K>
 Matrix<K, Row, Col, Backend, State>::Matrix()
     requires(MatrixExtent::rank_dynamic() == 0)
-    :
-    _extents{},
-    _elements{},
-    _span(_elements.data(), MatrixExtent{})
+    : _extents{}, _elements{}, _span(_elements.data(), Matrix::MatrixExtent{}) {}
 
-{}
+template <typename K, size_t Row, size_t Col, typename Backend, core::TransposedState State>
+    requires mk_concepts::BLASSupported<Backend, K>
+template <std::size_t ArrSize>
+Matrix<K, Row, Col, Backend, State>::Matrix(std::array<K, ArrSize> elements)
+    requires(MatrixExtent::rank_dynamic() == 0 && ArrSize == Row * Col)
+    : _extents{}, _elements{elements}, _span(_elements.data(), Matrix::MatrixExtent{}) {}
+
+template <typename K, size_t Row, size_t Col, typename Backend, core::TransposedState State>
+    requires mk_concepts::BLASSupported<Backend, K>
+Matrix<K, Row, Col, Backend, State>::Matrix(std::vector<K> elements)
+    requires(MatrixExtent::rank_dynamic() == 0)
+    : _extents{}, _elements{elements}, _span(_elements.data(), Matrix::MatrixExtent{}) {}
+
+// dynamic included
+template <typename K, size_t Row, size_t Col, typename Backend, core::TransposedState State>
+    requires mk_concepts::BLASSupported<Backend, K>
+template <mk_concepts::SizeCompatible... Sizes>
+Matrix<K, Row, Col, Backend, State>::Matrix(Sizes... sizes)
+    requires(MatrixExtent::rank_dynamic() > 0 && sizeof...(Sizes) == MatrixExtent::rank_dynamic())
+    : _extents{sizes...}, _elements{}, _span(_elements.data(), Matrix::MatrixExtent{}) {}
+
+template <typename K, size_t Row, size_t Col, typename Backend, core::TransposedState State>
+    requires mk_concepts::BLASSupported<Backend, K>
+template <mk_concepts::SizeCompatible... Sizes, std::size_t ArrSize>
+Matrix<K, Row, Col, Backend, State>::Matrix(std::array<K, ArrSize> elements, Sizes... sizes)
+    requires(MatrixExtent::rank_dynamic() > 0 && sizeof...(Sizes) == MatrixExtent::rank_dynamic())
+    : _extents{sizes...}, _elements{elements}, _span(_elements.data(), Matrix::MatrixExtent{}) {}
+
+template <typename K, size_t Row, size_t Col, typename Backend, core::TransposedState State>
+    requires mk_concepts::BLASSupported<Backend, K>
+template <mk_concepts::SizeCompatible... Sizes>
+Matrix<K, Row, Col, Backend, State>::Matrix(std::vector<K> elements, Sizes... sizes)
+    requires(MatrixExtent::rank_dynamic() > 0 && sizeof...(Sizes) == MatrixExtent::rank_dynamic())
+    : _extents{sizes...}, _elements{elements}, _span(_elements.data(), Matrix::MatrixExtent{}) {}
 /* end constructors definition */
+
+/* begin operator overloads definition */
+// ostream
+template <typename K, size_t Row, size_t Col, typename Backend, core::TransposedState State>
+requires mk_concepts::BLASSupported<Backend, K>
+std::ostream& operator<<(std::ostream& os, const Matrix<K, Row, Col, Backend, State>& mat) {
+    for (size_t i = 0; i < mat._extents.extent(0); i++) {
+        for (size_t j = 0; j < mat._extents.extent(1); j++) {
+            os << mat._span[i, j] << " ";
+        }
+        os << std::endl;
+    }
+    return os;
+}
+/* end operator overloads definition */
 }  // namespace mknnlib::matrix
 
 #endif

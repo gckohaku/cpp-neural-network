@@ -6,6 +6,7 @@
 
 #include <complex>
 #include <concepts>
+#include <cstddef>
 
 #if defined(__STDCPP_FLOAT16_T__)
 #include <stdfloat>
@@ -44,6 +45,9 @@ concept RealNumber = ClosedAddable<T> && ClosedSubtractable<T> && ClosedMultipli
 
 template <typename T>
 concept ComplexNumber = requires { RealNumber<decltype(T::real)> && RealNumber<decltype(T::imag)>; };
+
+template <typename T>
+concept SizeCompatible = std::convertible_to<T, std::size_t> && std::integral<T> && requires(T t) { t >= 0; };
 
 // for matrix
 template <typename Backend, typename T>
