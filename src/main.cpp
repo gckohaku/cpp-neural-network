@@ -5,7 +5,6 @@
 #include <span>
 #include <vector>
 
-#include "matrices/matrix.hpp"
 #include "src/matrices/core/blas_backends.hpp"
 #include "src/matrices/matrix.hpp"
 #include "src/matrices/matrix_template_base.hpp"

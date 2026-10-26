@@ -17,6 +17,7 @@
 #include <vector>
 
 #include "src/concept_defines/types/type_concepts.hpp"
+#include "src/concept_defines/matrices/matrix_concepts.hpp"
 #include "src/matrices/core/blas_storages/blas_storage.hpp"  // IWYU pragma: keep
 #include "src/matrices/core/transposed_state.hpp"
 #include "src/matrices/core/type_utilities.hpp"
@@ -33,7 +34,7 @@ template <typename K, std::size_t Row, std::size_t Col, typename Backend,
     core::TransposedState State = core::TransposedState::None>
     requires mk_concepts::BLASSupported<Backend, K>
 class Matrix {
-    template <typename T, size_t FRow, size_t FCol, typename FBackend, core::TransposedState FState>
+    template <typename T, std::size_t FRow, std::size_t FCol, typename FBackend, core::TransposedState FState>
         requires mk_concepts::BLASSupported<FBackend, T>
     friend class Matrix;
 
@@ -65,7 +66,7 @@ public:
     explicit Matrix(Sizes... sizes)
         requires(Matrix::MatrixExtent::rank_dynamic() > 0 && sizeof...(Sizes) == Matrix::MatrixExtent::rank_dynamic());
 
-    template <mk_concepts::SizeCompatible... Sizes, std::size_t ArrSize>
+    template <std::size_t ArrSize, mk_concepts::SizeCompatible... Sizes>
     explicit Matrix(std::array<K, ArrSize> elements, Sizes... sizes)
         requires(Matrix::MatrixExtent::rank_dynamic() > 0 && sizeof...(Sizes) == Matrix::MatrixExtent::rank_dynamic());
 
@@ -76,48 +77,57 @@ public:
     /* end constructors declaration */
 
     /* begin operator overloads declaration */
+    // arithmetics compound operators
+    template <mk_concepts::ReadableMatrix OppM>
+    Matrix<K, Row, Col, Backend, core::TransposedState::None> operator+=(OppM mat);
+
     // ostream
     friend std::ostream& operator<< <>(std::ostream& os, const Matrix& mat);
     /* end operator overloads declaration */
+
+    /* begin matrix unique arithmetics declaration */
+    template <std::size_t OppCol, core::TransposedState OppState>
+    Matrix<K, Row, OppCol, Backend, State> Dot(const Matrix<K, Col, OppCol, Backend, OppState>& mat);
+    /* end matrix unique arithmetics declaration */
 };
 
 /* begin constructors definition */
 // both static
-template <typename K, size_t Row, size_t Col, typename Backend, core::TransposedState State>
+template <typename K, std::size_t Row, std::size_t Col, typename Backend, core::TransposedState State>
     requires mk_concepts::BLASSupported<Backend, K>
 Matrix<K, Row, Col, Backend, State>::Matrix()
     requires(MatrixExtent::rank_dynamic() == 0)
     : _extents{}, _elements{}, _span(_elements.data(), Matrix::MatrixExtent{}) {}
 
-template <typename K, size_t Row, size_t Col, typename Backend, core::TransposedState State>
+template <typename K, std::size_t Row, std::size_t Col, typename Backend, core::TransposedState State>
     requires mk_concepts::BLASSupported<Backend, K>
 template <std::size_t ArrSize>
 Matrix<K, Row, Col, Backend, State>::Matrix(std::array<K, ArrSize> elements)
     requires(MatrixExtent::rank_dynamic() == 0 && ArrSize == Row * Col)
     : _extents{}, _elements{elements}, _span(_elements.data(), Matrix::MatrixExtent{}) {}
 
-template <typename K, size_t Row, size_t Col, typename Backend, core::TransposedState State>
+template <typename K, std::size_t Row, std::size_t Col, typename Backend, core::TransposedState State>
     requires mk_concepts::BLASSupported<Backend, K>
 Matrix<K, Row, Col, Backend, State>::Matrix(std::vector<K> elements)
     requires(MatrixExtent::rank_dynamic() == 0)
     : _extents{}, _elements{elements}, _span(_elements.data(), Matrix::MatrixExtent{}) {}
 
 // dynamic included
-template <typename K, size_t Row, size_t Col, typename Backend, core::TransposedState State>
+template <typename K, std::size_t Row, std::size_t Col, typename Backend, core::TransposedState State>
     requires mk_concepts::BLASSupported<Backend, K>
 template <mk_concepts::SizeCompatible... Sizes>
 Matrix<K, Row, Col, Backend, State>::Matrix(Sizes... sizes)
     requires(MatrixExtent::rank_dynamic() > 0 && sizeof...(Sizes) == MatrixExtent::rank_dynamic())
     : _extents{sizes...}, _elements{}, _span(_elements.data(), Matrix::MatrixExtent{}) {}
 
-template <typename K, size_t Row, size_t Col, typename Backend, core::TransposedState State>
+template <typename K, std::size_t Row, std::size_t Col, typename Backend, core::TransposedState State>
     requires mk_concepts::BLASSupported<Backend, K>
-template <mk_concepts::SizeCompatible... Sizes, std::size_t ArrSize>
+template <std::size_t ArrSize, mk_concepts::SizeCompatible... Sizes>
 Matrix<K, Row, Col, Backend, State>::Matrix(std::array<K, ArrSize> elements, Sizes... sizes)
     requires(MatrixExtent::rank_dynamic() > 0 && sizeof...(Sizes) == MatrixExtent::rank_dynamic())
     : _extents{sizes...}, _elements{elements}, _span(_elements.data(), Matrix::MatrixExtent{}) {}
 
-template <typename K, size_t Row, size_t Col, typename Backend, core::TransposedState State>
+template <typename K, std::size_t Row, std::size_t Col, typename Backend, core::TransposedState State>
     requires mk_concepts::BLASSupported<Backend, K>
 template <mk_concepts::SizeCompatible... Sizes>
 Matrix<K, Row, Col, Backend, State>::Matrix(std::vector<K> elements, Sizes... sizes)
@@ -126,9 +136,16 @@ Matrix<K, Row, Col, Backend, State>::Matrix(std::vector<K> elements, Sizes... si
 /* end constructors definition */
 
 /* begin operator overloads definition */
+// arithmetics compound operators
+template <typename K, std::size_t Row, std::size_t Col, typename Backend, core::TransposedState State>
+    requires mk_concepts::BLASSupported<Backend, K>
+template <mk_concepts::ReadableMatrix OppM>
+inline Matrix<K, Row, Col, Backend, core::TransposedState::None> Matrix<K, Row, Col, Backend, State>::operator+=(
+    OppM mat) {}
+
 // ostream
-template <typename K, size_t Row, size_t Col, typename Backend, core::TransposedState State>
-requires mk_concepts::BLASSupported<Backend, K>
+template <typename K, std::size_t Row, std::size_t Col, typename Backend, core::TransposedState State>
+    requires mk_concepts::BLASSupported<Backend, K>
 std::ostream& operator<<(std::ostream& os, const Matrix<K, Row, Col, Backend, State>& mat) {
     for (size_t i = 0; i < mat._extents.extent(0); i++) {
         for (size_t j = 0; j < mat._extents.extent(1); j++) {
@@ -138,7 +155,18 @@ std::ostream& operator<<(std::ostream& os, const Matrix<K, Row, Col, Backend, St
     }
     return os;
 }
+
 /* end operator overloads definition */
+
+/* begin matrix unique arithmetics definition */
+// template <typename K, std::size_t Row, std::size_t Col, typename Backend, core::TransposedState State>
+// requires mk_concepts::BLASSupported<Backend, K>
+// template <std::size_t OppCol, core::TransposedState OppState>
+// inline Matrix<K, Row, OppCol, Backend, State> Matrix<K, Row, Col, Backend, State>::Dot(Matrix<K, Col, OppCol,
+// Backend, OppState> mat) {
+
+// }
+/* end matrix unique arithmetics definition */
 }  // namespace mknnlib::matrix
 
 #endif
