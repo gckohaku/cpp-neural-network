@@ -79,11 +79,17 @@ public:
     /* begin operator overloads declaration */
     // arithmetics compound operators
     template <mk_concepts::ReadableMatrix OppM>
-    Matrix<K, Row, Col, Backend, core::TransposedState::None> operator+=(OppM mat);
+    auto operator+=(OppM mat);
 
     // ostream
     friend std::ostream& operator<< <>(std::ostream& os, const Matrix& mat);
     /* end operator overloads declaration */
+
+    /* begin matrix unique functions declaration */
+    constexpr size_t RowSize();
+    constexpr size_t ColumnSize();
+    std::string GetSizeString() const;
+    /* end matrix unique functions declaration */
 
     /* begin matrix unique arithmetics declaration */
     template <std::size_t OppCol, core::TransposedState OppState>
@@ -140,8 +146,19 @@ Matrix<K, Row, Col, Backend, State>::Matrix(std::vector<K> elements, Sizes... si
 template <typename K, std::size_t Row, std::size_t Col, typename Backend, core::TransposedState State>
     requires mk_concepts::BLASSupported<Backend, K>
 template <mk_concepts::ReadableMatrix OppM>
-inline Matrix<K, Row, Col, Backend, core::TransposedState::None> Matrix<K, Row, Col, Backend, State>::operator+=(
-    OppM mat) {}
+inline auto Matrix<K, Row, Col, Backend, State>::operator+=(OppM mat) {
+#if !defined(NDEBUG)
+    if (this->RowSize() != mat.RowSize() || this->ColumnSize() != mat.ColumnSize()) {
+        std::string errorString = "Mismatch matrix size for matrix product.\n";
+        errorString += "this size    : " + this->GetSizeString() + "\n";
+        errorString += "opponent size: " + mat.GetSizeString() + ".\n";
+
+        throw std::domain_error(errorString);
+    }
+#endif
+
+    return *this;
+}
 
 // ostream
 template <typename K, std::size_t Row, std::size_t Col, typename Backend, core::TransposedState State>
@@ -155,8 +172,27 @@ std::ostream& operator<<(std::ostream& os, const Matrix<K, Row, Col, Backend, St
     }
     return os;
 }
-
 /* end operator overloads definition */
+
+/* begin matrix unique functions definition */
+template <typename K, size_t Row, size_t Col, typename Backend, core::TransposedState State>
+    requires mk_concepts::BLASSupported<Backend, K>
+std::string Matrix<K, Row, Col, Backend, State>::GetSizeString() const {
+    return "(" + std::to_string(_extents.extent(0)) + ", " + std::to_string(_extents.extent(1)) + ")";
+}
+
+template <typename K, size_t Row, size_t Col, typename Backend, core::TransposedState State>
+    requires mk_concepts::BLASSupported<Backend, K>
+constexpr size_t Matrix<K, Row, Col, Backend, State>::RowSize() {
+    return _extents.extent(0);
+}
+
+template <typename K, size_t Row, size_t Col, typename Backend, core::TransposedState State>
+    requires mk_concepts::BLASSupported<Backend, K>
+constexpr size_t Matrix<K, Row, Col, Backend, State>::ColumnSize() {
+    return _extents.extent(1);
+}
+/* end matrix unique functions definition */
 
 /* begin matrix unique arithmetics definition */
 // template <typename K, std::size_t Row, std::size_t Col, typename Backend, core::TransposedState State>
