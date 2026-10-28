@@ -36,7 +36,7 @@ concept MatrixClosedArithmetic = MatrixElement<K> && ClosedAddable<M> && ClosedS
 
 // matrix types concepts
 template <typename M>
-concept MatrixLike = requires {
+concept MatrixLike = requires(M m) {
     typename std::remove_cvref_t<M>::MatrixExtent;
     typename std::remove_cvref_t<M>::ElementType;
 

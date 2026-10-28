@@ -6,6 +6,8 @@
 #include <cstddef>
 
 #include "src/concept_defines/types/type_concepts.hpp"
+#include "src/concept_defines/matrices/matrix_concepts.hpp"
+#include "src/matrices/core/matrix_size_utilities.hpp"
 #include "src/matrices/core/blas_backends.hpp"
 #include "src/matrices/core/blas_dispatchers/blas_primary_template.hpp"
 
@@ -35,6 +37,18 @@ struct BLAS<OpenBLASBackend, Type> {
     static void add_into(std::size_t elementSize, Type* destination, const Type* source, std::ptrdiff_t destinationStride = 1, std::ptrdiff_t sourceStride = 1) {
         if constexpr (mk_concepts::SingleFloatingPoint<Type>) {
             cblas_saxpy(elementSize, Type{1}, source, sourceStride, destination, destinationStride);
+        } else if constexpr (mk_concepts::DoubleFloatingPoint<Type>) {
+            cblas_daxpy(elementSize, Type{1}, source, sourceStride, destination, destinationStride);
+        }
+    }
+
+    template <mk_concepts::WritableMatrix DstM, mk_concepts::ReadableMatrix SrcM>
+    requires (std::is_same_v<typename std::remove_cvref_t<DstM>::ElementType, Type> && std::is_same_v<typename std::remove_cvref_t<SrcM>::ElementType, Type> && CompatibleMatrixShape<DstM, SrcM>)
+    static inline void add_into(DstM& destination, const SrcM& source) {
+        using DstNoRef = std::remove_cvref_t<DstM>;
+        using SrcNoRef = std::remove_cvref_t<SrcM>;
+        if constexpr (mk_concepts::SingleFloatingPoint<Type>) {
+            cblas_saxpy(DstNoRef::ExtentType::extents(0) * DstNoRef::ExtentType::extents(1), Type{1}, source, sourceStride, destination, destinationStride);
         } else if constexpr (mk_concepts::DoubleFloatingPoint<Type>) {
             cblas_daxpy(elementSize, Type{1}, source, sourceStride, destination, destinationStride);
         }

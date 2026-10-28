@@ -86,8 +86,9 @@ public:
     /* end operator overloads declaration */
 
     /* begin matrix unique functions declaration */
-    constexpr size_t RowSize();
-    constexpr size_t ColumnSize();
+    constexpr std::size_t RowSize();
+    constexpr std::size_t ColumnSize();
+    constexpr std::size_t ElementSize();
     std::string GetSizeString() const;
     /* end matrix unique functions declaration */
 
@@ -183,14 +184,20 @@ std::string Matrix<K, Row, Col, Backend, State>::GetSizeString() const {
 
 template <typename K, size_t Row, size_t Col, typename Backend, core::TransposedState State>
     requires mk_concepts::BLASSupported<Backend, K>
-constexpr size_t Matrix<K, Row, Col, Backend, State>::RowSize() {
+constexpr std::size_t Matrix<K, Row, Col, Backend, State>::RowSize() {
     return _extents.extent(0);
 }
 
-template <typename K, size_t Row, size_t Col, typename Backend, core::TransposedState State>
+template <typename K, std::size_t Row, std::size_t Col, typename Backend, core::TransposedState State>
     requires mk_concepts::BLASSupported<Backend, K>
-constexpr size_t Matrix<K, Row, Col, Backend, State>::ColumnSize() {
+constexpr std::size_t Matrix<K, Row, Col, Backend, State>::ColumnSize() {
     return _extents.extent(1);
+}
+
+template <typename K, std::size_t Row, std::size_t Col, typename Backend, core::TransposedState State>
+requires mk_concepts::BLASSupported<Backend, K>
+constexpr std::size_t Matrix<K, Row, Col, Backend, State>::ElementSize() {
+    return _extents.extent(0) * _extents.extent(1);
 }
 /* end matrix unique functions definition */
 
