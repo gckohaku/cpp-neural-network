@@ -19,7 +19,7 @@ template <mk_concepts::MatrixLike M>
 using MatrixExtents = typename std::remove_cvref_t<M>::MatrixExtent;
 
 template <std::size_t LRow, std::size_t LCol, std::size_t RRow, std::size_t RCol>
-concept CompatibleShape = CompatibleExtent<LRow, RRow> && CompatibleExtent<RRow, RCol>;
+concept CompatibleShape = CompatibleExtent<LRow, RRow> && CompatibleExtent<RCol, RCol>;
 
 template <typename ML, typename MR>
 concept CompatibleMatrixShape = mk_concepts::MatrixLike<ML> && mk_concepts::MatrixLike<MR> &&

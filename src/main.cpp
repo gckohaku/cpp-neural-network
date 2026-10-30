@@ -25,15 +25,24 @@ int main() {
     // std::array<float, k * n> b = {7.0, 9.0, 2.0, 8.0, 1.0, 3.0};
 
     std::vector<float> rowStatic = {2.0, 4.0, 6.0, 8.0, 10.0, 12.0};
+
+
     auto z = Matrix<float, m, std::dynamic_extent, OpenBLASBackend>(rowStatic, k);
 
     std::vector<float> c(m * n, 0.0);
 
     auto x = Matrix<float, m, k, OpenBLASBackend>(a);
-    // auto y = MatrixStaticOpen<float, k, n>(b);
+
+    std::cout << "x:\n" << x << "\n\n" << std::endl;
+    std::cout << "z:\n" << z << "\n\n" << std::endl;
     
-    // // auto res = x.Dot(y);
-    // auto resRowStatic = x.Dot(z);
+    x += z;
+
+    std::cout << x << std::endl;
+
+    std::cout << "\n==========\n" << "z:\n" << z << "\n\n" << std::endl;
+
+    z += x;
 
     std::cout << z << std::endl;
 

@@ -45,9 +45,9 @@ concept MatrixLike = requires(M m) {
 
 template <typename M>
 concept ReadableMatrix =
-    MatrixLike<M> && requires(const std::remove_cvref_t<M>& m, std::size_t row, std::size_t column) {
-        { m.extent(0) } -> std::convertible_to<std::size_t>;
-        { m.extent(1) } -> std::convertible_to<std::size_t>;
+    MatrixLike<M> && requires(const std::remove_cvref_t<M>& m, const std::size_t row, const std::size_t column) {
+        { m.Extent(0) } -> std::convertible_to<std::size_t>;
+        { m.Extent(1) } -> std::convertible_to<std::size_t>;
         { m[row, column] } -> std::convertible_to<typename std::remove_cvref_t<M>::ElementType>;
     };
 

@@ -21,6 +21,7 @@
 #include "src/matrices/core/blas_storages/blas_storage.hpp"  // IWYU pragma: keep
 #include "src/matrices/core/transposed_state.hpp"
 #include "src/matrices/core/type_utilities.hpp"
+#include "src/matrices/core/blas_dispatchers/blas_dispatchers.hpp"
 
 namespace mknnlib::matrix {
 template <typename K, std::size_t Row, std::size_t Col, typename Backend, core::TransposedState State>
@@ -79,7 +80,11 @@ public:
     /* begin operator overloads declaration */
     // arithmetics compound operators
     template <mk_concepts::ReadableMatrix OppM>
-    auto operator+=(OppM mat);
+    auto operator+=(const OppM& mat);
+
+    // element access
+    constexpr ElementType& operator[](const std::size_t a, const std::size_t b) ;
+    constexpr const ElementType& operator[](const std::size_t a, const std::size_t b) const;
 
     // ostream
     friend std::ostream& operator<< <>(std::ostream& os, const Matrix& mat);
@@ -87,9 +92,17 @@ public:
 
     /* begin matrix unique functions declaration */
     constexpr std::size_t RowSize();
+    constexpr std::size_t RowSize() const;
     constexpr std::size_t ColumnSize();
+    constexpr std::size_t ColumnSize() const;
     constexpr std::size_t ElementSize();
     std::string GetSizeString() const;
+    constexpr core::Storage<Backend, K, core::MatrixElementSize<MatrixExtent>>& Elements() noexcept;
+    constexpr const core::Storage<Backend, K, core::MatrixElementSize<MatrixExtent>>& Elements() const noexcept;
+    constexpr std::size_t Extent(const std::size_t index);
+    constexpr std::size_t Extent(const std::size_t index) const;
+    constexpr std::size_t Stride(const std::size_t index);
+    constexpr std::size_t Stride(const std::size_t index) const;
     /* end matrix unique functions declaration */
 
     /* begin matrix unique arithmetics declaration */
@@ -147,7 +160,7 @@ Matrix<K, Row, Col, Backend, State>::Matrix(std::vector<K> elements, Sizes... si
 template <typename K, std::size_t Row, std::size_t Col, typename Backend, core::TransposedState State>
     requires mk_concepts::BLASSupported<Backend, K>
 template <mk_concepts::ReadableMatrix OppM>
-inline auto Matrix<K, Row, Col, Backend, State>::operator+=(OppM mat) {
+inline auto Matrix<K, Row, Col, Backend, State>::operator+=(const OppM& mat) {
 #if !defined(NDEBUG)
     if (this->RowSize() != mat.RowSize() || this->ColumnSize() != mat.ColumnSize()) {
         std::string errorString = "Mismatch matrix size for matrix product.\n";
@@ -157,8 +170,21 @@ inline auto Matrix<K, Row, Col, Backend, State>::operator+=(OppM mat) {
         throw std::domain_error(errorString);
     }
 #endif
-
+    core::BLAS<Backend, K>::add_into(*this, mat);
     return *this;
+}
+
+// element access
+template <typename K, std::size_t Row, std::size_t Col, typename Backend, core::TransposedState State>
+    requires mk_concepts::BLASSupported<Backend, K>
+inline constexpr auto Matrix<K, Row, Col, Backend, State>::operator[](const std::size_t row, const std::size_t column) -> ElementType& {
+    return this->_span[row, column];
+}
+
+template <typename K, std::size_t Row, std::size_t Col, typename Backend, core::TransposedState State>
+    requires mk_concepts::BLASSupported<Backend, K>
+inline constexpr auto Matrix<K, Row, Col, Backend, State>::operator[](const std::size_t row, const std::size_t column) const -> const ElementType& {
+    return this->_span[row, column];
 }
 
 // ostream
@@ -184,21 +210,66 @@ std::string Matrix<K, Row, Col, Backend, State>::GetSizeString() const {
 
 template <typename K, size_t Row, size_t Col, typename Backend, core::TransposedState State>
     requires mk_concepts::BLASSupported<Backend, K>
-constexpr std::size_t Matrix<K, Row, Col, Backend, State>::RowSize() {
+inline constexpr auto Matrix<K, Row, Col, Backend, State>::Elements() noexcept
+    -> core::Storage<Backend, K, core::MatrixElementSize<MatrixExtent>>& {
+    return this->_elements;
+}
+
+template <typename K, size_t Row, size_t Col, typename Backend, core::TransposedState State>
+    requires mk_concepts::BLASSupported<Backend, K>
+inline constexpr auto Matrix<K, Row, Col, Backend, State>::Elements() const noexcept
+    -> const core::Storage<Backend, K, core::MatrixElementSize<MatrixExtent>>& {
+    return this->_elements;
+}
+
+template <typename K, size_t Row, size_t Col, typename Backend, core::TransposedState State>
+    requires mk_concepts::BLASSupported<Backend, K>
+inline constexpr std::size_t Matrix<K, Row, Col, Backend, State>::Extent(const std::size_t index) {
+    return _extents.extent(index);
+}
+
+template <typename K, size_t Row, size_t Col, typename Backend, core::TransposedState State>
+    requires mk_concepts::BLASSupported<Backend, K>
+inline constexpr std::size_t Matrix<K, Row, Col, Backend, State>::Extent(const std::size_t index) const {
+    return _extents.extent(index);
+}
+
+template <typename K, size_t Row, size_t Col, typename Backend, core::TransposedState State>
+    requires mk_concepts::BLASSupported<Backend, K>
+inline constexpr std::size_t Matrix<K, Row, Col, Backend, State>::RowSize() {
+    return _extents.extent(0);
+}
+
+template <typename K, size_t Row, size_t Col, typename Backend, core::TransposedState State>
+    requires mk_concepts::BLASSupported<Backend, K>
+inline constexpr std::size_t Matrix<K, Row, Col, Backend, State>::RowSize() const {
     return _extents.extent(0);
 }
 
 template <typename K, std::size_t Row, std::size_t Col, typename Backend, core::TransposedState State>
     requires mk_concepts::BLASSupported<Backend, K>
-constexpr std::size_t Matrix<K, Row, Col, Backend, State>::ColumnSize() {
+inline constexpr std::size_t Matrix<K, Row, Col, Backend, State>::ColumnSize() {
     return _extents.extent(1);
 }
 
 template <typename K, std::size_t Row, std::size_t Col, typename Backend, core::TransposedState State>
-requires mk_concepts::BLASSupported<Backend, K>
-constexpr std::size_t Matrix<K, Row, Col, Backend, State>::ElementSize() {
+    requires mk_concepts::BLASSupported<Backend, K>
+inline constexpr std::size_t Matrix<K, Row, Col, Backend, State>::ColumnSize() const {
+    return _extents.extent(1);
+}
+
+template <typename K, std::size_t Row, std::size_t Col, typename Backend, core::TransposedState State>
+    requires mk_concepts::BLASSupported<Backend, K>
+inline constexpr std::size_t Matrix<K, Row, Col, Backend, State>::ElementSize() {
     return _extents.extent(0) * _extents.extent(1);
 }
+
+template <typename K, std::size_t Row, std::size_t Col, typename Backend, core::TransposedState State>
+    requires mk_concepts::BLASSupported<Backend, K>
+inline constexpr std::size_t Matrix<K, Row, Col, Backend, State>::Stride(const std::size_t index) {
+    return _span.stride(index);
+}
+
 /* end matrix unique functions definition */
 
 /* begin matrix unique arithmetics definition */

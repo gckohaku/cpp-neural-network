@@ -48,9 +48,9 @@ struct BLAS<OpenBLASBackend, Type> {
         using DstNoRef = std::remove_cvref_t<DstM>;
         using SrcNoRef = std::remove_cvref_t<SrcM>;
         if constexpr (mk_concepts::SingleFloatingPoint<Type>) {
-            cblas_saxpy(DstNoRef::ExtentType::extents(0) * DstNoRef::ExtentType::extents(1), Type{1}, source, sourceStride, destination, destinationStride);
+            cblas_saxpy(destination.Extent(0) * destination.Extent(1), Type{1}, source.Elements().data(), 1, destination.Elements().data(), 1);
         } else if constexpr (mk_concepts::DoubleFloatingPoint<Type>) {
-            cblas_daxpy(elementSize, Type{1}, source, sourceStride, destination, destinationStride);
+            cblas_daxpy(destination.Extent(0) * destination.Extent(1), Type{1}, source.Elements().data(), 1, destination.Elements().data(), 1);
         }
     }
 
