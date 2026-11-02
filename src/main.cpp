@@ -36,13 +36,13 @@ int main() {
     std::cout << "x:\n" << x << "\n\n" << std::endl;
     std::cout << "z:\n" << z << "\n\n" << std::endl;
     
-    x += z;
+    x -= z;
 
     std::cout << x << std::endl;
 
     std::cout << "\n==========\n" << "z:\n" << z << "\n\n" << std::endl;
 
-    z += x;
+    z -= x;
 
     std::cout << z << std::endl;
 

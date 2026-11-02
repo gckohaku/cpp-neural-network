@@ -16,18 +16,18 @@ find_package(BLAS REQUIRED)
 find_package(Boost REQUIRED COMPONENTS unit_test_framework)
 
 add_executable(${PROJECT_NAME} src/main.cpp)
-add_executable(${TEST_FILE_NAME} tests/test_main.cpp)
+# add_executable(${TEST_FILE_NAME} tests/test_main.cpp)
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(${PROJECT_NAME} PRIVATE BLAS::BLAS Boost::headers)
-target_include_directories(${TEST_FILE_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(${TEST_FILE_NAME} PRIVATE BLAS::BLAS Boost::headers)
+# target_include_directories(${TEST_FILE_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+# target_link_libraries(${TEST_FILE_NAME} PRIVATE BLAS::BLAS Boost::headers)
 
 if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
     set_target_properties(${PROJECT_NAME} PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin/debug")
-    set_target_properties(${TEST_FILE_NAME} PROPERTIES
-        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin/debug")
+    # set_target_properties(${TEST_FILE_NAME} PROPERTIES
+    #     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin/debug")
 elseif("${CMAKE_BUILD_TYPE}" STREQUAL "Release")
     set_target_properties(${PROJECT_NAME} PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin/release")

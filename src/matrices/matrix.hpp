@@ -82,8 +82,11 @@ public:
     template <mk_concepts::ReadableMatrix OppM>
     auto operator+=(const OppM& mat);
 
+    template <mk_concepts::ReadableMatrix OppM>
+    auto operator-=(const OppM& mat);
+
     // element access
-    constexpr ElementType& operator[](const std::size_t a, const std::size_t b) ;
+    constexpr ElementType& operator[](const std::size_t a, const std::size_t b);
     constexpr const ElementType& operator[](const std::size_t a, const std::size_t b) const;
 
     // ostream
@@ -174,16 +177,35 @@ inline auto Matrix<K, Row, Col, Backend, State>::operator+=(const OppM& mat) {
     return *this;
 }
 
+template <typename K, std::size_t Row, std::size_t Col, typename Backend, core::TransposedState State>
+    requires mk_concepts::BLASSupported<Backend, K>
+template <mk_concepts::ReadableMatrix OppM>
+inline auto Matrix<K, Row, Col, Backend, State>::operator-=(const OppM& mat) {
+#if !defined(NDEBUG)
+    if (this->RowSize() != mat.RowSize() || this->ColumnSize() != mat.ColumnSize()) {
+        std::string errorString = "Mismatch matrix size for matrix product.\n";
+        errorString += "this size    : " + this->GetSizeString() + "\n";
+        errorString += "opponent size: " + mat.GetSizeString() + ".\n";
+
+        throw std::domain_error(errorString);
+    }
+#endif
+    core::BLAS<Backend, K>::subtract_into(*this, mat);
+    return *this;
+}
+
 // element access
 template <typename K, std::size_t Row, std::size_t Col, typename Backend, core::TransposedState State>
     requires mk_concepts::BLASSupported<Backend, K>
-inline constexpr auto Matrix<K, Row, Col, Backend, State>::operator[](const std::size_t row, const std::size_t column) -> ElementType& {
+inline constexpr auto Matrix<K, Row, Col, Backend, State>::operator[](const std::size_t row, const std::size_t column)
+    -> ElementType& {
     return this->_span[row, column];
 }
 
 template <typename K, std::size_t Row, std::size_t Col, typename Backend, core::TransposedState State>
     requires mk_concepts::BLASSupported<Backend, K>
-inline constexpr auto Matrix<K, Row, Col, Backend, State>::operator[](const std::size_t row, const std::size_t column) const -> const ElementType& {
+inline constexpr auto Matrix<K, Row, Col, Backend, State>::operator[](
+    const std::size_t row, const std::size_t column) const -> const ElementType& {
     return this->_span[row, column];
 }
 
