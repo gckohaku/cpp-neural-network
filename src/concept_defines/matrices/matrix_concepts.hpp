@@ -55,6 +55,11 @@ template <typename M>
 concept WritableMatrix = ReadableMatrix<M> &&
     requires(std::remove_cvref_t<M>& m, std::size_t row, std::size_t column,
         typename std::remove_cvref_t<M>::ElementType value) { m[row, column] = value; };
+
+template <typename M>
+concept IsOwningMatrix = requires(M m) {
+    m.Elements();
+};
 }  // namespace mknnlib::mk_concepts
 
 #endif
