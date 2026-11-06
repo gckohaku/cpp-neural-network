@@ -6,7 +6,7 @@
 namespace mknnlib::matrix {
 template <typename L, typename R>
     requires(mk_concepts::ReadableMatrix<std::remove_cvref_t<L>> && mk_concepts::ReadableMatrix<std::remove_cvref_t<R>>)
-auto operator+(L&& lhs, R&& rhs);
-}
+auto operator+(L&& lhs, R&& rhs) {}
+}  // namespace mknnlib::matrix
 
 #endif

@@ -26,6 +26,10 @@ concept CompatibleMatrixShape = mk_concepts::MatrixLike<ML> && mk_concepts::Matr
     CompatibleShape<MatrixExtents<ML>::static_extent(0), MatrixExtents<ML>::static_extent(1),
         MatrixExtents<MR>::static_extent(0), MatrixExtents<MR>::static_extent(1)>;
 
-}  // namespace mknnlib::matrix::core
+template <mk_concepts::ReadableMatrix ML, mk_concepts::ReadableMatrix MR>
+struct MatrixSameSizeOperationResult {
+
+};
+    }  // namespace mknnlib::matrix::core
 
 #endif
