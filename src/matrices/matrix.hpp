@@ -21,7 +21,6 @@
 #include "src/matrices/core/blas_storages/blas_storage.hpp"  // IWYU pragma: keep
 #include "src/matrices/core/transposed_state.hpp"
 #include "src/matrices/core/type_utilities.hpp"
-#include "src/matrices/core/blas_dispatchers/blas_dispatchers.hpp"
 
 namespace mknnlib::matrix {
 template <typename K, std::size_t Row, std::size_t Col, typename Backend, core::TransposedState State>
@@ -44,6 +43,7 @@ public:
     using MatrixExtent = std::extents<std::size_t, Row, Col>;
     using ElementType = K;
     using MdView = std::mdspan<K, MatrixExtent, std::layout_left>;
+    using MatrixBackend = Backend;
 
 private:
     MatrixExtent _extents;
