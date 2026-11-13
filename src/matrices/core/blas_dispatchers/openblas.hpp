@@ -45,7 +45,7 @@ struct BLAS<OpenBLASBackend, Type> {
     template <mk_concepts::WritableMatrix DstM, mk_concepts::ReadableMatrix SrcM>
         requires(std::is_same_v<typename std::remove_cvref_t<DstM>::ElementType, Type> &&
             std::is_same_v<typename std::remove_cvref_t<SrcM>::ElementType, Type> && CompatibleMatrixShape<DstM, SrcM>)
-    static inline void add_into(DstM& destination, const SrcM& source) {
+    static inline void add_assign(DstM& destination, const SrcM& source) {
         using DstNoRef = std::remove_cvref_t<DstM>;
         using SrcNoRef = std::remove_cvref_t<SrcM>;
         if constexpr (mk_concepts::SingleFloatingPoint<Type>) {
@@ -60,7 +60,7 @@ struct BLAS<OpenBLASBackend, Type> {
     template <mk_concepts::WritableMatrix DstM, mk_concepts::ReadableMatrix SrcM>
         requires(std::is_same_v<typename std::remove_cvref_t<DstM>::ElementType, Type> &&
             std::is_same_v<typename std::remove_cvref_t<SrcM>::ElementType, Type> && CompatibleMatrixShape<DstM, SrcM>)
-    static inline void subtract_into(DstM& destination, const SrcM& source) {
+    static inline void subtract_assign(DstM& destination, const SrcM& source) {
         using DstNoRef = std::remove_cvref_t<DstM>;
         using SrcNoRef = std::remove_cvref_t<SrcM>;
         if constexpr (mk_concepts::SingleFloatingPoint<Type>) {

@@ -173,7 +173,7 @@ inline auto Matrix<K, Row, Col, Backend, State>::operator+=(const OppM& mat) {
         throw std::domain_error(errorString);
     }
 #endif
-    core::BLAS<Backend, K>::add_into(*this, mat);
+    core::BLAS<Backend, K>::add_assign(*this, mat);
     return *this;
 }
 
@@ -190,7 +190,7 @@ inline auto Matrix<K, Row, Col, Backend, State>::operator-=(const OppM& mat) {
         throw std::domain_error(errorString);
     }
 #endif
-    core::BLAS<Backend, K>::subtract_into(*this, mat);
+    core::BLAS<Backend, K>::subtract_assign(*this, mat);
     return *this;
 }
 
