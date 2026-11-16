@@ -21,6 +21,8 @@
 #include "src/matrices/core/blas_storages/blas_storage.hpp"  // IWYU pragma: keep
 #include "src/matrices/core/transposed_state.hpp"
 #include "src/matrices/core/type_utilities.hpp"
+#include "src/matrices/core/blas_dispatchers/blas_dispatchers.hpp" // IWYU pragma: keep
+#include "src/matrices/matrix_binary_operators.hpp" // IWYU pragma: keep
 
 namespace mknnlib::matrix {
 template <typename K, std::size_t Row, std::size_t Col, typename Backend, core::TransposedState State>
@@ -31,7 +33,7 @@ template <typename K, std::size_t Row, std::size_t Col, typename Backend, core::
 std::ostream& operator<<(std::ostream& os, const Matrix<K, Row, Col, Backend, State>& mat);
 
 template <typename K, std::size_t Row, std::size_t Col, typename Backend,
-    core::TransposedState State = core::TransposedState::None>
+    core::TransposedState State>
     requires mk_concepts::BLASSupported<Backend, K>
 class Matrix {
     template <typename T, std::size_t FRow, std::size_t FCol, typename FBackend, core::TransposedState FState>
@@ -75,6 +77,11 @@ public:
     explicit Matrix(std::vector<K> elements, Sizes... sizes)
         requires(Matrix::MatrixExtent::rank_dynamic() > 0 && sizeof...(Sizes) == Matrix::MatrixExtent::rank_dynamic());
 
+    // copy constructor
+    Matrix(const Matrix& mat) = default;
+
+    // move constructor
+    Matrix(Matrix&&) = default;
     /* end constructors declaration */
 
     /* begin operator overloads declaration */

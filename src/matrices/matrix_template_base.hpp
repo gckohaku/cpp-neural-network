@@ -10,7 +10,7 @@
 
 namespace mknnlib::matrix {
 // primary
-template <typename K, size_t Row, size_t Col, typename Backend, core::TransposedState Layout>
+template <typename K, size_t Row, size_t Col, typename Backend, core::TransposedState State = core::TransposedState::None>
     requires mk_concepts::BLASSupported<Backend, K>
 class Matrix;
 
@@ -19,64 +19,64 @@ class Matrix;
 //     requires mk_concepts::BLASSupported<Backend, K>
 // using MatrixStatic = Matrix<K, Row, Col, Backend, Layout>;
 
-template <typename K, size_t Row, size_t Col, core::TransposedState Layout = core::TransposedState::None>
+template <typename K, size_t Row, size_t Col, core::TransposedState State = core::TransposedState::None>
     requires mk_concepts::BLASSupported<core::OpenBLASBackend, K>
-using MatrixStaticOpen = Matrix<K, Row, Col, core::OpenBLASBackend, Layout>;
+using MatrixStaticOpen = Matrix<K, Row, Col, core::OpenBLASBackend, State>;
 
-template <typename K, size_t Row, size_t Col, core::TransposedState Layout = core::TransposedState::None>
+template <typename K, size_t Row, size_t Col, core::TransposedState State = core::TransposedState::None>
     requires mk_concepts::BLASSupported<core::CuBLASBackend, K>
-using MatrixStaticCu = Matrix<K, Row, Col, core::CuBLASBackend, Layout>;
+using MatrixStaticCu = Matrix<K, Row, Col, core::CuBLASBackend, State>;
 
 // row static
 // template <typename K, size_t Row, typename Backend, typename Layout>
 //     requires mk_concepts::BLASSupported<Backend, K>
 // class Matrix<K, Row, std::dynamic_extent, Backend, Layout>;
 
-template <typename K, size_t Row, typename Backend, core::TransposedState Layout = core::TransposedState::None>
+template <typename K, size_t Row, typename Backend, core::TransposedState State = core::TransposedState::None>
     requires mk_concepts::BLASSupported<Backend, K>
-using MatrixRowStatic = Matrix<K, Row, std::dynamic_extent, Backend, Layout>;
+using MatrixRowStatic = Matrix<K, Row, std::dynamic_extent, Backend, State>;
 
-template <typename K, size_t Row, core::TransposedState Layout = core::TransposedState::None>
+template <typename K, size_t Row, core::TransposedState State = core::TransposedState::None>
     requires mk_concepts::BLASSupported<core::OpenBLASBackend, K>
-using MatrixRowStaticOpen = Matrix<K, Row, std::dynamic_extent, core::OpenBLASBackend, Layout>;
+using MatrixRowStaticOpen = Matrix<K, Row, std::dynamic_extent, core::OpenBLASBackend, State>;
 
-template <typename K, size_t Row, core::TransposedState Layout = core::TransposedState::None>
+template <typename K, size_t Row, core::TransposedState State = core::TransposedState::None>
     requires mk_concepts::BLASSupported<core::CuBLASBackend, K>
-using MatrixRowStaticCu = Matrix<K, Row, std::dynamic_extent, core::CuBLASBackend, Layout>;
+using MatrixRowStaticCu = Matrix<K, Row, std::dynamic_extent, core::CuBLASBackend, State>;
 
 // column static
 // template <typename K, size_t Col, typename Backend, typename Layout>
 //     requires mk_concepts::BLASSupported<Backend, K>
 // class Matrix<K, std::dynamic_extent, Col, Backend, Layout>;
 
-template <typename K, size_t Col, typename Backend, core::TransposedState Layout = core::TransposedState::None>
+template <typename K, size_t Col, typename Backend, core::TransposedState State = core::TransposedState::None>
     requires mk_concepts::BLASSupported<Backend, K>
-using MatrixColumnStatic = Matrix<K, std::dynamic_extent, Col, Backend, Layout>;
+using MatrixColumnStatic = Matrix<K, std::dynamic_extent, Col, Backend, State>;
 
-template <typename K, size_t Col, core::TransposedState Layout = core::TransposedState::None>
+template <typename K, size_t Col, core::TransposedState State = core::TransposedState::None>
     requires mk_concepts::BLASSupported<core::OpenBLASBackend, K>
-using MatrixColumnStaticOpen = Matrix<K, std::dynamic_extent, Col, core::OpenBLASBackend, Layout>;
+using MatrixColumnStaticOpen = Matrix<K, std::dynamic_extent, Col, core::OpenBLASBackend, State>;
 
-template <typename K, size_t Col, core::TransposedState Layout = core::TransposedState::None>
+template <typename K, size_t Col, core::TransposedState State = core::TransposedState::None>
     requires mk_concepts::BLASSupported<core::CuBLASBackend, K>
-using MatrixColumnStaticCu = Matrix<K, std::dynamic_extent, Col, core::CuBLASBackend, Layout>;
+using MatrixColumnStaticCu = Matrix<K, std::dynamic_extent, Col, core::CuBLASBackend, State>;
 
 // both dynamic
 // template <typename K, typename Backend, typename Layout>
 //     requires mk_concepts::BLASSupported<Backend, K>
 // class Matrix<K, std::dynamic_extent, std::dynamic_extent, Backend, Layout>;
 
-template <typename K, typename Backend, core::TransposedState Layout = core::TransposedState::None>
+template <typename K, typename Backend, core::TransposedState State = core::TransposedState::None>
     requires mk_concepts::BLASSupported<Backend, K>
-using MatrixDynamic = Matrix<K, std::dynamic_extent, std::dynamic_extent, Backend, Layout>;
+using MatrixDynamic = Matrix<K, std::dynamic_extent, std::dynamic_extent, Backend, State>;
 
-template <typename K, core::TransposedState Layout = core::TransposedState::None>
+template <typename K, core::TransposedState State = core::TransposedState::None>
     requires mk_concepts::BLASSupported<core::OpenBLASBackend, K>
-using MatrixDynamicOpen = Matrix<K, std::dynamic_extent, std::dynamic_extent, core::OpenBLASBackend, Layout>;
+using MatrixDynamicOpen = Matrix<K, std::dynamic_extent, std::dynamic_extent, core::OpenBLASBackend, State>;
 
-template <typename K, core::TransposedState Layout = core::TransposedState::None>
+template <typename K, core::TransposedState State = core::TransposedState::None>
     requires mk_concepts::BLASSupported<core::CuBLASBackend, K>
-using MatrixDynamicCu = Matrix<K, std::dynamic_extent, std::dynamic_extent, core::CuBLASBackend, Layout>;
+using MatrixDynamicCu = Matrix<K, std::dynamic_extent, std::dynamic_extent, core::CuBLASBackend, State>;
 
 // template <typename K, size_t Row, size_t Col, typename Backend, core::TransposedState Layout>
 // struct MatrixTranspose_base {

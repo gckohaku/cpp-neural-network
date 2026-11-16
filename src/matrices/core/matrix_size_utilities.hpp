@@ -6,7 +6,7 @@
 #include <type_traits>
 
 #include "src/concept_defines/matrices/matrix_concepts.hpp"
-#include "src/matrices/matrix.hpp"
+#include "src/matrices/matrix_template_base.hpp" // IWYU pragma: keep
 
 namespace mknnlib::matrix::core {
 template <std::size_t L, std::size_t R>

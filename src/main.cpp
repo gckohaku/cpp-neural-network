@@ -7,7 +7,7 @@
 
 #include "src/matrices/core/blas_backends.hpp"
 #include "src/matrices/matrix.hpp"
-#include "src/matrices/matrix_template_base.hpp"
+// #include "src/matrices/matrix_template_base.hpp"
 
 using mknnlib::matrix::Matrix;
 using mknnlib::matrix::MatrixRowStaticOpen;
@@ -36,15 +36,21 @@ int main() {
     std::cout << "x:\n" << x << "\n\n" << std::endl;
     std::cout << "z:\n" << z << "\n\n" << std::endl;
     
-    x -= z;
+    // x += z;
 
-    std::cout << x << std::endl;
+    // std::cout << x << std::endl;
 
-    std::cout << "\n==========\n" << "z:\n" << z << "\n\n" << std::endl;
+    // std::cout << "\n==========\n" << "z:\n" << z << "\n\n" << std::endl;
 
-    z -= x;
+    // z += x;
 
-    std::cout << z << std::endl;
+    // std::cout << z << std::endl;
+
+    std::cout << "\n==========\n" << std::endl;
+
+    auto res = x + z;
+
+    std::cout << "res:\n" << res << "\n\n" << std::endl;
 
     return 0;
 }
