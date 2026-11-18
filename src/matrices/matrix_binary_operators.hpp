@@ -1,21 +1,12 @@
 #ifndef MKNNLIB_MATRICES_MATRIX_BINARY_OPERATORS_HPP
 #define MKNNLIB_MATRICES_MATRIX_BINARY_OPERATORS_HPP
 
+#include <iostream>
 #include <type_traits>
 #include "src/concept_defines/matrices/matrix_concepts.hpp"
 #include "src/matrices/core/matrix_size_utilities.hpp"
 
 namespace mknnlib::matrix {
-// template <typename L, typename R, typename Backend>
-// requires(core::CompatibleMatrixShape<L, R>)
-// auto MakeBinaryOperatorResultMatrix(L lhs, R rhs) {
-//     using LeftExtents = core::MatrixExtents<std::remove_cvref_t<L>>;
-//     using RightExtents = core::MatrixExtents<std::remove_cvref_t<R>>;
-//     using ElementType = std::remove_cvref_t<L>::ElementType;
-
-//     // Matrix<ElementType, core::MergeExtent<, std::size_t R>>
-// }
-
 template <typename L, typename R>
     requires(mk_concepts::ReadableMatrix<std::remove_cvref_t<L>> && mk_concepts::ReadableMatrix<std::remove_cvref_t<R>> && core::CompatibleMatrixShape<L, R>)
 auto operator+(L&& lhs, R&& rhs) {
@@ -32,6 +23,7 @@ auto operator+(L&& lhs, R&& rhs) {
         return std::forward(rhs);
     }
     else {
+        std::cout << "enter binary add operator" << std::endl;
         Result result = lhs;
         core::BLAS<Backend, ElementType>::add_assign(result, rhs);
         return result;

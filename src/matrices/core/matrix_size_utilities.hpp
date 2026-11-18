@@ -6,7 +6,7 @@
 #include <type_traits>
 
 #include "src/concept_defines/matrices/matrix_concepts.hpp"
-#include "src/matrices/matrix_template_base.hpp" // IWYU pragma: keep
+#include "src/matrices/matrix_template_base.hpp"  // IWYU pragma: keep
 
 namespace mknnlib::matrix::core {
 template <std::size_t L, std::size_t R>
@@ -32,7 +32,9 @@ concept CompatibleMatrixShape = mk_concepts::MatrixLike<ML> && mk_concepts::Matr
 
 // };
 
-template <mk_concepts::ReadableMatrix ML, mk_concepts::ReadableMatrix MR>
+template <typename ML, typename MR>
+    requires(mk_concepts::ReadableMatrix<std::remove_cvref_t<ML>> &&
+                mk_concepts::ReadableMatrix<std::remove_cvref_t<MR>>)
 using MatrixSameSizeOperationResult = Matrix<typename std::remove_cvref_t<ML>::ElementType,
     MergeExtent<MatrixExtents<ML>::static_extent(0), MatrixExtents<MR>::static_extent(0)>,
     MergeExtent<MatrixExtents<ML>::static_extent(1), MatrixExtents<MR>::static_extent(1)>,

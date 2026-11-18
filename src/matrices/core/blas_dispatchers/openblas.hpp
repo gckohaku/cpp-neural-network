@@ -4,6 +4,7 @@
 #include <cblas.h>
 #include <openblas_config.h>
 #include <cstddef>
+#include <iostream>
 
 #include "src/concept_defines/types/type_concepts.hpp"
 #include "src/concept_defines/matrices/matrix_concepts.hpp"
@@ -46,12 +47,12 @@ struct BLAS<OpenBLASBackend, Type> {
         requires(std::is_same_v<typename std::remove_cvref_t<DstM>::ElementType, Type> &&
             std::is_same_v<typename std::remove_cvref_t<SrcM>::ElementType, Type> && CompatibleMatrixShape<DstM, SrcM>)
     static inline void add_assign(DstM& destination, const SrcM& source) {
-        using DstNoRef = std::remove_cvref_t<DstM>;
-        using SrcNoRef = std::remove_cvref_t<SrcM>;
         if constexpr (mk_concepts::SingleFloatingPoint<Type>) {
-            cblas_saxpy(destination.Extent(0) * destination.Extent(1), Type{1}, source.Elements().data(), 1,
-                destination.Elements().data(), 1);
+            std::cout << "type is single floating point." << std::endl;
+            cblas_saxpy(static_cast<blasint>(destination.Extent(0) * destination.Extent(1)), Type{1},
+                source.Elements().data(), 1, destination.Elements().data(), 1);
         } else if constexpr (mk_concepts::DoubleFloatingPoint<Type>) {
+            std::cout << "type is double floating point." << std::endl;
             cblas_daxpy(destination.Extent(0) * destination.Extent(1), Type{1}, source.Elements().data(), 1,
                 destination.Elements().data(), 1);
         }
@@ -61,8 +62,8 @@ struct BLAS<OpenBLASBackend, Type> {
         requires(std::is_same_v<typename std::remove_cvref_t<DstM>::ElementType, Type> &&
             std::is_same_v<typename std::remove_cvref_t<SrcM>::ElementType, Type> && CompatibleMatrixShape<DstM, SrcM>)
     static inline void subtract_assign(DstM& destination, const SrcM& source) {
-        using DstNoRef = std::remove_cvref_t<DstM>;
-        using SrcNoRef = std::remove_cvref_t<SrcM>;
+        // using DstNoRef = std::remove_cvref_t<DstM>;
+        // using SrcNoRef = std::remove_cvref_t<SrcM>;
         if constexpr (mk_concepts::SingleFloatingPoint<Type>) {
             cblas_saxpy(destination.Extent(0) * destination.Extent(1), Type{-1}, source.Elements().data(), 1,
                 destination.Elements().data(), 1);

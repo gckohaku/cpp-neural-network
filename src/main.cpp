@@ -51,6 +51,8 @@ int main() {
     auto res = x + z;
 
     std::cout << "res:\n" << res << "\n\n" << std::endl;
+    std::cout << "x:\n" << x << "\n\n" << std::endl;
+    std::cout << "z\n" << z << "\n\n" << std::endl;
 
     return 0;
 }
