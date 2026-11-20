@@ -21,8 +21,8 @@
 #include "src/matrices/core/blas_storages/blas_storage.hpp"  // IWYU pragma: keep
 #include "src/matrices/core/transposed_state.hpp"
 #include "src/matrices/core/type_utilities.hpp"
-#include "src/matrices/core/blas_dispatchers/blas_dispatchers.hpp" // IWYU pragma: keep
-#include "src/matrices/matrix_binary_operators.hpp" // IWYU pragma: keep
+#include "src/matrices/core/blas_dispatchers/blas_dispatchers.hpp"  // IWYU pragma: keep
+#include "src/matrices/matrix_binary_operators.hpp"                 // IWYU pragma: keep
 
 namespace mknnlib::matrix {
 template <typename K, std::size_t Row, std::size_t Col, typename Backend, core::TransposedState State>
@@ -32,8 +32,7 @@ template <typename K, std::size_t Row, std::size_t Col, typename Backend, core::
     requires mk_concepts::BLASSupported<Backend, K>
 std::ostream& operator<<(std::ostream& os, const Matrix<K, Row, Col, Backend, State>& mat);
 
-template <typename K, std::size_t Row, std::size_t Col, typename Backend,
-    core::TransposedState State>
+template <typename K, std::size_t Row, std::size_t Col, typename Backend, core::TransposedState State>
     requires mk_concepts::BLASSupported<Backend, K>
 class Matrix {
     template <typename T, std::size_t FRow, std::size_t FCol, typename FBackend, core::TransposedState FState>
@@ -78,10 +77,10 @@ public:
         requires(Matrix::MatrixExtent::rank_dynamic() > 0 && sizeof...(Sizes) == Matrix::MatrixExtent::rank_dynamic());
 
     // copy constructor
-    Matrix(const Matrix& mat) = default;
+    Matrix(const Matrix& mat);
 
     // move constructor
-    Matrix(Matrix&&) = default;
+    Matrix(Matrix&&);
     /* end constructors declaration */
 
     /* begin operator overloads declaration */
@@ -148,21 +147,37 @@ template <typename K, std::size_t Row, std::size_t Col, typename Backend, core::
 template <mk_concepts::SizeCompatible... Sizes>
 Matrix<K, Row, Col, Backend, State>::Matrix(Sizes... sizes)
     requires(MatrixExtent::rank_dynamic() > 0 && sizeof...(Sizes) == MatrixExtent::rank_dynamic())
-    : _extents{sizes...}, _elements{}, _span(_elements.data(), Matrix::MatrixExtent{}) {}
+    : _extents{sizes...}, _elements{}, _span(_elements.data(), _extents) {}
 
 template <typename K, std::size_t Row, std::size_t Col, typename Backend, core::TransposedState State>
     requires mk_concepts::BLASSupported<Backend, K>
 template <std::size_t ArrSize, mk_concepts::SizeCompatible... Sizes>
 Matrix<K, Row, Col, Backend, State>::Matrix(std::array<K, ArrSize> elements, Sizes... sizes)
     requires(MatrixExtent::rank_dynamic() > 0 && sizeof...(Sizes) == MatrixExtent::rank_dynamic())
-    : _extents{sizes...}, _elements{elements}, _span(_elements.data(), Matrix::MatrixExtent{}) {}
+    : _extents{sizes...}, _elements{elements}, _span(_elements.data(), _extents) {}
 
 template <typename K, std::size_t Row, std::size_t Col, typename Backend, core::TransposedState State>
     requires mk_concepts::BLASSupported<Backend, K>
 template <mk_concepts::SizeCompatible... Sizes>
 Matrix<K, Row, Col, Backend, State>::Matrix(std::vector<K> elements, Sizes... sizes)
     requires(MatrixExtent::rank_dynamic() > 0 && sizeof...(Sizes) == MatrixExtent::rank_dynamic())
-    : _extents{sizes...}, _elements{elements}, _span(_elements.data(), Matrix::MatrixExtent{}) {}
+    : _extents{sizes...}, _elements{elements}, _span(_elements.data(), _extents) {}
+
+// copy constructor
+template <typename K, size_t Row, size_t Col, typename Backend, core::TransposedState State>
+    requires mk_concepts::BLASSupported<Backend, K>
+Matrix<K, Row, Col, Backend, State>::Matrix(const Matrix<K, Row, Col, Backend, State>& mat) :
+    _extents{mat._extents}, _elements(mat._elements), _span(_elements.data(), _extents) {}
+
+// move constructor
+template <typename K, size_t Row, size_t Col, typename Backend, core::TransposedState State>
+    requires mk_concepts::BLASSupported<Backend, K>
+Matrix<K, Row, Col, Backend, State>::Matrix(Matrix<K, Row, Col, Backend, State>&& mat) :
+    _extents{mat._extents}, _elements(std::move(mat._elements)), _span(_elements.data(), _extents) {
+#if !defined(NDEBUG)
+    std::cout << "called move constructor" << std::endl;
+#endif
+}
 /* end constructors definition */
 
 /* begin operator overloads definition */
