@@ -79,6 +79,11 @@ public:
     // copy constructor
     Matrix(const Matrix& mat);
 
+    template <typename OtherM>
+        requires(mk_concepts::ReadableMatrix<std::remove_cvref_t<OtherM>> &&
+            !std::same_as<std::remove_cvref_t<OtherM>, Matrix>)
+    explicit Matrix(const OtherM& mat);
+
     // move constructor
     Matrix(Matrix&&);
     /* end constructors declaration */
@@ -110,6 +115,8 @@ public:
     constexpr const core::Storage<Backend, K, core::MatrixElementSize<MatrixExtent>>& Elements() const noexcept;
     constexpr std::size_t Extent(const std::size_t index);
     constexpr std::size_t Extent(const std::size_t index) const;
+    constexpr std::extents<std::size_t, 2> Extents();
+    constexpr std::extents<std::size_t, 2> Extents() const;
     constexpr std::size_t Stride(const std::size_t index);
     constexpr std::size_t Stride(const std::size_t index) const;
     /* end matrix unique functions declaration */
@@ -167,16 +174,23 @@ Matrix<K, Row, Col, Backend, State>::Matrix(std::vector<K> elements, Sizes... si
 template <typename K, size_t Row, size_t Col, typename Backend, core::TransposedState State>
     requires mk_concepts::BLASSupported<Backend, K>
 Matrix<K, Row, Col, Backend, State>::Matrix(const Matrix<K, Row, Col, Backend, State>& mat) :
-    _extents{mat._extents}, _elements(mat._elements), _span(_elements.data(), _extents) {}
+    _extents{mat._extents}, _elements(mat._elements), _span(_elements.data(), _extents) {
+    // std::cout << "called copy constructor" << std::endl;
+}
+
+template <typename K, size_t Row, size_t Col, typename Backend, core::TransposedState State>
+    requires mk_concepts::BLASSupported<Backend, K>
+template <typename OtherM>
+    requires(mk_concepts::ReadableMatrix<std::remove_cvref_t<OtherM>> &&
+        !std::same_as<std::remove_cvref_t<OtherM>, Matrix<K, Row, Col, Backend, State>>)
+Matrix<K, Row, Col, Backend, State>::Matrix(const OtherM& mat) : _extents(mat.Extents()), _elements(mat._elements), _span(_elements.data(), _extents) {}
 
 // move constructor
 template <typename K, size_t Row, size_t Col, typename Backend, core::TransposedState State>
     requires mk_concepts::BLASSupported<Backend, K>
 Matrix<K, Row, Col, Backend, State>::Matrix(Matrix<K, Row, Col, Backend, State>&& mat) :
     _extents{mat._extents}, _elements(std::move(mat._elements)), _span(_elements.data(), _extents) {
-#if !defined(NDEBUG)
-    std::cout << "called move constructor" << std::endl;
-#endif
+    // std::cout << "called move constructor" << std::endl;
 }
 /* end constructors definition */
 
@@ -276,6 +290,18 @@ template <typename K, size_t Row, size_t Col, typename Backend, core::Transposed
     requires mk_concepts::BLASSupported<Backend, K>
 inline constexpr std::size_t Matrix<K, Row, Col, Backend, State>::Extent(const std::size_t index) const {
     return _extents.extent(index);
+}
+
+template <typename K, size_t Row, size_t Col, typename Backend, core::TransposedState State>
+    requires mk_concepts::BLASSupported<Backend, K>
+inline constexpr std::extents<std::size_t, 2> Matrix<K, Row, Col, Backend, State>::Extents() {
+    return _extents;
+}
+
+template <typename K, size_t Row, size_t Col, typename Backend, core::TransposedState State>
+    requires mk_concepts::BLASSupported<Backend, K>
+inline constexpr std::extents<std::size_t, 2> Matrix<K, Row, Col, Backend, State>::Extents() const {
+    return _extents;
 }
 
 template <typename K, size_t Row, size_t Col, typename Backend, core::TransposedState State>

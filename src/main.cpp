@@ -26,16 +26,12 @@ int main() {
 
     std::vector<float> rowStatic = {2.0, 4.0, 6.0, 8.0, 10.0, 12.0};
 
-
-    auto z = Matrix<float, m, std::dynamic_extent, OpenBLASBackend>(rowStatic, k);
+    auto z = Matrix<float, m, k, OpenBLASBackend>(rowStatic);
 
     std::vector<float> c(m * n, 0.0);
 
-    auto x = Matrix<float, m, k, OpenBLASBackend>(a);
+    auto x = Matrix<float, m, std::dynamic_extent, OpenBLASBackend>(a, k);
 
-    std::cout << "x:\n" << x << "\n\n" << std::endl;
-    std::cout << "z:\n" << z << "\n\n" << std::endl;
-    
     // x += z;
 
     // std::cout << x << std::endl;
@@ -46,13 +42,14 @@ int main() {
 
     // std::cout << z << std::endl;
 
-    std::cout << "\n==========\n" << std::endl;
+    std::cout << "x:\n" << x << std::endl;
+    std::cout << "z:\n" << z << std::endl;
+
+    std::cout << "==========" << std::endl;
 
     auto res = x + z;
 
-    std::cout << "res:\n" << res << "\n\n" << std::endl;
-    std::cout << "x:\n" << x << "\n\n" << std::endl;
-    std::cout << "z\n" << z << "\n\n" << std::endl;
+    std::cout << "res:\n" << res << std::endl;
 
     return 0;
 }

@@ -31,7 +31,9 @@
 			"options": {
 				"cwd": "${workspaceFolder}"
 			},
-			"problemMatcher": ["$gcc"],
+			"problemMatcher": [
+				"$gcc"
+			],
 			"group": "build",
 			"detail": "コンパイラ: /usr/bin/clang++"
 		},
@@ -48,19 +50,12 @@
 			"detail": "コンパイラ: /usr/bin/clang++"
 		},
 		{
-			"type": "process",
 			"label": "C/C++ (debug): clang++ ビルドして実行",
-			"command": "cmake",
-			"args": [
-				"--build",
-				"${workspaceFolder}/build/debug",
-				"&&",
-				"${workspaceFolder}/bin/debug/cpp-neural-network"
+			"dependsOn": [
+				"C/C++ (debug): clang++ ビルド",
+				"C/C++ (debug): clang++ 実行"
 			],
-			"options": {
-				"cwd": "${workspaceFolder}"
-			},
-			"problemMatcher": [],
+			"dependsOrder": "sequence",
 			"group": "build",
 			"detail": "コンパイラ: /usr/bin/clang++"
 		},
@@ -111,19 +106,12 @@
 			"detail": "コンパイラ: /usr/bin/clang++"
 		},
 		{
-			"type": "process",
 			"label": "C/C++ (release): clang++ ビルドして実行",
-			"command": "cmake",
-			"args": [
-				"--build",
-				"${workspaceFolder}/build/release",
-				"&&",
-				"${workspaceFolder}/bin/release/cpp-neural-network"
+			"dependsOn": [
+				"C/C++ (release): clang++ ビルド",
+				"C/C++ (release): clang++ 実行"
 			],
-			"options": {
-				"cwd": "${workspaceFolder}"
-			},
-			"problemMatcher": [],
+			"dependsOrder": "sequence",
 			"group": "build",
 			"detail": "コンパイラ: /usr/bin/clang++"
 		},
