@@ -115,8 +115,8 @@ public:
     constexpr const core::Storage<Backend, K, core::MatrixElementSize<MatrixExtent>>& Elements() const noexcept;
     constexpr std::size_t Extent(const std::size_t index);
     constexpr std::size_t Extent(const std::size_t index) const;
-    constexpr std::extents<std::size_t, 2> Extents();
-    constexpr std::extents<std::size_t, 2> Extents() const;
+    constexpr std::extents<std::size_t, Row, Col> Extents();
+    constexpr std::extents<std::size_t, Row, Col> Extents() const;
     constexpr std::size_t Stride(const std::size_t index);
     constexpr std::size_t Stride(const std::size_t index) const;
     /* end matrix unique functions declaration */
@@ -294,13 +294,13 @@ inline constexpr std::size_t Matrix<K, Row, Col, Backend, State>::Extent(const s
 
 template <typename K, size_t Row, size_t Col, typename Backend, core::TransposedState State>
     requires mk_concepts::BLASSupported<Backend, K>
-inline constexpr std::extents<std::size_t, 2> Matrix<K, Row, Col, Backend, State>::Extents() {
+inline constexpr std::extents<std::size_t, Row, Col> Matrix<K, Row, Col, Backend, State>::Extents() {
     return _extents;
 }
 
 template <typename K, size_t Row, size_t Col, typename Backend, core::TransposedState State>
     requires mk_concepts::BLASSupported<Backend, K>
-inline constexpr std::extents<std::size_t, 2> Matrix<K, Row, Col, Backend, State>::Extents() const {
+inline constexpr std::extents<std::size_t, Row, Col> Matrix<K, Row, Col, Backend, State>::Extents() const {
     return _extents;
 }
 
