@@ -32,6 +32,7 @@ int main() {
 
     auto x = Matrix<float, m, std::dynamic_extent, OpenBLASBackend>(a, k);
 
+
     // x += z;
 
     // std::cout << x << std::endl;

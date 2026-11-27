@@ -351,6 +351,7 @@ inline constexpr std::size_t Matrix<K, Row, Col, Backend, State>::Stride(const s
 
 // }
 /* end matrix unique arithmetics definition */
+#include "src/matrices/matrix_template_base.hpp"
 }  // namespace mknnlib::matrix
 
 #endif

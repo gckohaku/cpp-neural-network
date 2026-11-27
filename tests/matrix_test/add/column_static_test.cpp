@@ -10,7 +10,7 @@
 #include "tests/test_matrix_add_vector_defines.hpp"
 #include "tests/test_type_defines.hpp"
 #include "tests/test_utilities.hpp"
-#include "src/matrices/matrix_template_base.hpp"
+#include "src/matrices/matrix.hpp"
 
 using mknnlib::matrix::MatrixColumnStatic;
 

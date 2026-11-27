@@ -7,7 +7,7 @@
 #include <limits>
 #include <type_traits>
 
-#include "src/matrices/matrix_static.hpp"
+#include "src/matrices/matrix_template_base.hpp"
 #include "tests/test_matrix_add_array_defines.hpp"
 #include "tests/test_type_defines.hpp"
 #include "tests/test_utilities.hpp"

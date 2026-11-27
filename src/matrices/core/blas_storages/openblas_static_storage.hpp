@@ -3,6 +3,7 @@
 
 #include <array>
 #include <cstddef>
+#include <span>
 #include <stdexcept>
 #include <vector>
 
@@ -12,18 +13,24 @@
 namespace mknnlib::matrix::core {
 template <typename T, size_t Size>
 struct Storage<OpenBLASBackend, T, Size> {
-    private:
+private:
     std::array<T, Size> _elements;
+
 public:
     using iterator = std::array<T, Size>::iterator;
     using const_iterator = std::array<T, Size>::const_iterator;
     using size_type = std::array<T, Size>::size_type;
-    
+
     Storage();
 
     Storage(std::array<T, Size> elements);
     Storage(std::vector<T> elements);
+
+    // copy constructor
     Storage(const Storage&) = default;
+    Storage(const Storage<OpenBLASBackend, T, std::dynamic_extent>& elements);
+
+    // move constructor
     Storage(Storage&&) = default;
 
     Storage& operator=(const Storage&) = default;
@@ -56,10 +63,23 @@ Storage<OpenBLASBackend, T, Size>::Storage(std::array<T, Size> elements) : _elem
 
 template <typename T, size_t Size>
 Storage<OpenBLASBackend, T, Size>::Storage(std::vector<T> elements) : _elements{} {
+#ifndef NDEBUG
     if (elements.size() != Size) {
-        throw std::invalid_argument("At Storage constructor: invalid number of elements");
+        throw std::invalid_argument("At Storage constructor: invalid element size");
     }
+#endif
 
+    std::copy(elements.begin(), elements.end(), _elements.begin());
+}
+
+// copy constructor
+template <typename T, size_t Size>
+Storage<OpenBLASBackend, T, Size>::Storage(const Storage<OpenBLASBackend, T, std::dynamic_extent>& elements) {
+#ifndef NDEBUG
+    if (elements.size() != Size) {
+        throw std::invalid_argument("At Storage constructor: invalid element size");
+    }
+#endif
     std::copy(elements.begin(), elements.end(), _elements.begin());
 }
 
